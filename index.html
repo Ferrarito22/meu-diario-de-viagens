@@ -150,8 +150,8 @@
       
       <form id="auth-form" onsubmit="handleAuth(event)">
         <div class="form-group">
-          <label>Usuário</label>
-          <input type="text" id="auth-username" required placeholder="Digite seu usuário">
+          <label>Chave de Acesso (Usuário)</label>
+          <input type="text" id="auth-username" required placeholder="Digite sua chave de acesso">
         </div>
         <div class="form-group">
           <label>Senha</label>
@@ -272,6 +272,23 @@
               </div>
             </div>
           </div>
+
+          <!-- CARD PARA ALTERAR SENHA -->
+          <div class="card">
+            <h2>🔑 Alterar Senha de Acesso</h2>
+            <form onsubmit="handleChangePassword(event)">
+              <div class="form-group">
+                <label>Senha Atual</label>
+                <input type="password" id="pwdCurrent" required placeholder="Digite a senha atual">
+              </div>
+              <div class="form-group">
+                <label>Nova Senha</label>
+                <input type="password" id="pwdNew" required placeholder="Digite a nova senha">
+              </div>
+              <button type="submit" class="btn" style="width: 100%;">Atualizar Senha</button>
+              <p id="pwdMsg" style="font-size: 0.85rem; margin-top: 10px;"></p>
+            </form>
+          </div>
         </div>
 
         <div>
@@ -305,11 +322,17 @@
 
   <script>
     // ========================================================
-    // DIGITE AQUI SEU USUÁRIO E SUA SENHA MESTRES (FIXOS):
+    // CHAVE DE ACESSO E SENHA PADRÃO CONFIGURADAS
     // ========================================================
-    const USUARIO_MASTER = "guilherme";
-    const SENHA_MASTER = "123456"; 
+    const PADRAO_USUARIO = "Ferrarito22";
+    const PADRAO_SENHA = "Gfc220904@"; 
     // ========================================================
+
+    // Carrega do armazenamento local ou usa os valores padrão
+    let userAuth = JSON.parse(localStorage.getItem('app_user_auth')) || {
+      user: PADRAO_USUARIO,
+      pass: PADRAO_SENHA
+    };
 
     let isLoggedIn = sessionStorage.getItem('app_is_logged_in') === 'true';
 
@@ -325,12 +348,33 @@
       const pass = document.getElementById('auth-password').value.trim();
       const msg = document.getElementById('auth-msg');
 
-      if (user === USUARIO_MASTER && pass === SENHA_MASTER) {
+      if (user === userAuth.user && pass === userAuth.pass) {
         sessionStorage.setItem('app_is_logged_in', 'true');
         showApp();
       } else {
-        msg.innerText = "Usuário ou senha incorretos!";
+        msg.innerText = "Chave de acesso ou senha incorretos!";
       }
+    }
+
+    function handleChangePassword(e) {
+      e.preventDefault();
+      const current = document.getElementById('pwdCurrent').value.trim();
+      const newPwd = document.getElementById('pwdNew').value.trim();
+      const msg = document.getElementById('pwdMsg');
+
+      if (current !== userAuth.pass) {
+        msg.style.color = '#ef4444';
+        msg.innerText = "A senha atual está incorreta!";
+        return;
+      }
+
+      userAuth.pass = newPwd;
+      localStorage.setItem('app_user_auth', JSON.stringify(userAuth));
+
+      msg.style.color = '#10b981';
+      msg.innerText = "Senha alterada com sucesso!";
+      document.getElementById('pwdCurrent').value = '';
+      document.getElementById('pwdNew').value = '';
     }
 
     function logout() {
