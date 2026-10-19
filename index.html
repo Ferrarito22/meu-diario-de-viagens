@@ -3,11 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meu Diário de Viagens - Mapa & QR Codes</title>
+  <title>Meu Diário de Viagens - Mundo, Brasil & EUA</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-  <!-- Biblioteca de Mapa Vetorial SVG -->
+  
+  <!-- Bibliotecas de Mapas Vetoriais (Mundo, Brasil e EUA) -->
   <script src="https://cdn.jsdelivr.net/npm/jsvectormap"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsvectormap/dist/maps/world.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsvectormap/dist/maps/brazil.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsvectormap/dist/maps/us-aea-en.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap/dist/css/jsvectormap.min.css" />
 
   <style>
@@ -66,12 +69,13 @@
 
     h2 { margin-top: 0; font-size: 1.25rem; color: var(--text-main); }
 
-    /* Container do Mapa */
-    #world-map {
+    /* Mapas Container */
+    .map-container {
       width: 100%;
-      height: 420px;
+      height: 380px;
       border-radius: 8px;
       background: #0f172a;
+      margin-top: 10px;
     }
 
     .form-group { margin-bottom: 15px; }
@@ -130,19 +134,32 @@
     <div class="grid-layout">
       <div>
         <div class="card">
-          <h2>Estatísticas Globais & Nacionais</h2>
+          <h2>Estatísticas de Exploração</h2>
           <div class="stats-container">
             <div class="stat-card"><div class="val" id="stat-world">0%</div><div class="lbl">Mundo Total</div></div>
             <div class="stat-card"><div class="val" id="stat-brazil">0%</div><div class="lbl">Brasil (Estados)</div></div>
-            <div class="stat-card"><div class="val" id="stat-americas">0%</div><div class="lbl">Américas</div></div>
+            <div class="stat-card"><div class="val" id="stat-usa">0%</div><div class="lbl">EUA (Estados)</div></div>
             <div class="stat-card"><div class="val" id="stat-europe">0%</div><div class="lbl">Europa</div></div>
             <div class="stat-card"><div class="val" id="stat-asia">0%</div><div class="lbl">Ásia</div></div>
           </div>
         </div>
         
+        <!-- MAPA MUNDI -->
         <div class="card">
-          <h2>Mapa Interativo de Exploração</h2>
-          <div id="world-map"></div>
+          <h2>🗺️ Mapa do Mundo</h2>
+          <div id="world-map" class="map-container"></div>
+        </div>
+
+        <!-- MAPA DO BRASIL POR ESTADOS -->
+        <div class="card">
+          <h2>🇧🇷 Brasil - Divisão por Estados</h2>
+          <div id="brazil-map" class="map-container"></div>
+        </div>
+
+        <!-- MAPA DOS EUA POR ESTADOS -->
+        <div class="card">
+          <h2>🇺🇸 Estados Unidos - Divisão por Estados</h2>
+          <div id="usa-map" class="map-container"></div>
         </div>
       </div>
 
@@ -163,13 +180,13 @@
           <h2>➕ Adicionar Destino ou Estado</h2>
           <form id="addDestinationForm" onsubmit="handleSaveDestination(event)">
             <div class="form-group">
-              <label>Nome do País / Território / Estado</label>
-              <input type="text" id="adminName" placeholder="Ex: Japão, Curaçao, Rio de Janeiro" required>
+              <label>Nome do País / Estado / Território</label>
+              <input type="text" id="adminName" placeholder="Ex: Rio de Janeiro, Flórida, Japão, Curaçao" required>
             </div>
 
             <div class="form-group">
-              <label>Código do País (2 letras - ex: JP para Japão, BR para Brasil, CW para Curaçao, FR para França)</label>
-              <input type="text" id="adminCode" placeholder="Ex: JP, BR, CW, US, FR, IT" maxlength="2" style="text-transform: uppercase;" required>
+              <label id="codeLabel">Código / Sigla (2 letras - Ex: RJ, SP, FL, NY, JP, BR, CW)</label>
+              <input type="text" id="adminCode" placeholder="Ex: RJ, FL, JP, CW" maxlength="5" style="text-transform: uppercase;" required>
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -177,6 +194,7 @@
                 <label>Região / Categoria</label>
                 <select id="adminRegion">
                   <option value="Brasil">Brasil (Estado)</option>
+                  <option value="EUA">Estados Unidos (Estado)</option>
                   <option value="Americas">Américas / Caribe</option>
                   <option value="Europa">Europa</option>
                   <option value="Asia">Ásia</option>
@@ -200,14 +218,14 @@
         </div>
 
         <div class="card">
-          <h2>🎨 Personalizar Cores do Mapa</h2>
+          <h2>🎨 Personalizar Cores dos Mapas</h2>
           <div class="color-picker-group">
             <div>
-              <label>Cor do País Visitado</label>
+              <label>Cor do Local Visitado</label>
               <input type="color" id="pickerVisited" value="#10b981" onchange="updateTheme()">
             </div>
             <div>
-              <label>Cor do País Não Visitado</label>
+              <label>Cor do Local Não Visitado</label>
               <input type="color" id="pickerUnvisited" value="#334155" onchange="updateTheme()">
             </div>
           </div>
@@ -221,7 +239,7 @@
             <thead>
               <tr>
                 <th>Destino</th>
-                <th>Código</th>
+                <th>Código/Sigla</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -244,37 +262,64 @@
 
   <script>
     let db = JSON.parse(localStorage.getItem('travel_db')) || [
-      { id: 'brasil', code: 'BR', name: 'Brasil', region: 'Brasil', year: '2026', link: '#' },
+      { id: 'rio-de-janeiro', code: 'BR-RJ', name: 'Rio de Janeiro', region: 'Brasil', year: '2026', link: '#' },
+      { id: 'sao-paulo', code: 'BR-SP', name: 'São Paulo', region: 'Brasil', year: '2026', link: '#' },
+      { id: 'florida', code: 'US-FL', name: 'Flórida', region: 'EUA', year: '2026', link: '#' },
       { id: 'japao', code: 'JP', name: 'Japão', region: 'Asia', year: '2028', link: '#' },
       { id: 'curacao', code: 'CW', name: 'Curaçao', region: 'Americas', year: '2026', link: '#' }
     ];
 
-    let mapInstance = null;
     let visitedColor = '#10b981';
     let unvisitedColor = '#334155';
 
-    function initMap() {
-      const selectedCodes = {};
+    function initMaps() {
+      // Códigos Mundo
+      const worldCodes = {};
+      // Siglas Brasil (Formato BR-RJ)
+      const brazilCodes = {};
+      // Siglas EUA (Formato US-FL)
+      const usaCodes = {};
+
       db.forEach(item => {
-        if (item.code) selectedCodes[item.code.toUpperCase()] = 1;
+        const c = item.code.toUpperCase();
+        if (item.region === 'Brasil') {
+          const sigla = c.replace('BR-', '');
+          brazilCodes['BR-' + sigla] = 1;
+          worldCodes['BR'] = 1; // Pinta o Brasil no Mapa Mundi também
+        } else if (item.region === 'EUA') {
+          const sigla = c.replace('US-', '');
+          usaCodes['US-' + sigla] = 1;
+          worldCodes['US'] = 1; // Pinta EUA no Mapa Mundi também
+        } else {
+          worldCodes[c] = 1;
+        }
       });
 
-      mapInstance = new jsVectorMap({
+      // 1. Mapa Mundi
+      new jsVectorMap({
         selector: '#world-map',
         map: 'world',
         draggable: true,
-        zoomButtons: true,
-        regionStyle: {
-          initial: { fill: unvisitedColor },
-          hover: { fillOpacity: 0.8 }
-        },
-        series: {
-          regions: [{
-            values: selectedCodes,
-            scale: { '1': visitedColor },
-            attribute: 'fill'
-          }]
-        }
+        regionStyle: { initial: { fill: unvisitedColor } },
+        series: { regions: [{ values: worldCodes, scale: { '1': visitedColor }, attribute: 'fill' }] }
+      });
+
+      // 2. Mapa do Brasil por Estados
+      new jsVectorMap({
+        selector: '#brazil-map',
+        map: 'brazil',
+        draggable: true,
+        regionStyle: { initial: { fill: unvisitedColor } },
+        series: { regions: [{ values: brazilCodes, scale: { '1': visitedColor }, attribute: 'fill' }] }
+      });
+
+      // 3. Mapa dos EUA por Estados
+      new jsVectorMap({
+        selector: '#usa-map',
+        map: 'us_aea_en',
+        draggable: true,
+        regionStyle: { initial: { fill: unvisitedColor } },
+        series: { regions: [{ values: usaCodes, scale: { '1': visitedColor }, attribute: 'fill' }] }
       });
     }
 
@@ -294,17 +339,21 @@
     function handleSaveDestination(e) {
       e.preventDefault();
       const name = document.getElementById('adminName').value;
-      const code = document.getElementById('adminCode').value.toUpperCase();
+      let code = document.getElementById('adminCode').value.toUpperCase();
       const region = document.getElementById('adminRegion').value;
       const year = document.getElementById('adminYear').value;
       const link = document.getElementById('adminDriveLink').value;
+
+      // Normaliza códigos para mapas regionais
+      if (region === 'Brasil' && !code.startsWith('BR-')) code = 'BR-' + code;
+      if (region === 'EUA' && !code.startsWith('US-')) code = 'US-' + code;
 
       const id = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
 
       db.push({ id, code, name, region, year, link });
       document.getElementById('addDestinationForm').reset();
       saveDb();
-      location.reload(); // Recarrega para repintar o mapa
+      location.reload(); // Recarrega para pintar os novos estados nos mapas
     }
 
     function deleteDestination(id) {
@@ -350,13 +399,18 @@
         `;
       });
 
+      // Cálculo de Estatísticas
       const totalWorld = 195;
       const totalBRStates = 27;
+      const totalUSStates = 50;
 
       const brCount = db.filter(d => d.region === 'Brasil').length;
       document.getElementById('stat-brazil').innerText = ((brCount / totalBRStates) * 100).toFixed(1) + '%';
 
-      const worldCount = db.filter(d => d.region !== 'Brasil').length;
+      const usCount = db.filter(d => d.region === 'EUA').length;
+      document.getElementById('stat-usa').innerText = ((usCount / totalUSStates) * 100).toFixed(1) + '%';
+
+      const worldCount = db.filter(d => d.region !== 'Brasil' && d.region !== 'EUA').length;
       document.getElementById('stat-world').innerText = ((worldCount / totalWorld) * 100).toFixed(1) + '%';
     }
 
@@ -381,7 +435,7 @@
 
     window.onload = function() {
       render();
-      initMap();
+      initMaps();
     };
   </script>
 </body>
