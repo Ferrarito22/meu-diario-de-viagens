@@ -27,7 +27,6 @@
     * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
     body { background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; }
 
-    /* Tela de Login */
     #auth-screen {
       display: flex;
       justify-content: center;
@@ -45,7 +44,6 @@
       text-align: center;
     }
 
-    /* Estrutura Principal do App */
     #app-screen { display: none; }
 
     header {
@@ -133,6 +131,8 @@
     .stat-card .val { font-size: 1.4rem; font-weight: bold; color: var(--accent); }
     .stat-card .lbl { font-size: 0.75rem; color: var(--text-muted); }
 
+    #loading-notice { display: none; color: var(--accent); font-weight: bold; margin-bottom: 10px; }
+
     #qrModal {
       display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000;
@@ -146,7 +146,7 @@
   <div id="auth-screen">
     <div class="auth-card">
       <h1 style="margin-bottom: 10px;">🔒 Acesso Restrito</h1>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Informe suas credenciais para acessar o diário</p>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Informe suas credenciais para sincronizar o diário</p>
       
       <form id="auth-form" onsubmit="handleAuth(event)">
         <div class="form-group">
@@ -157,7 +157,7 @@
           <label>Senha</label>
           <input type="password" id="auth-password" required placeholder="Digite sua senha">
         </div>
-        <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Entrar</button>
+        <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Entrar e Sincronizar</button>
       </form>
       <p id="auth-msg" style="color: #ef4444; font-size: 0.85rem; margin-top: 15px;"></p>
     </div>
@@ -173,6 +173,8 @@
         <button class="tab-btn btn-logout" onclick="logout()">Sair 🚪</button>
       </div>
     </header>
+
+    <div id="loading-notice">⚡ Sincronizando dados com a nuvem...</div>
 
     <!-- DASHBOARD -->
     <div id="tab-dashboard" class="view-panel active">
@@ -255,7 +257,7 @@
                 <input type="url" id="adminDriveLink" placeholder="https://drive.google.com/drive/folders/...">
               </div>
 
-              <button type="submit" class="btn" style="width: 100%;">Salvar e Pintar no Mapa</button>
+              <button type="submit" class="btn" style="width: 100%;">Salvar e Salvar na Nuvem</button>
             </form>
           </div>
 
@@ -273,7 +275,6 @@
             </div>
           </div>
 
-          <!-- CARD PARA ALTERAR SENHA -->
           <div class="card">
             <h2>🔑 Alterar Senha de Acesso</h2>
             <form onsubmit="handleChangePassword(event)">
@@ -322,13 +323,20 @@
 
   <script>
     const PADRAO_USUARIO = "Ferrarito22";
-    const PADRAO_SENHA = "Gfc220904@"; 
+    const PADRAO_SENHA = "Gfc220904@";
+
+    // CHAVES CONFIGURADAS:
+    const JSONBIN_API_KEY = "$2a$10$HTk3DVa3.52ZLdUV078GgOmQ4U5ImH4rauxH/szMx6bV.btJeO8Qa"; 
+    const JSONBIN_BIN_ID = "6ad632cbac6210605a3f6448";      
 
     let userAuth = JSON.parse(localStorage.getItem('app_user_auth')) || {
       user: PADRAO_USUARIO,
       pass: PADRAO_SENHA
     };
 
+    let db = [];
+    let visitedColor = '#10b981';
+    let unvisitedColor = '#334155';
     let isLoggedIn = sessionStorage.getItem('app_is_logged_in') === 'true';
 
     function initAuth() {
@@ -348,6 +356,42 @@
         showApp();
       } else {
         msg.innerText = "Chave de acesso ou senha incorretos!";
+      }
+    }
+
+    async function loadCloudData() {
+      document.getElementById('loading-notice').style.display = 'block';
+      try {
+        const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+          headers: { 'X-Master-Key': JSONBIN_API_KEY }
+        });
+        const data = await response.json();
+        db = data.record.viagens || [];
+      } catch (err) {
+        console.error("Erro ao carregar dados da nuvem:", err);
+      } finally {
+        document.getElementById('loading-notice').style.display = 'none';
+        render();
+        initMaps();
+      }
+    }
+
+    async function saveCloudData() {
+      document.getElementById('loading-notice').style.display = 'block';
+      try {
+        await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Master-Key': JSONBIN_API_KEY
+          },
+          body: JSON.stringify({ viagens: db })
+        });
+      } catch (err) {
+        console.error("Erro ao salvar dados na nuvem:", err);
+      } finally {
+        document.getElementById('loading-notice').style.display = 'none';
+        location.reload();
       }
     }
 
@@ -396,23 +440,14 @@
       const savedTab = sessionStorage.getItem('active_tab') || 'dashboard';
       switchTab(savedTab);
 
-      render();
-      initMaps();
+      loadCloudData();
     }
 
-    // Banco de Dados das Viagens
-    let db = JSON.parse(localStorage.getItem('travel_db')) || [
-      { id: 'rio-de-janeiro', code: 'BR-RJ', name: 'Rio de Janeiro', region: 'Brasil', year: '2026', link: '#' },
-      { id: 'sao-paulo', code: 'BR-SP', name: 'São Paulo', region: 'Brasil', year: '2026', link: '#' },
-      { id: 'florida', code: 'US-FL', name: 'Flórida', region: 'EUA', year: '2026', link: '#' },
-      { id: 'japao', code: 'JP', name: 'Japão', region: 'Asia', year: '2028', link: '#' },
-      { id: 'curacao', code: 'CW', name: 'Curaçao', region: 'Americas', year: '2026', link: '#' }
-    ];
-
-    let visitedColor = '#10b981';
-    let unvisitedColor = '#334155';
-
     function initMaps() {
+      document.getElementById('world-map').innerHTML = '';
+      document.getElementById('brazil-map').innerHTML = '';
+      document.getElementById('usa-map').innerHTML = '';
+
       const worldCodes = {};
       const brazilCodes = {};
       const usaCodes = {};
@@ -457,12 +492,7 @@
       });
     }
 
-    function saveDb() {
-      localStorage.setItem('travel_db', JSON.stringify(db));
-      render();
-    }
-
-    function handleSaveDestination(e) {
+    async function handleSaveDestination(e) {
       e.preventDefault();
       const name = document.getElementById('adminName').value;
       let code = document.getElementById('adminCode').value.toUpperCase();
@@ -477,14 +507,12 @@
 
       db.push({ id, code, name, region, year, link });
       document.getElementById('addDestinationForm').reset();
-      saveDb();
-      location.reload();
+      await saveCloudData();
     }
 
-    function deleteDestination(id) {
+    async function deleteDestination(id) {
       db = db.filter(item => item.id !== id);
-      saveDb();
-      location.reload();
+      await saveCloudData();
     }
 
     function updateTheme() {
