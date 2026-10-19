@@ -168,8 +168,8 @@
     <header>
       <h1>🌍 Diário de Viagens & Ímãs</h1>
       <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('dashboard', event)">🗺️ Dashboard</button>
-        <button class="tab-btn" onclick="switchTab('admin', event)">⚙️ Painel Admin</button>
+        <button id="btn-tab-dashboard" class="tab-btn active" onclick="switchTab('dashboard')">🗺️ Dashboard</button>
+        <button id="btn-tab-admin" class="tab-btn" onclick="switchTab('admin')">⚙️ Painel Admin</button>
         <button class="tab-btn btn-logout" onclick="logout()">Sair 🚪</button>
       </div>
     </header>
@@ -321,14 +321,9 @@
   </div>
 
   <script>
-    // ========================================================
-    // CHAVE DE ACESSO E SENHA PADRÃO CONFIGURADAS
-    // ========================================================
     const PADRAO_USUARIO = "Ferrarito22";
     const PADRAO_SENHA = "Gfc220904@"; 
-    // ========================================================
 
-    // Carrega do armazenamento local ou usa os valores padrão
     let userAuth = JSON.parse(localStorage.getItem('app_user_auth')) || {
       user: PADRAO_USUARIO,
       pass: PADRAO_SENHA
@@ -379,12 +374,28 @@
 
     function logout() {
       sessionStorage.removeItem('app_is_logged_in');
+      sessionStorage.removeItem('active_tab');
       location.reload();
+    }
+
+    function switchTab(tab) {
+      sessionStorage.setItem('active_tab', tab);
+      
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      
+      document.getElementById('tab-' + tab).classList.add('active');
+      const activeBtn = document.getElementById('btn-tab-' + tab);
+      if (activeBtn) activeBtn.classList.add('active');
     }
 
     function showApp() {
       document.getElementById('auth-screen').style.display = 'none';
       document.getElementById('app-screen').style.display = 'block';
+      
+      const savedTab = sessionStorage.getItem('active_tab') || 'dashboard';
+      switchTab(savedTab);
+
       render();
       initMaps();
     }
@@ -449,14 +460,6 @@
     function saveDb() {
       localStorage.setItem('travel_db', JSON.stringify(db));
       render();
-    }
-
-    function switchTab(tab, event) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
-      
-      document.getElementById('tab-' + tab).classList.add('active');
-      if (event) event.target.classList.add('active');
     }
 
     function handleSaveDestination(e) {
