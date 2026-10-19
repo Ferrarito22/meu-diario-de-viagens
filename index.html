@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Diário de Viagens - Admin & QR Codes</title>
+  <!-- Biblioteca para Gerar QR Codes -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --visited-color: #10b981;
+      --unvisited-color: #334155;
+    }
+
+    * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #334155;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    h1 { margin: 0; font-size: 1.6rem; }
+
+    .nav-tabs { display: flex; gap: 10px; }
+    .tab-btn {
+      background: #334155;
+      color: var(--text-main);
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--accent); color: #000; }
+
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
+
+    .grid-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+    @media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      margin-bottom: 20px;
+    }
+
+    h2 { margin-top: 0; font-size: 1.25rem; color: var(--text-main); }
+
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
+    input[type="text"], input[type="url"], select {
+      width: 100%;
+      padding: 10px 14px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #fff;
+    }
+    
+    .color-picker-group { display: flex; gap: 20px; align-items: center; }
+    input[type="color"] { border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; background: none; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #334155; font-size: 0.9rem; }
+    th { color: var(--text-muted); }
+
+    .btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-danger { background: #ef4444; color: #fff; }
+
+    .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; }
+    .stat-card { background: #0f172a; padding: 14px; border-radius: 8px; text-align: center; }
+    .stat-card .val { font-size: 1.4rem; font-weight: bold; color: var(--accent); }
+    .stat-card .lbl { font-size: 0.75rem; color: var(--text-muted); }
+
+    #qrModal {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000;
+    }
+    .modal-box { background: var(--card-bg); padding: 30px; border-radius: 12px; text-align: center; max-width: 350px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🌍 Diário de Viagens & Ímãs</h1>
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('dashboard', event)">🗺️ Dashboard</button>
+      <button class="tab-btn" onclick="switchTab('admin', event)">⚙️ Painel Admin</button>
+    </div>
+  </header>
+
+  <!-- ABAS -->
+  <div id="tab-dashboard" class="view-panel active">
+    <div class="grid-layout">
+      <div>
+        <div class="card">
+          <h2>Estatísticas Globais de Exploração</h2>
+          <div class="stats-container">
+            <div class="stat-card"><div class="val" id="stat-world">0%</div><div class="lbl">Mundo Total</div></div>
+            <div class="stat-card"><div class="val" id="stat-americas">0%</div><div class="lbl">Américas/Caribe</div></div>
+            <div class="stat-card"><div class="val" id="stat-europe">0%</div><div class="lbl">Europa</div></div>
+            <div class="stat-card"><div class="val" id="stat-asia">0%</div><div class="lbl">Ásia</div></div>
+            <div class="stat-card"><div class="val" id="stat-oceania">0%</div><div class="lbl">Oceania</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Visualização dos Meus Destinos</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Cada destino registrado no Painel Admin gera um QR Code exclusivo e permanente para colar nos seus ímãs de geladeira.
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h2>Viagens Registradas</h2>
+          <div id="publicTravelList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-admin" class="view-panel">
+    <div class="grid-layout">
+      <div>
+        <div class="card">
+          <h2>➕ Adicionar / Editar Destino</h2>
+          <form id="addDestinationForm" onsubmit="handleSaveDestination(event)">
+            <div class="form-group">
+              <label>Nome do País / Território Autônomo</label>
+              <input type="text" id="adminName" placeholder="Ex: Curaçao, Japão, Ilhas Faroé" required>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="form-group">
+                <label>Região / Continente</label>
+                <select id="adminRegion">
+                  <option value="Americas">Américas / Caribe</option>
+                  <option value="Europa">Europa</option>
+                  <option value="Asia">Ásia</option>
+                  <option value="Oceania">Oceania</option>
+                  <option value="Africa">África</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Ano da Viagem</label>
+                <input type="text" id="adminYear" placeholder="Ex: 2028">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Link da Galeria de Fotos (Google Drive / Cloudinary)</label>
+              <input type="url" id="adminDriveLink" placeholder="https://drive.google.com/drive/folders/...">
+            </div>
+
+            <button type="submit" class="btn" style="width: 100%;">Salvar Destino no Sistema</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>🎨 Personalizar Aparência</h2>
+          <div class="color-picker-group">
+            <div>
+              <label>Cor de Países Visitados</label>
+              <input type="color" id="pickerVisited" value="#10b981" onchange="updateTheme()">
+            </div>
+            <div>
+              <label>Cor de Países Não Visitados</label>
+              <input type="color" id="pickerUnvisited" value="#334155" onchange="updateTheme()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h2>📋 Gerenciador de Ímãs & QR Codes</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Destino</th>
+                <th>Região</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE EXIBIÇÃO DO QR CODE -->
+  <div id="qrModal">
+    <div class="modal-box">
+      <h3 id="modalTitle">QR Code do Ímã</h3>
+      <div id="qrcode"></div>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Imprima e cole atrás do ímã de geladeira!</p>
+      <button class="btn" onclick="closeModal()" style="margin-top: 15px;">Fechar</button>
+    </div>
+  </div>
+
+  <script>
+    let db = JSON.parse(localStorage.getItem('travel_db')) || [
+      { id: 'curacao', name: 'Curaçao', region: 'Americas', year: '2026', link: '#' },
+      { id: 'japao', name: 'Japão', region: 'Asia', year: '2028', link: '#' }
+    ];
+
+    function saveDb() {
+      localStorage.setItem('travel_db', JSON.stringify(db));
+      render();
+    }
+
+    function switchTab(tab, event) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      
+      document.getElementById('tab-' + tab).classList.add('active');
+      if (event) event.target.classList.add('active');
+    }
+
+    function handleSaveDestination(e) {
+      e.preventDefault();
+      const name = document.getElementById('adminName').value;
+      const region = document.getElementById('adminRegion').value;
+      const year = document.getElementById('adminYear').value;
+      const link = document.getElementById('adminDriveLink').value;
+
+      const id = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
+
+      db.push({ id, name, region, year, link });
+      document.getElementById('addDestinationForm').reset();
+      saveDb();
+    }
+
+    function deleteDestination(id) {
+      db = db.filter(item => item.id !== id);
+      saveDb();
+    }
+
+    function updateTheme() {
+      const vColor = document.getElementById('pickerVisited').value;
+      const uColor = document.getElementById('pickerUnvisited').value;
+      document.documentElement.style.setProperty('--visited-color', vColor);
+      document.documentElement.style.setProperty('--accent', vColor);
+      document.documentElement.style.setProperty('--unvisited-color', uColor);
+    }
+
+    function render() {
+      const tbody = document.getElementById('adminTableBody');
+      tbody.innerHTML = '';
+      db.forEach(item => {
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>${item.name}</strong> <br><small style="color:var(--text-muted)">${item.year || ''}</small></td>
+            <td>${item.region}</td>
+            <td>
+              <button class="btn" onclick="openQrModal('${item.id}', '${item.name}')">QR Code</button>
+              <button class="btn btn-danger" onclick="deleteDestination('${item.id}')">✕</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      const pubList = document.getElementById('publicTravelList');
+      pubList.innerHTML = '';
+      db.forEach(item => {
+        pubList.innerHTML += `
+          <div style="padding: 12px 0; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong>📍 ${item.name}</strong> <small style="color: var(--text-muted);">(${item.region})</small>
+            </div>
+            ${item.link && item.link !== '#' ? `<a href="${item.link}" target="_blank" style="color: var(--accent); text-decoration: none; font-size: 0.85rem; font-weight: bold;">Ver Fotos ↗</a>` : ''}
+          </div>
+        `;
+      });
+
+      const totalWorld = 250;
+      document.getElementById('stat-world').innerText = ((db.length / totalWorld) * 100).toFixed(1) + '%';
+    }
+
+    function openQrModal(id, name) {
+      document.getElementById('modalTitle').innerText = 'Ímã: ' + name;
+      const qrDiv = document.getElementById('qrcode');
+      qrDiv.innerHTML = '';
+      
+      const targetUrl = window.location.origin + '/?destino=' + id;
+      const qr = qrcode(4, 'L');
+      qr.addData(targetUrl);
+      qr.make();
+      qrDiv.innerHTML = qr.createImgTag(5);
+
+      document.getElementById('qrModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('qrModal').style.display = 'none';
+    }
+
+    window.onload = render;
+  </script>
+</body>
+</html>
