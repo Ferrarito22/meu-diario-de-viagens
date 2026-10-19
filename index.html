@@ -3,15 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meu Diário de Viagens - Admin & QR Codes</title>
-  <!-- Biblioteca para Gerar QR Codes -->
+  <title>Meu Diário de Viagens - Mapa & QR Codes</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <!-- Biblioteca de Mapa Vetorial SVG -->
+  <script src="https://cdn.jsdelivr.net/npm/jsvectormap"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsvectormap/dist/maps/world.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap/dist/css/jsvectormap.min.css" />
+
   <style>
     :root {
       --bg-color: #0f172a;
       --card-bg: #1e293b;
       --accent: #10b981;
-      --accent-hover: #059669;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --visited-color: #10b981;
@@ -63,6 +66,14 @@
 
     h2 { margin-top: 0; font-size: 1.25rem; color: var(--text-main); }
 
+    /* Container do Mapa */
+    #world-map {
+      width: 100%;
+      height: 420px;
+      border-radius: 8px;
+      background: #0f172a;
+    }
+
     .form-group { margin-bottom: 15px; }
     label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
     input[type="text"], input[type="url"], select {
@@ -73,7 +84,7 @@
       border-radius: 6px;
       color: #fff;
     }
-    
+
     .color-picker-group { display: flex; gap: 20px; align-items: center; }
     input[type="color"] { border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; background: none; }
 
@@ -114,25 +125,24 @@
     </div>
   </header>
 
-  <!-- ABAS -->
+  <!-- DASHBOARD -->
   <div id="tab-dashboard" class="view-panel active">
     <div class="grid-layout">
       <div>
         <div class="card">
-          <h2>Estatísticas Globais de Exploração</h2>
+          <h2>Estatísticas Globais & Nacionais</h2>
           <div class="stats-container">
             <div class="stat-card"><div class="val" id="stat-world">0%</div><div class="lbl">Mundo Total</div></div>
-            <div class="stat-card"><div class="val" id="stat-americas">0%</div><div class="lbl">Américas/Caribe</div></div>
+            <div class="stat-card"><div class="val" id="stat-brazil">0%</div><div class="lbl">Brasil (Estados)</div></div>
+            <div class="stat-card"><div class="val" id="stat-americas">0%</div><div class="lbl">Américas</div></div>
             <div class="stat-card"><div class="val" id="stat-europe">0%</div><div class="lbl">Europa</div></div>
             <div class="stat-card"><div class="val" id="stat-asia">0%</div><div class="lbl">Ásia</div></div>
-            <div class="stat-card"><div class="val" id="stat-oceania">0%</div><div class="lbl">Oceania</div></div>
           </div>
         </div>
+        
         <div class="card">
-          <h2>Visualização dos Meus Destinos</h2>
-          <p style="color: var(--text-muted); font-size: 0.9rem;">
-            Cada destino registrado no Painel Admin gera um QR Code exclusivo e permanente para colar nos seus ímãs de geladeira.
-          </p>
+          <h2>Mapa Interativo de Exploração</h2>
+          <div id="world-map"></div>
         </div>
       </div>
 
@@ -145,21 +155,28 @@
     </div>
   </div>
 
+  <!-- PAINEL ADMIN -->
   <div id="tab-admin" class="view-panel">
     <div class="grid-layout">
       <div>
         <div class="card">
-          <h2>➕ Adicionar / Editar Destino</h2>
+          <h2>➕ Adicionar Destino ou Estado</h2>
           <form id="addDestinationForm" onsubmit="handleSaveDestination(event)">
             <div class="form-group">
-              <label>Nome do País / Território Autônomo</label>
-              <input type="text" id="adminName" placeholder="Ex: Curaçao, Japão, Ilhas Faroé" required>
+              <label>Nome do País / Território / Estado</label>
+              <input type="text" id="adminName" placeholder="Ex: Japão, Curaçao, Rio de Janeiro" required>
+            </div>
+
+            <div class="form-group">
+              <label>Código do País (2 letras - ex: JP para Japão, BR para Brasil, CW para Curaçao, FR para França)</label>
+              <input type="text" id="adminCode" placeholder="Ex: JP, BR, CW, US, FR, IT" maxlength="2" style="text-transform: uppercase;" required>
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
               <div class="form-group">
-                <label>Região / Continente</label>
+                <label>Região / Categoria</label>
                 <select id="adminRegion">
+                  <option value="Brasil">Brasil (Estado)</option>
                   <option value="Americas">Américas / Caribe</option>
                   <option value="Europa">Europa</option>
                   <option value="Asia">Ásia</option>
@@ -169,7 +186,7 @@
               </div>
               <div class="form-group">
                 <label>Ano da Viagem</label>
-                <input type="text" id="adminYear" placeholder="Ex: 2028">
+                <input type="text" id="adminYear" placeholder="Ex: 2026">
               </div>
             </div>
 
@@ -178,19 +195,19 @@
               <input type="url" id="adminDriveLink" placeholder="https://drive.google.com/drive/folders/...">
             </div>
 
-            <button type="submit" class="btn" style="width: 100%;">Salvar Destino no Sistema</button>
+            <button type="submit" class="btn" style="width: 100%;">Salvar e Pintar no Mapa</button>
           </form>
         </div>
 
         <div class="card">
-          <h2>🎨 Personalizar Aparência</h2>
+          <h2>🎨 Personalizar Cores do Mapa</h2>
           <div class="color-picker-group">
             <div>
-              <label>Cor de Países Visitados</label>
+              <label>Cor do País Visitado</label>
               <input type="color" id="pickerVisited" value="#10b981" onchange="updateTheme()">
             </div>
             <div>
-              <label>Cor de Países Não Visitados</label>
+              <label>Cor do País Não Visitado</label>
               <input type="color" id="pickerUnvisited" value="#334155" onchange="updateTheme()">
             </div>
           </div>
@@ -204,7 +221,7 @@
             <thead>
               <tr>
                 <th>Destino</th>
-                <th>Região</th>
+                <th>Código</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -215,21 +232,51 @@
     </div>
   </div>
 
-  <!-- MODAL DE EXIBIÇÃO DO QR CODE -->
+  <!-- MODAL QR CODE -->
   <div id="qrModal">
     <div class="modal-box">
       <h3 id="modalTitle">QR Code do Ímã</h3>
       <div id="qrcode"></div>
-      <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Imprima e cole atrás do ímã de geladeira!</p>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Imprima e cole atrás do seu ímã de geladeira!</p>
       <button class="btn" onclick="closeModal()" style="margin-top: 15px;">Fechar</button>
     </div>
   </div>
 
   <script>
     let db = JSON.parse(localStorage.getItem('travel_db')) || [
-      { id: 'curacao', name: 'Curaçao', region: 'Americas', year: '2026', link: '#' },
-      { id: 'japao', name: 'Japão', region: 'Asia', year: '2028', link: '#' }
+      { id: 'brasil', code: 'BR', name: 'Brasil', region: 'Brasil', year: '2026', link: '#' },
+      { id: 'japao', code: 'JP', name: 'Japão', region: 'Asia', year: '2028', link: '#' },
+      { id: 'curacao', code: 'CW', name: 'Curaçao', region: 'Americas', year: '2026', link: '#' }
     ];
+
+    let mapInstance = null;
+    let visitedColor = '#10b981';
+    let unvisitedColor = '#334155';
+
+    function initMap() {
+      const selectedCodes = {};
+      db.forEach(item => {
+        if (item.code) selectedCodes[item.code.toUpperCase()] = 1;
+      });
+
+      mapInstance = new jsVectorMap({
+        selector: '#world-map',
+        map: 'world',
+        draggable: true,
+        zoomButtons: true,
+        regionStyle: {
+          initial: { fill: unvisitedColor },
+          hover: { fillOpacity: 0.8 }
+        },
+        series: {
+          regions: [{
+            values: selectedCodes,
+            scale: { '1': visitedColor },
+            attribute: 'fill'
+          }]
+        }
+      });
+    }
 
     function saveDb() {
       localStorage.setItem('travel_db', JSON.stringify(db));
@@ -247,28 +294,31 @@
     function handleSaveDestination(e) {
       e.preventDefault();
       const name = document.getElementById('adminName').value;
+      const code = document.getElementById('adminCode').value.toUpperCase();
       const region = document.getElementById('adminRegion').value;
       const year = document.getElementById('adminYear').value;
       const link = document.getElementById('adminDriveLink').value;
 
       const id = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
 
-      db.push({ id, name, region, year, link });
+      db.push({ id, code, name, region, year, link });
       document.getElementById('addDestinationForm').reset();
       saveDb();
+      location.reload(); // Recarrega para repintar o mapa
     }
 
     function deleteDestination(id) {
       db = db.filter(item => item.id !== id);
       saveDb();
+      location.reload();
     }
 
     function updateTheme() {
-      const vColor = document.getElementById('pickerVisited').value;
-      const uColor = document.getElementById('pickerUnvisited').value;
-      document.documentElement.style.setProperty('--visited-color', vColor);
-      document.documentElement.style.setProperty('--accent', vColor);
-      document.documentElement.style.setProperty('--unvisited-color', uColor);
+      visitedColor = document.getElementById('pickerVisited').value;
+      unvisitedColor = document.getElementById('pickerUnvisited').value;
+      document.documentElement.style.setProperty('--visited-color', visitedColor);
+      document.documentElement.style.setProperty('--accent', visitedColor);
+      document.documentElement.style.setProperty('--unvisited-color', unvisitedColor);
     }
 
     function render() {
@@ -278,9 +328,9 @@
         tbody.innerHTML += `
           <tr>
             <td><strong>${item.name}</strong> <br><small style="color:var(--text-muted)">${item.year || ''}</small></td>
-            <td>${item.region}</td>
+            <td><code>${item.code}</code></td>
             <td>
-              <button class="btn" onclick="openQrModal('${item.id}', '${item.name}')">QR Code</button>
+              <button class="btn" onclick="openQrModal('${item.id}', '${item.name}', '${item.link}')">QR Code</button>
               <button class="btn btn-danger" onclick="deleteDestination('${item.id}')">✕</button>
             </td>
           </tr>
@@ -293,23 +343,30 @@
         pubList.innerHTML += `
           <div style="padding: 12px 0; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <strong>📍 ${item.name}</strong> <small style="color: var(--text-muted);">(${item.region})</small>
+              <strong>📍 ${item.name}</strong> <small style="color: var(--text-muted);">(${item.code})</small>
             </div>
             ${item.link && item.link !== '#' ? `<a href="${item.link}" target="_blank" style="color: var(--accent); text-decoration: none; font-size: 0.85rem; font-weight: bold;">Ver Fotos ↗</a>` : ''}
           </div>
         `;
       });
 
-      const totalWorld = 250;
-      document.getElementById('stat-world').innerText = ((db.length / totalWorld) * 100).toFixed(1) + '%';
+      const totalWorld = 195;
+      const totalBRStates = 27;
+
+      const brCount = db.filter(d => d.region === 'Brasil').length;
+      document.getElementById('stat-brazil').innerText = ((brCount / totalBRStates) * 100).toFixed(1) + '%';
+
+      const worldCount = db.filter(d => d.region !== 'Brasil').length;
+      document.getElementById('stat-world').innerText = ((worldCount / totalWorld) * 100).toFixed(1) + '%';
     }
 
-    function openQrModal(id, name) {
+    function openQrModal(id, name, link) {
       document.getElementById('modalTitle').innerText = 'Ímã: ' + name;
       const qrDiv = document.getElementById('qrcode');
       qrDiv.innerHTML = '';
       
-      const targetUrl = window.location.origin + '/?destino=' + id;
+      const targetUrl = (link && link !== '#') ? link : (window.location.origin + '/?destino=' + id);
+      
       const qr = qrcode(4, 'L');
       qr.addData(targetUrl);
       qr.make();
@@ -322,7 +379,10 @@
       document.getElementById('qrModal').style.display = 'none';
     }
 
-    window.onload = render;
+    window.onload = function() {
+      render();
+      initMap();
+    };
   </script>
 </body>
 </html>
