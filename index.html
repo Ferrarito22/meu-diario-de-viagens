@@ -142,11 +142,11 @@
 </head>
 <body>
 
-  <!-- TELA DE LOGIN / REGISTRO -->
+  <!-- TELA DE LOGIN EXCLUSIVO -->
   <div id="auth-screen">
     <div class="auth-card">
-      <h1 style="margin-bottom: 10px;">🔒 Área Restrita</h1>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;" id="auth-subtitle">Faça login para acessar o diário</p>
+      <h1 style="margin-bottom: 10px;">🔒 Acesso Restrito</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Informe suas credenciais para acessar o diário</p>
       
       <form id="auth-form" onsubmit="handleAuth(event)">
         <div class="form-group">
@@ -157,7 +157,7 @@
           <label>Senha</label>
           <input type="password" id="auth-password" required placeholder="Digite sua senha">
         </div>
-        <button type="submit" class="btn" style="width: 100%; margin-top: 10px;" id="auth-btn">Entrar</button>
+        <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Entrar</button>
       </form>
       <p id="auth-msg" style="color: #ef4444; font-size: 0.85rem; margin-top: 15px;"></p>
     </div>
@@ -304,22 +304,16 @@
   </div>
 
   <script>
-    // Gerenciamento de Autenticação
-    let userAuth = JSON.parse(localStorage.getItem('app_user_auth')) || null;
+    // ========================================================
+    // DIGITE AQUI SEU USUÁRIO E SUA SENHA MESTRES (FIXOS):
+    // ========================================================
+    const USUARIO_MASTER = "guilherme";
+    const SENHA_MASTER = "123456"; 
+    // ========================================================
+
     let isLoggedIn = sessionStorage.getItem('app_is_logged_in') === 'true';
 
     function initAuth() {
-      const subtitle = document.getElementById('auth-subtitle');
-      const btn = document.getElementById('auth-btn');
-
-      if (!userAuth) {
-        subtitle.innerText = "Crie seu usuário e senha de acesso";
-        btn.innerText = "Cadastrar e Entrar";
-      } else {
-        subtitle.innerText = "Digite suas credenciais de acesso";
-        btn.innerText = "Entrar";
-      }
-
       if (isLoggedIn) {
         showApp();
       }
@@ -331,20 +325,11 @@
       const pass = document.getElementById('auth-password').value.trim();
       const msg = document.getElementById('auth-msg');
 
-      if (!userAuth) {
-        // Primeiro Acesso: Cadastra o Usuário
-        userAuth = { user, pass };
-        localStorage.setItem('app_user_auth', JSON.stringify(userAuth));
+      if (user === USUARIO_MASTER && pass === SENHA_MASTER) {
         sessionStorage.setItem('app_is_logged_in', 'true');
         showApp();
       } else {
-        // Acessos Seguintes: Valida as Credenciais
-        if (user === userAuth.user && pass === userAuth.pass) {
-          sessionStorage.setItem('app_is_logged_in', 'true');
-          showApp();
-        } else {
-          msg.innerText = "Usuário ou senha incorretos!";
-        }
+        msg.innerText = "Usuário ou senha incorretos!";
       }
     }
 
