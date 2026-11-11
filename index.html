@@ -99,7 +99,7 @@
 
     .form-group { margin-bottom: 15px; text-align: left; }
     label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
-    input[type="text"], input[type="password"], input[type="url"], select {
+    input[type="text"], input[type="password"], input[type="url"], input[type="date"], select {
       width: 100%;
       padding: 10px 14px;
       background: #0f172a;
@@ -124,6 +124,7 @@
       font-weight: 600;
       cursor: pointer;
     }
+    .btn-secondary { background: #3b82f6; color: #fff; }
     .btn-danger { background: #ef4444; color: #fff; }
 
     .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; }
@@ -131,13 +132,44 @@
     .stat-card .val { font-size: 1.4rem; font-weight: bold; color: var(--accent); }
     .stat-card .lbl { font-size: 0.75rem; color: var(--text-muted); }
 
+    /* Filtros por Ano */
+    .filter-bar { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+    .filter-chip {
+      background: #0f172a;
+      color: var(--text-muted);
+      border: 1px solid #334155;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .filter-chip.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
+
+    /* Countdown */
+    .countdown-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid var(--accent);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .countdown-timer { font-size: 1.6rem; font-weight: bold; color: var(--accent); }
+
     #loading-notice { display: none; color: var(--accent); font-weight: bold; margin-bottom: 10px; }
 
-    #qrModal {
+    /* Modais */
+    .modal-overlay {
       display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000;
+      background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000;
     }
-    .modal-box { background: var(--card-bg); padding: 30px; border-radius: 12px; text-align: center; max-width: 350px; }
+    .modal-box { background: var(--card-bg); padding: 30px; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; }
+    .modal-large { max-width: 900px; width: 95%; height: 85vh; display: flex; flex-direction: column; }
+    .modal-iframe { width: 100%; height: 100%; border: none; border-radius: 8px; margin-top: 15px; }
   </style>
 </head>
 <body>
@@ -146,7 +178,7 @@
   <div id="auth-screen">
     <div class="auth-card">
       <h1 style="margin-bottom: 10px;">🔒 Acesso Restrito</h1>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Informe suas credenciais para sincronizar o diário</p>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Informe suas credenciais para acessar o diário</p>
       
       <form id="auth-form" onsubmit="handleAuth(event)">
         <div class="form-group">
@@ -178,6 +210,16 @@
 
     <!-- DASHBOARD -->
     <div id="tab-dashboard" class="view-panel active">
+      
+      <!-- Card do Próximo Destino (Countdown) -->
+      <div id="countdownBox" class="countdown-card" style="display: none;">
+        <div>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">✈️ Próxima Aventura Programada:</span>
+          <h3 id="nextTripName" style="margin: 5px 0 0 0; font-size: 1.3rem;">-</h3>
+        </div>
+        <div class="countdown-timer" id="nextTripTimer">00d 00h 00m</div>
+      </div>
+
       <div class="grid-layout">
         <div>
           <div class="card">
@@ -192,7 +234,10 @@
           </div>
           
           <div class="card">
-            <h2>🗺️ Mapa do Mundo</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+              <h2>🗺️ Mapa do Mundo</h2>
+              <div class="filter-bar" id="yearFilterBar"></div>
+            </div>
             <div id="world-map" class="map-container"></div>
           </div>
 
@@ -253,26 +298,28 @@
               </div>
 
               <div class="form-group">
-                <label>Link da Galeria de Fotos (Google Drive / Cloudinary)</label>
+                <label>Data Exata de Início (Para Viagens Futuras / Countdown)</label>
+                <input type="date" id="adminStartDate">
+              </div>
+
+              <div class="form-group">
+                <label>Link da Galeria de Fotos (Google Drive)</label>
                 <input type="url" id="adminDriveLink" placeholder="https://drive.google.com/drive/folders/...">
               </div>
 
-              <button type="submit" class="btn" style="width: 100%;">Salvar e Salvar na Nuvem</button>
+              <div class="form-group">
+                <label>Caminho ou Link do PDF do Roteiro (ex: /roteiro-japao.pdf)</label>
+                <input type="text" id="adminRoteiroLink" placeholder="Ex: /roteiro-japao.pdf ou https://...">
+              </div>
+
+              <button type="submit" class="btn" style="width: 100%;">Salvar na Nuvem</button>
             </form>
           </div>
 
           <div class="card">
-            <h2>🎨 Personalizar Cores dos Mapas</h2>
-            <div class="color-picker-group">
-              <div>
-                <label>Cor do Local Visitado</label>
-                <input type="color" id="pickerVisited" value="#10b981" onchange="updateTheme()">
-              </div>
-              <div>
-                <label>Cor do Local Não Visitado</label>
-                <input type="color" id="pickerUnvisited" value="#334155" onchange="updateTheme()">
-              </div>
-            </div>
+            <h2>💾 Backup & Exportação de Dados</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Baixe um arquivo de segurança com todas as suas viagens cadastradas.</p>
+            <button class="btn btn-secondary" style="width: 100%;" onclick="exportDataBackup()">📥 Baixar Backup (JSON)</button>
           </div>
 
           <div class="card">
@@ -312,12 +359,23 @@
   </div>
 
   <!-- MODAL QR CODE -->
-  <div id="qrModal">
+  <div id="qrModal" class="modal-overlay">
     <div class="modal-box">
       <h3 id="modalTitle">QR Code do Ímã</h3>
       <div id="qrcode"></div>
       <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Imprima e cole atrás do seu ímã de geladeira!</p>
-      <button class="btn" onclick="closeModal()" style="margin-top: 15px;">Fechar</button>
+      <button class="btn" onclick="closeModal('qrModal')" style="margin-top: 15px;">Fechar</button>
+    </div>
+  </div>
+
+  <!-- MODAL DE FOTOS OU PDF EMBUTIDO -->
+  <div id="mediaModal" class="modal-overlay">
+    <div class="modal-box modal-large">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 id="mediaModalTitle" style="margin:0;">Visualizador</h3>
+        <button class="btn btn-danger" onclick="closeModal('mediaModal')">✕ Fechar</button>
+      </div>
+      <iframe id="mediaIframe" class="modal-iframe" src=""></iframe>
     </div>
   </div>
 
@@ -325,7 +383,6 @@
     const PADRAO_USUARIO = "Ferrarito22";
     const PADRAO_SENHA = "Gfc220904@";
 
-    // CHAVES CONFIGURADAS:
     const JSONBIN_API_KEY = "$2a$10$HTk3DVa3.52ZLdUV078GgOmQ4U5ImH4rauxH/szMx6bV.btJeO8Qa"; 
     const JSONBIN_BIN_ID = "6ad632cbac6210605a3f6448";      
 
@@ -335,6 +392,7 @@
     };
 
     let db = [];
+    let selectedYearFilter = 'ALL';
     let visitedColor = '#10b981';
     let unvisitedColor = '#334155';
     let isLoggedIn = sessionStorage.getItem('app_is_logged_in') === 'true';
@@ -373,6 +431,7 @@
         document.getElementById('loading-notice').style.display = 'none';
         render();
         initMaps();
+        updateCountdown();
       }
     }
 
@@ -452,7 +511,11 @@
       const brazilCodes = {};
       const usaCodes = {};
 
-      db.forEach(item => {
+      const filteredDb = (selectedYearFilter === 'ALL') 
+        ? db 
+        : db.filter(item => String(item.year) === String(selectedYearFilter));
+
+      filteredDb.forEach(item => {
         const c = item.code.toUpperCase();
         if (item.region === 'Brasil') {
           const sigla = c.replace('BR-', '');
@@ -498,14 +561,16 @@
       let code = document.getElementById('adminCode').value.toUpperCase();
       const region = document.getElementById('adminRegion').value;
       const year = document.getElementById('adminYear').value;
+      const startDate = document.getElementById('adminStartDate').value;
       const link = document.getElementById('adminDriveLink').value;
+      const roteiroLink = document.getElementById('adminRoteiroLink').value;
 
       if (region === 'Brasil' && !code.startsWith('BR-')) code = 'BR-' + code;
       if (region === 'EUA' && !code.startsWith('US-')) code = 'US-' + code;
 
       const id = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
 
-      db.push({ id, code, name, region, year, link });
+      db.push({ id, code, name, region, year, startDate, link, roteiroLink });
       document.getElementById('addDestinationForm').reset();
       await saveCloudData();
     }
@@ -515,15 +580,61 @@
       await saveCloudData();
     }
 
-    function updateTheme() {
-      visitedColor = document.getElementById('pickerVisited').value;
-      unvisitedColor = document.getElementById('pickerUnvisited').value;
-      document.documentElement.style.setProperty('--visited-color', visitedColor);
-      document.documentElement.style.setProperty('--accent', visitedColor);
-      document.documentElement.style.setProperty('--unvisited-color', unvisitedColor);
+    function setYearFilter(year) {
+      selectedYearFilter = year;
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      document.getElementById('chip-' + year).classList.add('active');
+      initMaps();
+    }
+
+    function renderFilterChips() {
+      const yearBar = document.getElementById('yearFilterBar');
+      const years = Array.from(new Set(db.map(d => d.year).filter(Boolean))).sort();
+      
+      let html = `<div id="chip-ALL" class="filter-chip ${selectedYearFilter === 'ALL' ? 'active' : ''}" onclick="setYearFilter('ALL')">Todos</div>`;
+      years.forEach(y => {
+        html += `<div id="chip-${y}" class="filter-chip ${selectedYearFilter === String(y) ? 'active' : ''}" onclick="setYearFilter('${y}')">${y}</div>`;
+      });
+      yearBar.innerHTML = html;
+    }
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const futureTrips = db
+        .filter(d => d.startDate && new Date(d.startDate).getTime() > now)
+        .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+      if (futureTrips.length > 0) {
+        const next = futureTrips[0];
+        document.getElementById('nextTripName').innerText = `${next.name} (${next.year || ''})`;
+        document.getElementById('countdownBox').style.display = 'flex';
+
+        const targetTime = new Date(next.startDate).getTime();
+        const diff = targetTime - now;
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        document.getElementById('nextTripTimer').innerText = `${days}d ${hours}h ${mins}m`;
+      } else {
+        document.getElementById('countdownBox').style.display = 'none';
+      }
+    }
+
+    function exportDataBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `diario_viagens_backup_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
     }
 
     function render() {
+      renderFilterChips();
+
       const tbody = document.getElementById('adminTableBody');
       tbody.innerHTML = '';
       db.forEach(item => {
@@ -543,11 +654,14 @@
       pubList.innerHTML = '';
       db.forEach(item => {
         pubList.innerHTML += `
-          <div style="padding: 12px 0; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
-            <div>
+          <div style="padding: 12px 0; border-bottom: 1px solid #334155;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <strong>📍 ${item.name}</strong> <small style="color: var(--text-muted);">(${item.code})</small>
             </div>
-            ${item.link && item.link !== '#' ? `<a href="${item.link}" target="_blank" style="color: var(--accent); text-decoration: none; font-size: 0.85rem; font-weight: bold;">Ver Fotos ↗</a>` : ''}
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              ${item.link && item.link !== '#' ? `<button onclick="openMediaModal('Galeria: ${item.name}', '${item.link}')" style="background:none; border:none; color: var(--accent); cursor:pointer; font-size: 0.85rem; font-weight: bold; padding:0;">🖼️ Ver Fotos</button>` : ''}
+              ${item.roteiroLink ? `<button onclick="openMediaModal('Roteiro: ${item.name}', '${item.roteiroLink}')" style="background:none; border:none; color: #3b82f6; cursor:pointer; font-size: 0.85rem; font-weight: bold; padding:0;">📋 Ver Roteiro (PDF)</button>` : ''}
+            </div>
           </div>
         `;
       });
@@ -581,8 +695,19 @@
       document.getElementById('qrModal').style.display = 'flex';
     }
 
-    function closeModal() {
-      document.getElementById('qrModal').style.display = 'none';
+    function openMediaModal(title, url) {
+      document.getElementById('mediaModalTitle').innerText = title;
+      let embedUrl = url;
+      if (url.includes('drive.google.com') && url.includes('/view')) {
+        embedUrl = url.replace('/view', '/preview');
+      }
+      document.getElementById('mediaIframe').src = embedUrl;
+      document.getElementById('mediaModal').style.display = 'flex';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+      if (id === 'mediaModal') document.getElementById('mediaIframe').src = '';
     }
 
     window.onload = initAuth;
