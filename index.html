@@ -18,6 +18,7 @@
       --bg-color: #0f172a;
       --card-bg: #1e293b;
       --accent: #10b981;
+      --home-color: #3b82f6;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --visited-color: #10b981;
@@ -95,6 +96,22 @@
       border-radius: 8px;
       background: #0f172a;
       margin-top: 10px;
+    }
+
+    .map-legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      align-items: center;
+    }
+    .legend-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 6px;
     }
 
     .form-group { margin-bottom: 15px; text-align: left; }
@@ -244,6 +261,11 @@
           <div class="card">
             <h2>🇧🇷 Brasil - Divisão por Estados</h2>
             <div id="brazil-map" class="map-container"></div>
+            <div class="map-legend">
+              <span><i class="legend-dot" style="background: var(--home-color);"></i>Residência (RJ)</span>
+              <span><i class="legend-dot" style="background: var(--visited-color);"></i>Visitado</span>
+              <span><i class="legend-dot" style="background: var(--unvisited-color);"></i>Não Visitado</span>
+            </div>
           </div>
 
           <div class="card">
@@ -270,12 +292,12 @@
             <form id="addDestinationForm" onsubmit="handleSaveDestination(event)">
               <div class="form-group">
                 <label>Nome do País / Estado / Território</label>
-                <input type="text" id="adminName" placeholder="Ex: Rio de Janeiro, Flórida, Japão, Curaçao" required>
+                <input type="text" id="adminName" placeholder="Ex: São Paulo, Flórida, Japão, Curaçao" required>
               </div>
 
               <div class="form-group">
-                <label>Código / Sigla (Ex: RJ, FL, JP, CW, BR)</label>
-                <input type="text" id="adminCode" placeholder="Ex: RJ, FL, JP, CW" maxlength="5" style="text-transform: uppercase;" required>
+                <label>Código / Sigla (Ex: SP, FL, JP, CW, BR)</label>
+                <input type="text" id="adminCode" placeholder="Ex: SP, FL, JP, CW" maxlength="5" style="text-transform: uppercase;" required>
               </div>
               
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -394,6 +416,7 @@
     let db = [];
     let selectedYearFilter = 'ALL';
     let visitedColor = '#10b981';
+    let homeColor = '#3b82f6';
     let unvisitedColor = '#334155';
     let isLoggedIn = sessionStorage.getItem('app_is_logged_in') === 'true';
 
@@ -508,7 +531,9 @@
       document.getElementById('usa-map').innerHTML = '';
 
       const worldCodes = {};
-      const brazilCodes = {};
+      const brazilCodes = {
+        'BR-RJ': '2' // Rio de Janeiro destacado como residência (Azul)
+      };
       const usaCodes = {};
 
       const filteredDb = (selectedYearFilter === 'ALL') 
@@ -519,14 +544,16 @@
         const c = item.code.toUpperCase();
         if (item.region === 'Brasil') {
           const sigla = c.replace('BR-', '');
-          brazilCodes['BR-' + sigla] = 1;
-          worldCodes['BR'] = 1;
+          if (sigla !== 'RJ') {
+            brazilCodes['BR-' + sigla] = '1';
+          }
+          worldCodes['BR'] = '1';
         } else if (item.region === 'EUA') {
           const sigla = c.replace('US-', '');
-          usaCodes['US-' + sigla] = 1;
-          worldCodes['US'] = 1;
+          usaCodes['US-' + sigla] = '1';
+          worldCodes['US'] = '1';
         } else {
-          worldCodes[c] = 1;
+          worldCodes[c] = '1';
         }
       });
 
@@ -543,7 +570,16 @@
         map: 'brazil',
         draggable: true,
         regionStyle: { initial: { fill: unvisitedColor } },
-        series: { regions: [{ values: brazilCodes, scale: { '1': visitedColor }, attribute: 'fill' }] }
+        series: { 
+          regions: [{ 
+            values: brazilCodes, 
+            scale: { 
+              '1': visitedColor,
+              '2': homeColor 
+            }, 
+            attribute: 'fill' 
+          }] 
+        }
       });
 
       new jsVectorMap({
@@ -670,7 +706,7 @@
       const totalBRStates = 27;
       const totalUSStates = 50;
 
-      const brCount = db.filter(d => d.region === 'Brasil').length;
+      const brCount = db.filter(d => d.region === 'Brasil' && d.code.toUpperCase() !== 'BR-RJ').length;
       document.getElementById('stat-brazil').innerText = ((brCount / totalBRStates) * 100).toFixed(1) + '%';
 
       const usCount = db.filter(d => d.region === 'EUA').length;
