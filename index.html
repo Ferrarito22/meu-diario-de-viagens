@@ -18,10 +18,10 @@
       --bg-color: #0f172a;
       --card-bg: #1e293b;
       --accent: #10b981;
-      --home-color: #3b82f6;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --visited-color: #10b981;
+      --home-color: #3b82f6;
       --unvisited-color: #334155;
     }
 
@@ -101,18 +101,13 @@
     .map-legend {
       display: flex;
       gap: 16px;
-      margin-top: 12px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
-      align-items: center;
+      margin-top: 10px;
+      flex-wrap: wrap;
     }
-    .legend-dot {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      margin-right: 6px;
-    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 
     .form-group { margin-bottom: 15px; text-align: left; }
     label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
@@ -260,16 +255,20 @@
 
           <div class="card">
             <h2>🇧🇷 Brasil - Divisão por Estados</h2>
-            <div id="brazil-map" class="map-container"></div>
             <div class="map-legend">
-              <span><i class="legend-dot" style="background: var(--home-color);"></i>Residência (RJ)</span>
-              <span><i class="legend-dot" style="background: var(--visited-color);"></i>Visitado</span>
-              <span><i class="legend-dot" style="background: var(--unvisited-color);"></i>Não Visitado</span>
+              <div class="legend-item"><span class="legend-dot" style="background: #3b82f6;"></span> Residência (Rio de Janeiro)</div>
+              <div class="legend-item"><span class="legend-dot" style="background: #10b981;"></span> Estados Visitados</div>
+              <div class="legend-item"><span class="legend-dot" style="background: #334155;"></span> Não Visitados</div>
             </div>
+            <div id="brazil-map" class="map-container"></div>
           </div>
 
           <div class="card">
             <h2>🇺🇸 Estados Unidos - Divisão por Estados</h2>
+            <div class="map-legend">
+              <div class="legend-item"><span class="legend-dot" style="background: #10b981;"></span> Estados Visitados</div>
+              <div class="legend-item"><span class="legend-dot" style="background: #334155;"></span> Não Visitados</div>
+            </div>
             <div id="usa-map" class="map-container"></div>
           </div>
         </div>
@@ -408,6 +407,9 @@
     const JSONBIN_API_KEY = "$2a$10$HTk3DVa3.52ZLdUV078GgOmQ4U5ImH4rauxH/szMx6bV.btJeO8Qa"; 
     const JSONBIN_BIN_ID = "6ad632cbac6210605a3f6448";      
 
+    // Estado de residência fixo (azul)
+    const HOME_STATE_BR = "BR-RJ";
+
     let userAuth = JSON.parse(localStorage.getItem('app_user_auth')) || {
       user: PADRAO_USUARIO,
       pass: PADRAO_SENHA
@@ -530,10 +532,8 @@
       document.getElementById('brazil-map').innerHTML = '';
       document.getElementById('usa-map').innerHTML = '';
 
-      const worldCodes = {};
-      const brazilCodes = {
-        'BR-RJ': '2' // Rio de Janeiro destacado como residência (Azul)
-      };
+      const worldCodes = { 'BR': 'visited' };
+      const brazilCodes = { [HOME_STATE_BR]: 'home' };
       const usaCodes = {};
 
       const filteredDb = (selectedYearFilter === 'ALL') 
@@ -544,16 +544,18 @@
         const c = item.code.toUpperCase();
         if (item.region === 'Brasil') {
           const sigla = c.replace('BR-', '');
-          if (sigla !== 'RJ') {
-            brazilCodes['BR-' + sigla] = '1';
+          const fullBrCode = 'BR-' + sigla;
+          // Mantém o Rio de Janeiro em azul mesmo se houver registros lá
+          if (fullBrCode !== HOME_STATE_BR) {
+            brazilCodes[fullBrCode] = 'visited';
           }
-          worldCodes['BR'] = '1';
+          worldCodes['BR'] = 'visited';
         } else if (item.region === 'EUA') {
           const sigla = c.replace('US-', '');
-          usaCodes['US-' + sigla] = '1';
-          worldCodes['US'] = '1';
+          usaCodes['US-' + sigla] = 'visited';
+          worldCodes['US'] = 'visited';
         } else {
-          worldCodes[c] = '1';
+          worldCodes[c] = 'visited';
         }
       });
 
@@ -562,7 +564,15 @@
         map: 'world',
         draggable: true,
         regionStyle: { initial: { fill: unvisitedColor } },
-        series: { regions: [{ values: worldCodes, scale: { '1': visitedColor }, attribute: 'fill' }] }
+        series: {
+          regions: [{
+            values: worldCodes,
+            scale: {
+              'visited': visitedColor
+            },
+            attribute: 'fill'
+          }]
+        }
       });
 
       new jsVectorMap({
@@ -570,15 +580,15 @@
         map: 'brazil',
         draggable: true,
         regionStyle: { initial: { fill: unvisitedColor } },
-        series: { 
-          regions: [{ 
-            values: brazilCodes, 
-            scale: { 
-              '1': visitedColor,
-              '2': homeColor 
-            }, 
-            attribute: 'fill' 
-          }] 
+        series: {
+          regions: [{
+            values: brazilCodes,
+            scale: {
+              'home': homeColor,
+              'visited': visitedColor
+            },
+            attribute: 'fill'
+          }]
         }
       });
 
@@ -587,7 +597,15 @@
         map: 'us_aea_en',
         draggable: true,
         regionStyle: { initial: { fill: unvisitedColor } },
-        series: { regions: [{ values: usaCodes, scale: { '1': visitedColor }, attribute: 'fill' }] }
+        series: {
+          regions: [{
+            values: usaCodes,
+            scale: {
+              'visited': visitedColor
+            },
+            attribute: 'fill'
+          }]
+        }
       });
     }
 
@@ -706,14 +724,38 @@
       const totalBRStates = 27;
       const totalUSStates = 50;
 
-      const brCount = db.filter(d => d.region === 'Brasil' && d.code.toUpperCase() !== 'BR-RJ').length;
-      document.getElementById('stat-brazil').innerText = ((brCount / totalBRStates) * 100).toFixed(1) + '%';
+      // Contagem padrão do Brasil: estados únicos + RJ (residência) sem duplicar
+      const uniqueBrStates = new Set(
+        db.filter(d => d.region === 'Brasil')
+          .map(d => 'BR-' + d.code.toUpperCase().replace('BR-', ''))
+      );
+      uniqueBrStates.add(HOME_STATE_BR);
+      document.getElementById('stat-brazil').innerText = ((uniqueBrStates.size / totalBRStates) * 100).toFixed(1) + '%';
 
-      const usCount = db.filter(d => d.region === 'EUA').length;
-      document.getElementById('stat-usa').innerText = ((usCount / totalUSStates) * 100).toFixed(1) + '%';
+      // Contagem padrão dos EUA: estados únicos cadastrados
+      const uniqueUsStates = new Set(
+        db.filter(d => d.region === 'EUA')
+          .map(d => 'US-' + d.code.toUpperCase().replace('US-', ''))
+      );
+      document.getElementById('stat-usa').innerText = ((uniqueUsStates.size / totalUSStates) * 100).toFixed(1) + '%';
 
-      const worldCount = db.filter(d => d.region !== 'Brasil' && d.region !== 'EUA').length;
-      document.getElementById('stat-world').innerText = ((worldCount / totalWorld) * 100).toFixed(1) + '%';
+      // Contagem padrão do Mundo: países únicos cadastrados + Brasil (país de residência)
+      const uniqueCountries = new Set(
+        db.filter(d => d.region !== 'Brasil' && d.region !== 'EUA')
+          .map(d => d.code.toUpperCase())
+      );
+      uniqueCountries.add('BR');
+      if (uniqueUsStates.size > 0) uniqueCountries.add('US');
+      document.getElementById('stat-world').innerText = ((uniqueCountries.size / totalWorld) * 100).toFixed(1) + '%';
+
+      // Contagem Europa e Ásia
+      const totalEurope = 44;
+      const europeCount = new Set(db.filter(d => d.region === 'Europa').map(d => d.code.toUpperCase())).size;
+      document.getElementById('stat-europe').innerText = ((europeCount / totalEurope) * 100).toFixed(1) + '%';
+
+      const totalAsia = 48;
+      const asiaCount = new Set(db.filter(d => d.region === 'Asia').map(d => d.code.toUpperCase())).size;
+      document.getElementById('stat-asia').innerText = ((asiaCount / totalAsia) * 100).toFixed(1) + '%';
     }
 
     function openQrModal(id, name, link) {
