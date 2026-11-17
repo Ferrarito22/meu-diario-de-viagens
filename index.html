@@ -2,96 +2,136 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meu Diário de Viagens - Acesso Restrito</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#090d16">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <title>Diário de Viagens & Passaporte</title>
   
-  <!-- Biblioteca oficial Google Charts para Mapas Detalhados (Mundo, Brasil e EUA por Estados) -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
+      --bg-color: #090d16;
+      --card-bg: rgba(23, 32, 51, 0.85);
+      --card-border: rgba(255, 255, 255, 0.08);
       --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.25);
+      --home-color: #3b82f6;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --visited-color: #10b981;
-      --home-color: #3b82f6;
-      --unvisited-color: #334155;
     }
 
-    * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; }
+    * { box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    
+    body {
+      background-color: var(--bg-color);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%);
+      color: var(--text-main);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
 
+    /* TELA DE LOGIN */
     #auth-screen {
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 80vh;
+      min-height: 85vh;
     }
 
     .auth-card {
       background: var(--card-bg);
-      padding: 35px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      padding: 40px 32px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
       width: 100%;
-      max-width: 380px;
+      max-width: 400px;
       text-align: center;
     }
 
-    #app-screen { display: none; }
+    #app-screen { display: none; max-width: 1400px; margin: 0 auto; }
 
+    /* HEADER & NAVEGAÇÃO */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #334155;
-      margin-bottom: 25px;
+      padding: 16px 24px;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      margin-bottom: 24px;
       flex-wrap: wrap;
       gap: 15px;
     }
 
-    h1 { margin: 0; font-size: 1.6rem; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #059669);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; box-shadow: 0 4px 12px var(--accent-glow);
+    }
+    h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
 
-    .nav-tabs { display: flex; gap: 10px; align-items: center; }
+    .nav-tabs { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .tab-btn {
-      background: #334155;
-      color: var(--text-main);
-      border: none;
-      padding: 10px 18px;
-      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      padding: 10px 16px;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: 600;
-      transition: all 0.2s;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
     }
-    .tab-btn.active { background: var(--accent); color: #000; }
-    .btn-logout { background: #ef4444; color: #fff; }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.08); }
+    .tab-btn.active {
+      background: var(--accent);
+      color: #052e16;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+    .btn-logout { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .btn-logout:hover { background: #ef4444; color: #fff; }
 
-    .view-panel { display: none; }
+    .view-panel { display: none; animation: fadeIn 0.3s ease; }
     .view-panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    .grid-layout { display: grid; grid-template-columns: 2.5fr 1fr; gap: 20px; }
-    @media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } }
+    .grid-layout { display: grid; grid-template-columns: 2.4fr 1fr; gap: 22px; }
+    @media (max-width: 960px) { .grid-layout { grid-template-columns: 1fr; } }
 
     .card {
       background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
       padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-      margin-bottom: 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+      margin-bottom: 22px;
     }
 
-    h2 { margin-top: 0; font-size: 1.25rem; color: var(--text-main); }
+    h2 { margin: 0 0 16px 0; font-size: 1.15rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
 
+    /* MAPAS */
     .map-container {
       width: 100%;
-      height: 420px;
-      border-radius: 8px;
-      background: #0f172a;
-      margin-top: 10px;
+      height: 410px;
+      border-radius: 12px;
+      background: #0b1120;
+      border: 1px solid var(--card-border);
+      margin-top: 12px;
       overflow: hidden;
       display: flex;
       justify-content: center;
@@ -100,85 +140,215 @@
 
     .map-legend {
       display: flex;
-      gap: 16px;
-      font-size: 0.85rem;
+      gap: 18px;
+      font-size: 0.82rem;
       color: var(--text-muted);
-      margin-top: 8px;
+      margin-bottom: 8px;
       flex-wrap: wrap;
     }
     .legend-item { display: flex; align-items: center; gap: 6px; }
-    .legend-dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+    .legend-dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
 
-    .form-group { margin-bottom: 15px; text-align: left; }
-    label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
+    /* FORMULÁRIOS & BOTÕES */
+    .form-group { margin-bottom: 16px; text-align: left; }
+    label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; }
     input[type="text"], input[type="password"], input[type="url"], input[type="date"], select {
       width: 100%;
-      padding: 10px 14px;
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 6px;
+      padding: 11px 14px;
+      background: #0b1120;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
       color: #fff;
+      font-size: 0.92rem;
+      transition: border-color 0.2s;
     }
+    input:focus, select:focus { outline: none; border-color: var(--accent); }
 
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #334155; font-size: 0.9rem; }
-    th { color: var(--text-muted); }
+    th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--card-border); font-size: 0.88rem; }
+    th { color: var(--text-muted); font-weight: 600; }
 
     .btn {
       background: var(--accent);
-      color: #000;
+      color: #052e16;
       border: none;
       padding: 10px 16px;
-      border-radius: 6px;
+      border-radius: 10px;
       font-weight: 600;
+      font-size: 0.9rem;
       cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
     }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px var(--accent-glow); }
     .btn-secondary { background: #3b82f6; color: #fff; }
-    .btn-danger { background: #ef4444; color: #fff; }
+    .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); padding: 6px 10px; }
+    .btn-danger:hover { background: #ef4444; color: #fff; }
 
-    .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; }
-    .stat-card { background: #0f172a; padding: 14px; border-radius: 8px; text-align: center; }
-    .stat-card .val { font-size: 1.4rem; font-weight: bold; color: var(--accent); }
-    .stat-card .lbl { font-size: 0.75rem; color: var(--text-muted); }
+    /* ESTATÍSTICAS */
+    .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(115px, 1fr)); gap: 12px; }
+    .stat-card {
+      background: #0b1120;
+      border: 1px solid var(--card-border);
+      padding: 16px 12px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .stat-card .val { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+    .stat-card .lbl { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
 
-    /* Filtros por Ano */
-    .filter-bar { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+    /* CONQUISTAS & BADGES */
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      gap: 12px;
+    }
+    .badge-item {
+      background: #0b1120;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+      opacity: 0.4;
+      filter: grayscale(100%);
+      transition: all 0.3s ease;
+    }
+    .badge-item.unlocked {
+      opacity: 1;
+      filter: grayscale(0%);
+      border-color: rgba(16, 185, 129, 0.4);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, #0b1120 100%);
+    }
+    .badge-icon { font-size: 1.8rem; margin-bottom: 6px; display: block; }
+    .badge-title { font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: block; }
+    .badge-desc { font-size: 0.7rem; color: var(--text-muted); margin-top: 3px; display: block; }
+
+    /* ABA PASSAPORTE CARIMBADO */
+    .passport-book {
+      background: #131c2e;
+      border: 2px solid #334155;
+      border-radius: 20px;
+      padding: 30px;
+      position: relative;
+      box-shadow: inset 0 0 60px rgba(0,0,0,0.6), 0 15px 35px rgba(0,0,0,0.4);
+    }
+    .passport-header {
+      border-bottom: 2px dashed #334155;
+      padding-bottom: 18px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .passport-id { font-family: 'Courier Prime', monospace; color: #eab308; letter-spacing: 2px; font-size: 0.9rem; }
+    .stamps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 22px;
+    }
+    .passport-stamp {
+      border: 3px double var(--stamp-color, #10b981);
+      color: var(--stamp-color, #10b981);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+      position: relative;
+      background: rgba(255, 255, 255, 0.015);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .passport-stamp:hover { transform: scale(1.03) rotate(0deg) !important; }
+    .stamp-type {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-bottom: 1px solid currentColor;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .stamp-symbol { font-size: 2.3rem; margin: 6px 0; display: block; }
+    .stamp-country {
+      font-family: 'Courier Prime', monospace;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: block;
+    }
+    .stamp-meta {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.72rem;
+      margin-top: 6px;
+      opacity: 0.85;
+      display: block;
+    }
+
+    /* FILTROS & COUNTDOWN */
+    .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; }
     .filter-chip {
-      background: #0f172a;
+      background: #0b1120;
       color: var(--text-muted);
-      border: 1px solid #334155;
+      border: 1px solid var(--card-border);
       padding: 6px 14px;
       border-radius: 20px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       cursor: pointer;
     }
-    .filter-chip.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
+    .filter-chip.active { background: var(--accent); color: #052e16; font-weight: 700; border-color: var(--accent); }
 
-    /* Countdown */
     .countdown-card {
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      border: 1px solid var(--accent);
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 20px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 18px 24px;
+      border-radius: 16px;
+      margin-bottom: 22px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 15px;
     }
-    .countdown-timer { font-size: 1.6rem; font-weight: bold; color: var(--accent); }
+    .countdown-timer { font-size: 1.5rem; font-weight: 700; color: var(--accent); font-family: 'Courier Prime', monospace; }
 
-    #loading-notice { display: none; color: var(--accent); font-weight: bold; margin-bottom: 10px; }
+    .trip-item {
+      padding: 14px;
+      background: #0b1120;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
 
-    /* Modais */
+    #loading-notice {
+      display: none;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      margin-bottom: 16px;
+    }
+
+    /* MODAIS */
     .modal-overlay {
       display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
+      justify-content: center; align-items: center; z-index: 1000;
     }
-    .modal-box { background: var(--card-bg); padding: 30px; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; }
-    .modal-large { max-width: 900px; width: 95%; height: 85vh; display: flex; flex-direction: column; }
-    .modal-iframe { width: 100%; height: 100%; border: none; border-radius: 8px; margin-top: 15px; }
+    .modal-box {
+      background: #172033;
+      border: 1px solid var(--card-border);
+      padding: 28px;
+      border-radius: 18px;
+      text-align: center;
+      max-width: 400px;
+      width: 92%;
+    }
+    .modal-large { max-width: 920px; width: 95%; height: 86vh; display: flex; flex-direction: column; }
+    .modal-iframe { width: 100%; height: 100%; border: none; border-radius: 10px; margin-top: 14px; background: #fff; }
   </style>
 </head>
 <body>
@@ -186,53 +356,62 @@
   <!-- TELA DE LOGIN EXCLUSIVO -->
   <div id="auth-screen">
     <div class="auth-card">
-      <h1 style="margin-bottom: 10px;">🔒 Acesso Restrito</h1>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Informe suas credenciais para acessar o diário</p>
+      <div style="font-size: 2.5rem; margin-bottom: 10px;">🛂</div>
+      <h1 style="margin-bottom: 8px; font-size: 1.5rem;">Acesso ao Passaporte</h1>
+      <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 26px;">Entre com suas credenciais para sincronizar seus mapas e carimbos</p>
       
       <form id="auth-form" onsubmit="handleAuth(event)">
         <div class="form-group">
-          <label>Chave de Acesso (Usuário)</label>
+          <label>Usuário</label>
           <input type="text" id="auth-username" required placeholder="Digite sua chave de acesso">
         </div>
         <div class="form-group">
           <label>Senha</label>
           <input type="password" id="auth-password" required placeholder="Digite sua senha">
         </div>
-        <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Entrar e Sincronizar</button>
+        <button type="submit" class="btn" style="width: 100%; margin-top: 8px; padding: 12px;">Desbloquear Diário</button>
       </form>
-      <p id="auth-msg" style="color: #ef4444; font-size: 0.85rem; margin-top: 15px;"></p>
+      <p id="auth-msg" style="color: #f87171; font-size: 0.85rem; margin-top: 14px;"></p>
     </div>
   </div>
 
   <!-- APLICAÇÃO PRINCIPAL -->
   <div id="app-screen">
     <header>
-      <h1>🌍 Diário de Viagens & Ímãs</h1>
+      <div class="brand">
+        <div class="brand-icon">🌍</div>
+        <div>
+          <h1>Diário de Viagens</h1>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Exploração Global & Passaporte Digital</span>
+        </div>
+      </div>
       <div class="nav-tabs">
         <button id="btn-tab-dashboard" class="tab-btn active" onclick="switchTab('dashboard')">🗺️ Dashboard</button>
-        <button id="btn-tab-admin" class="tab-btn" onclick="switchTab('admin')">⚙️ Painel Admin</button>
-        <button class="tab-btn btn-logout" onclick="logout()">Sair 🚪</button>
+        <button id="btn-tab-passport" class="tab-btn" onclick="switchTab('passport')">🛂 Passaporte</button>
+        <button id="btn-tab-admin" class="tab-btn" onclick="switchTab('admin')">⚙️ Admin</button>
+        <button class="tab-btn btn-logout" onclick="logout()">Sair</button>
       </div>
     </header>
 
     <div id="loading-notice">⚡ Sincronizando dados com a nuvem...</div>
 
-    <!-- DASHBOARD -->
+    <!-- ABA 1: DASHBOARD -->
     <div id="tab-dashboard" class="view-panel active">
       
       <!-- Card do Próximo Destino (Countdown) -->
       <div id="countdownBox" class="countdown-card" style="display: none;">
         <div>
-          <span style="font-size: 0.85rem; color: var(--text-muted);">✈️ Próxima Aventura Programada:</span>
-          <h3 id="nextTripName" style="margin: 5px 0 0 0; font-size: 1.3rem;">-</h3>
+          <span style="font-size: 0.82rem; color: var(--text-muted);">✈️ Próxima Expedição Programada:</span>
+          <h3 id="nextTripName" style="margin: 4px 0 0 0; font-size: 1.25rem;">-</h3>
         </div>
         <div class="countdown-timer" id="nextTripTimer">00d 00h 00m</div>
       </div>
 
       <div class="grid-layout">
         <div>
+          <!-- Estatísticas -->
           <div class="card">
-            <h2>Estatísticas de Exploração</h2>
+            <h2>📊 Estatísticas de Exploração</h2>
             <div class="stats-container">
               <div class="stat-card"><div class="val" id="stat-world">0%</div><div class="lbl">Mundo Total</div></div>
               <div class="stat-card"><div class="val" id="stat-brazil">0%</div><div class="lbl">Brasil (Estados)</div></div>
@@ -241,15 +420,23 @@
               <div class="stat-card"><div class="val" id="stat-asia">0%</div><div class="lbl">Ásia</div></div>
             </div>
           </div>
-          
+
+          <!-- Conquistas & Badges -->
           <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-              <h2>🗺️ Mapa do Mundo</h2>
+            <h2>🏆 Conquistas & Medalhas</h2>
+            <div class="badges-grid" id="badgesContainer"></div>
+          </div>
+          
+          <!-- Mapa do Mundo -->
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+              <h2 style="margin:0;">🗺️ Mapa do Mundo</h2>
               <div class="filter-bar" id="yearFilterBar"></div>
             </div>
             <div id="world-map" class="map-container"></div>
           </div>
 
+          <!-- Mapa do Brasil -->
           <div class="card">
             <h2>🇧🇷 Brasil - Divisão por Estados</h2>
             <div class="map-legend">
@@ -260,6 +447,7 @@
             <div id="brazil-map" class="map-container"></div>
           </div>
 
+          <!-- Mapa dos EUA -->
           <div class="card">
             <h2>🇺🇸 Estados Unidos - Divisão por Estados</h2>
             <div class="map-legend">
@@ -270,16 +458,35 @@
           </div>
         </div>
 
+        <!-- Coluna Direita: Lista de Viagens -->
         <div>
           <div class="card">
-            <h2>Viagens Registradas</h2>
+            <h2>📍 Viagens Registradas</h2>
             <div id="publicTravelList"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- PAINEL ADMIN -->
+    <!-- ABA 2: PASSAPORTE CARIMBADO -->
+    <div id="tab-passport" class="view-panel">
+      <div class="passport-book">
+        <div class="passport-header">
+          <div>
+            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px;">República Federativa do Brasil • Documento de Exploração</span>
+            <h2 style="margin: 4px 0 0 0; font-size: 1.4rem;">🛂 Passaporte de Carimbos Oficiais</h2>
+          </div>
+          <div style="text-align: right;">
+            <span class="passport-id">TITULAR: GUILHERME F. CARVALHO</span><br>
+            <span style="font-size: 0.78rem; color: var(--text-muted);" id="passportStampCount">1 Carimbo Oficial</span>
+          </div>
+        </div>
+
+        <div class="stamps-grid" id="passportStampsContainer"></div>
+      </div>
+    </div>
+
+    <!-- ABA 3: PAINEL ADMIN -->
     <div id="tab-admin" class="view-panel">
       <div class="grid-layout">
         <div>
@@ -288,15 +495,15 @@
             <form id="addDestinationForm" onsubmit="handleSaveDestination(event)">
               <div class="form-group">
                 <label>Nome do País / Estado / Território</label>
-                <input type="text" id="adminName" placeholder="Ex: São Paulo, Flórida, Japão, Curaçao" required>
+                <input type="text" id="adminName" placeholder="Ex: São Paulo, Flórida, Japão, Geórgia" required>
               </div>
 
               <div class="form-group">
-                <label>Código / Sigla (Ex: SP, FL, JP, CW, BR)</label>
-                <input type="text" id="adminCode" placeholder="Ex: SP, FL, JP, CW" maxlength="5" style="text-transform: uppercase;" required>
+                <label>Código ISO / Sigla (Ex: SP, FL, JP, GE, RO)</label>
+                <input type="text" id="adminCode" placeholder="Ex: SP, FL, JP, GE" maxlength="5" style="text-transform: uppercase;" required>
               </div>
               
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <div class="form-group">
                   <label>Região / Categoria</label>
                   <select id="adminRegion">
@@ -330,13 +537,13 @@
                 <input type="text" id="adminRoteiroLink" placeholder="Ex: /roteiro-japao.pdf ou https://...">
               </div>
 
-              <button type="submit" class="btn" style="width: 100%;">Salvar na Nuvem</button>
+              <button type="submit" class="btn" style="width: 100%; padding: 12px;">Salvar e Carimbar Passaporte</button>
             </form>
           </div>
 
           <div class="card">
             <h2>💾 Backup & Exportação de Dados</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Baixe um arquivo de segurança com todas as suas viagens cadastradas.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">Baixe um arquivo de segurança com todas as suas viagens e carimbos.</p>
             <button class="btn btn-secondary" style="width: 100%;" onclick="exportDataBackup()">📥 Baixar Backup (JSON)</button>
           </div>
 
@@ -379,10 +586,10 @@
   <!-- MODAL QR CODE -->
   <div id="qrModal" class="modal-overlay">
     <div class="modal-box">
-      <h3 id="modalTitle">QR Code do Ímã</h3>
-      <div id="qrcode"></div>
-      <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Imprima e cole atrás do seu ímã de geladeira!</p>
-      <button class="btn" onclick="closeModal('qrModal')" style="margin-top: 15px;">Fechar</button>
+      <h3 id="modalTitle" style="margin-top:0;">QR Code do Ímã</h3>
+      <div id="qrcode" style="margin: 16px auto; display: inline-block; background: #fff; padding: 12px; border-radius: 10px;"></div>
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 8px;">Imprima e cole atrás do seu ímã de geladeira!</p>
+      <button class="btn" onclick="closeModal('qrModal')" style="margin-top: 14px; width: 100%;">Fechar</button>
     </div>
   </div>
 
@@ -398,6 +605,13 @@
   </div>
 
   <script>
+    // Registro do Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW:', err));
+      });
+    }
+
     const PADRAO_USUARIO = "Ferrarito22";
     const PADRAO_SENHA = "Gfc220904@";
 
@@ -405,6 +619,29 @@
     const JSONBIN_BIN_ID = "6ad632cbac6210605a3f6448";      
 
     const HOME_STATE_BR = "BR-RJ";
+
+    // Dicionário de símbolos culturais para o Passaporte Carimbado
+    const COUNTRY_SYMBOLS = {
+      'BR': { name: 'Brasil', symbol: '🗿', landmark: 'Cristo Redentor • RJ', color: '#10b981' },
+      'JP': { name: 'Japão', symbol: '🗻', landmark: 'Monte Fuji & Torii', color: '#f43f5e' },
+      'US': { name: 'Estados Unidos', symbol: '🗽', landmark: 'Estátua da Liberdade', color: '#3b82f6' },
+      'FR': { name: 'França', symbol: '🗼', landmark: 'Torre Eiffel • Paris', color: '#6366f1' },
+      'IT': { name: 'Itália', symbol: '🏛️', landmark: 'Coliseu • Roma', color: '#10b981' },
+      'GB': { name: 'Reino Unido', symbol: '🎡', landmark: 'Big Ben & London Eye', color: '#ec4899' },
+      'PT': { name: 'Portugal', symbol: '🚋', landmark: 'Torre de Belém & Elétrico', color: '#eab308' },
+      'ES': { name: 'Espanha', symbol: '💃', landmark: 'Sagrada Família', color: '#f97316' },
+      'DE': { name: 'Alemanha', symbol: '🏰', landmark: 'Portão de Brandemburgo', color: '#eab308' },
+      'RO': { name: 'Romênia', symbol: '🧛', landmark: 'Castelo de Bran • Transilvânia', color: '#a855f7' },
+      'GE': { name: 'Geórgia', symbol: '⛰️', landmark: 'Montanhas do Cáucaso', color: '#f43f5e' },
+      'AR': { name: 'Argentina', symbol: '🥩', landmark: 'Obelisco & Patagônia', color: '#38bdf8' },
+      'CL': { name: 'Chile', symbol: '🏔️', landmark: 'Cordilheira dos Andes', color: '#ef4444' },
+      'UY': { name: 'Uruguai', symbol: '🧉', landmark: 'Punta del Este', color: '#38bdf8' },
+      'CW': { name: 'Curaçao', symbol: '🏝️', landmark: 'Willemstad • Caribe', color: '#06b6d4' },
+      'EG': { name: 'Egito', symbol: '🏜️', landmark: 'Pirâmides de Gizé', color: '#eab308' },
+      'AU': { name: 'Austrália', symbol: '🦘', landmark: 'Sydney Opera House', color: '#f97316' },
+      'CA': { name: 'Canadá', symbol: '🍁', landmark: 'Cataratas do Niágara', color: '#ef4444' },
+      'MX': { name: 'México', symbol: '🌮', landmark: 'Chichén Itzá', color: '#10b981' }
+    };
 
     let userAuth = JSON.parse(localStorage.getItem('app_user_auth')) || {
       user: PADRAO_USUARIO,
@@ -416,11 +653,10 @@
     let chartsLoaded = false;
     let isLoggedIn = sessionStorage.getItem('app_is_logged_in') === 'true';
 
-    // Carrega o Google GeoChart
     google.charts.load('current', { 'packages': ['geochart'] });
     google.charts.setOnLoadCallback(() => {
       chartsLoaded = true;
-      if (isLoggedIn && db.length >= 0) {
+      if (isLoggedIn) {
         drawAllMaps();
       }
     });
@@ -489,7 +725,7 @@
       const msg = document.getElementById('pwdMsg');
 
       if (current !== userAuth.pass) {
-        msg.style.color = '#ef4444';
+        msg.style.color = '#f87171';
         msg.innerText = "A senha atual está incorreta!";
         return;
       }
@@ -543,11 +779,8 @@
 
       // 1. MAPA DO MUNDO
       const worldRows = [['Country', 'Status', { role: 'tooltip', p: { html: false } }]];
-      const addedCountries = new Set();
-
-      // Garante o Brasil pintado no mapa-múndi
+      const addedCountries = new Set(['BR']);
       worldRows.push(['BR', 2, 'Brasil (País de Residência)']);
-      addedCountries.add('BR');
 
       filteredDb.forEach(item => {
         const c = item.code.toUpperCase();
@@ -567,15 +800,14 @@
       const worldData = google.visualization.arrayToDataTable(worldRows);
       const worldChart = new google.visualization.GeoChart(document.getElementById('world-map'));
       worldChart.draw(worldData, {
-        backgroundColor: '#0f172a',
-        datalessRegionColor: '#334155',
+        backgroundColor: '#0b1120',
+        datalessRegionColor: '#263248',
         defaultColor: '#10b981',
         colorAxis: { values: [1, 2], colors: ['#3b82f6', '#10b981'] },
         legend: 'none'
       });
 
-      // 2. MAPA DO BRASIL DETALHADO POR ESTADOS (26 estados + DF)
-      // Valor 1 = Azul (Residência RJ), Valor 2 = Verde (Visitado)
+      // 2. MAPA DO BRASIL POR ESTADOS
       const brRows = [['State', 'Status', { role: 'tooltip', p: { html: false } }]];
       brRows.push(['BR-RJ', 1, 'Rio de Janeiro (Residência)']);
 
@@ -596,13 +828,13 @@
       brChart.draw(brData, {
         region: 'BR',
         resolution: 'provinces',
-        backgroundColor: '#0f172a',
-        datalessRegionColor: '#334155',
+        backgroundColor: '#0b1120',
+        datalessRegionColor: '#263248',
         colorAxis: { values: [1, 2], colors: ['#3b82f6', '#10b981'] },
         legend: 'none'
       });
 
-      // 3. MAPA DOS ESTADOS UNIDOS DETALHADO POR ESTADOS (50 estados)
+      // 3. MAPA DOS EUA POR ESTADOS
       const usRows = [['State', 'Status', { role: 'tooltip', p: { html: false } }]];
       const addedUsStates = new Set();
 
@@ -622,8 +854,8 @@
       usChart.draw(usData, {
         region: 'US',
         resolution: 'provinces',
-        backgroundColor: '#0f172a',
-        datalessRegionColor: '#334155',
+        backgroundColor: '#0b1120',
+        datalessRegionColor: '#263248',
         defaultColor: '#10b981',
         colorAxis: { values: [1, 2], colors: ['#3b82f6', '#10b981'] },
         legend: 'none'
@@ -713,6 +945,98 @@
       downloadAnchor.remove();
     }
 
+    // RENDERIZAR CONQUISTAS & BADGES
+    function renderBadges(uniqueBrCount, uniqueCountriesCount) {
+      const hasRoteiro = db.some(d => d.roteiroLink && d.roteiroLink.trim() !== '');
+      const hasPhotos = db.some(d => d.link && d.link.trim() !== '' && d.link !== '#');
+      const continents = new Set(db.map(d => d.region).filter(r => r !== 'Brasil' && r !== 'EUA'));
+      continents.add('Americas'); // Brasil
+
+      const badges = [
+        { icon: '🏠', title: 'Base Carioca', desc: 'Residência no RJ ativa', unlocked: true },
+        { icon: '🇧🇷', title: 'Explorador Nacional', desc: '3+ estados do Brasil', unlocked: uniqueBrCount >= 3 },
+        { icon: '🛫', title: 'Passaporte Carimbado', desc: '1º país internacional', unlocked: uniqueCountriesCount >= 2 },
+        { icon: '🌐', title: 'Desbravador Global', desc: '5+ países visitados', unlocked: uniqueCountriesCount >= 5 },
+        { icon: '🧭', title: 'Intercontinental', desc: '2+ continentes explorados', unlocked: continents.size >= 2 },
+        { icon: '📋', title: 'Estrategista', desc: 'Roteiro PDF anexado', unlocked: hasRoteiro },
+        { icon: '📸', title: 'Memórias Vivas', desc: 'Álbum de fotos integrado', unlocked: hasPhotos },
+        { icon: '🧲', title: 'Colecionador', desc: '5+ destinos registrados', unlocked: db.length >= 5 }
+      ];
+
+      const container = document.getElementById('badgesContainer');
+      container.innerHTML = badges.map(b => `
+        <div class="badge-item ${b.unlocked ? 'unlocked' : ''}">
+          <span class="badge-icon">${b.icon}</span>
+          <span class="badge-title">${b.title}</span>
+          <span class="badge-desc">${b.desc}</span>
+        </div>
+      `).join('');
+    }
+
+    // RENDERIZAR PASSAPORTE CARIMBADO
+    function renderPassport() {
+      const stampsContainer = document.getElementById('passportStampsContainer');
+      const stampedCountries = new Map();
+
+      // Carimbo oficial do Brasil já garantido
+      stampedCountries.set('BR', {
+        code: 'BR',
+        name: 'Brasil',
+        symbol: COUNTRY_SYMBOLS['BR'].symbol,
+        landmark: COUNTRY_SYMBOLS['BR'].landmark,
+        color: COUNTRY_SYMBOLS['BR'].color,
+        year: 'BASE PERMANENTE',
+        type: 'ORIGEM • RESIDÊNCIA'
+      });
+
+      // Adiciona carimbos para cada país visitado
+      db.forEach(item => {
+        let countryCode = item.code.toUpperCase();
+        if (item.region === 'EUA') countryCode = 'US';
+        if (item.region === 'Brasil') countryCode = 'BR';
+
+        if (!stampedCountries.has(countryCode)) {
+          const info = COUNTRY_SYMBOLS[countryCode] || {
+            name: item.name,
+            symbol: '🌐',
+            landmark: item.region || 'Território Internacional',
+            color: '#10b981'
+          };
+
+          stampedCountries.set(countryCode, {
+            code: countryCode,
+            name: info.name,
+            symbol: info.symbol,
+            landmark: info.landmark,
+            color: info.color,
+            year: item.year || 'CARIMBADO',
+            type: 'ENTRADA AUTORIZADA'
+          });
+        }
+      });
+
+      const rotations = [-3, 2, -2, 3, -1, 2];
+      let index = 0;
+      let html = '';
+
+      stampedCountries.forEach(stamp => {
+        const rot = rotations[index % rotations.length];
+        index++;
+        html += `
+          <div class="passport-stamp" style="--stamp-color: ${stamp.color}; transform: rotate(${rot}deg);">
+            <span class="stamp-type">${stamp.type}</span>
+            <span class="stamp-symbol">${stamp.symbol}</span>
+            <span class="stamp-country">${stamp.name} (${stamp.code})</span>
+            <span class="stamp-meta">${stamp.landmark}</span>
+            <span class="stamp-meta" style="font-weight:bold; margin-top:4px;">★ ${stamp.year} ★</span>
+          </div>
+        `;
+      });
+
+      stampsContainer.innerHTML = html;
+      document.getElementById('passportStampCount').innerText = `${stampedCountries.size} Carimbo(s) Oficial(is)`;
+    }
+
     function render() {
       renderFilterChips();
 
@@ -724,7 +1048,7 @@
             <td><strong>${item.name}</strong> <br><small style="color:var(--text-muted)">${item.year || ''}</small></td>
             <td><code>${item.code}</code></td>
             <td>
-              <button class="btn" onclick="openQrModal('${item.id}', '${item.name}', '${item.link}')">QR Code</button>
+              <button class="btn" style="padding: 6px 10px; font-size: 0.8rem;" onclick="openQrModal('${item.id}', '${item.name}', '${item.link}')">QR</button>
               <button class="btn btn-danger" onclick="deleteDestination('${item.id}')">✕</button>
             </td>
           </tr>
@@ -738,13 +1062,14 @@
         const icon = isHome ? '🏠' : '📍';
         
         pubList.innerHTML += `
-          <div style="padding: 12px 0; border-bottom: 1px solid #334155;">
+          <div class="trip-item">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <strong>${icon} ${item.name}</strong> <small style="color: var(--text-muted);">(${item.code})</small>
+              <strong>${icon} ${item.name}</strong>
+              <span style="font-size: 0.78rem; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 6px;">${item.year || item.code}</span>
             </div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              ${item.link && item.link !== '#' ? `<button onclick="openMediaModal('Galeria: ${item.name}', '${item.link}')" style="background:none; border:none; color: var(--accent); cursor:pointer; font-size: 0.85rem; font-weight: bold; padding:0;">🖼️ Ver Fotos</button>` : ''}
-              ${item.roteiroLink ? `<button onclick="openMediaModal('Roteiro: ${item.name}', '${item.roteiroLink}')" style="background:none; border:none; color: #3b82f6; cursor:pointer; font-size: 0.85rem; font-weight: bold; padding:0;">📋 Ver Roteiro (PDF)</button>` : ''}
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px;">
+              ${item.link && item.link !== '#' ? `<button onclick="openMediaModal('Galeria: ${item.name}', '${item.link}')" style="background:none; border:none; color: var(--accent); cursor:pointer; font-size: 0.82rem; font-weight: 600; padding:0;">🖼️ Ver Fotos</button>` : ''}
+              ${item.roteiroLink ? `<button onclick="openMediaModal('Roteiro: ${item.name}', '${item.roteiroLink}')" style="background:none; border:none; color: #38bdf8; cursor:pointer; font-size: 0.82rem; font-weight: 600; padding:0;">📋 Ver Roteiro (PDF)</button>` : ''}
             </div>
           </div>
         `;
@@ -782,6 +1107,9 @@
       const totalAsia = 48;
       const asiaCount = new Set(db.filter(d => d.region === 'Asia').map(d => d.code.toUpperCase())).size;
       document.getElementById('stat-asia').innerText = ((asiaCount / totalAsia) * 100).toFixed(1) + '%';
+
+      renderBadges(uniqueBrStates.size, uniqueCountries.size);
+      renderPassport();
     }
 
     function openQrModal(id, name, link) {
