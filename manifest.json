@@ -1,0 +1,18 @@
+{
+  "name": "Diário de Viagens & Passaporte",
+  "short_name": "Meu Passaporte",
+  "description": "Mapa interativo, passaporte carimbado e roteiros de viagem.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/826/826070.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
