@@ -6,12 +6,8 @@
   <title>Meu Diário de Viagens - Acesso Restrito</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   
-  <!-- Biblioteca jsVectorMap + Mapas Oficiais (Mundo, Brasil e EUA) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/css/jsvectormap.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/js/jsvectormap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/maps/world.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jsvectormap-maps@1.0.0/maps/brazil.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jsvectormap-maps@1.0.0/maps/us-aea-en.js"></script>
+  <!-- Biblioteca oficial Google Charts para Mapas Detalhados (Mundo, Brasil e EUA por Estados) -->
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
   <style>
     :root {
@@ -92,16 +88,14 @@
 
     .map-container {
       width: 100%;
-      height: 400px;
+      height: 420px;
       border-radius: 8px;
       background: #0f172a;
       margin-top: 10px;
-      position: relative;
       overflow: hidden;
-    }
-    .map-container svg {
-      width: 100% !important;
-      height: 100% !important;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .map-legend {
@@ -410,7 +404,6 @@
     const JSONBIN_API_KEY = "$2a$10$HTk3DVa3.52ZLdUV078GgOmQ4U5ImH4rauxH/szMx6bV.btJeO8Qa"; 
     const JSONBIN_BIN_ID = "6ad632cbac6210605a3f6448";      
 
-    // Estado de residência fixo (azul)
     const HOME_STATE_BR = "BR-RJ";
 
     let userAuth = JSON.parse(localStorage.getItem('app_user_auth')) || {
@@ -420,10 +413,17 @@
 
     let db = [];
     let selectedYearFilter = 'ALL';
-    let visitedColor = '#10b981';
-    let homeColor = '#3b82f6';
-    let unvisitedColor = '#334155';
+    let chartsLoaded = false;
     let isLoggedIn = sessionStorage.getItem('app_is_logged_in') === 'true';
+
+    // Carrega o Google GeoChart
+    google.charts.load('current', { 'packages': ['geochart'] });
+    google.charts.setOnLoadCallback(() => {
+      chartsLoaded = true;
+      if (isLoggedIn && db.length >= 0) {
+        drawAllMaps();
+      }
+    });
 
     function initAuth() {
       if (isLoggedIn) {
@@ -458,7 +458,7 @@
       } finally {
         document.getElementById('loading-notice').style.display = 'none';
         render();
-        initMaps();
+        drawAllMaps();
         updateCountdown();
       }
     }
@@ -520,7 +520,7 @@
       if (activeBtn) activeBtn.classList.add('active');
       
       if (tab === 'dashboard') {
-        setTimeout(initMaps, 100);
+        setTimeout(drawAllMaps, 100);
       }
     }
 
@@ -534,88 +534,107 @@
       loadCloudData();
     }
 
-    function initMaps() {
-      document.getElementById('world-map').innerHTML = '';
-      document.getElementById('brazil-map').innerHTML = '';
-      document.getElementById('usa-map').innerHTML = '';
-
-      const worldCodes = { 'BR': 'visited' };
-      const brazilCodes = { [HOME_STATE_BR]: 'home' };
-      const usaCodes = {};
+    function drawAllMaps() {
+      if (!chartsLoaded || typeof google === 'undefined' || !google.visualization) return;
 
       const filteredDb = (selectedYearFilter === 'ALL') 
         ? db 
         : db.filter(item => String(item.year) === String(selectedYearFilter));
 
+      // 1. MAPA DO MUNDO
+      const worldRows = [['Country', 'Status', { role: 'tooltip', p: { html: false } }]];
+      const addedCountries = new Set();
+
+      // Garante o Brasil pintado no mapa-múndi
+      worldRows.push(['BR', 2, 'Brasil (País de Residência)']);
+      addedCountries.add('BR');
+
       filteredDb.forEach(item => {
         const c = item.code.toUpperCase();
-        if (item.region === 'Brasil') {
-          const sigla = c.replace('BR-', '');
-          const fullBrCode = 'BR-' + sigla;
-          if (fullBrCode !== HOME_STATE_BR) {
-            brazilCodes[fullBrCode] = 'visited';
+        if (item.region === 'EUA') {
+          if (!addedCountries.has('US')) {
+            worldRows.push(['US', 2, 'Estados Unidos (Visitado)']);
+            addedCountries.add('US');
           }
-          worldCodes['BR'] = 'visited';
-        } else if (item.region === 'EUA') {
-          const sigla = c.replace('US-', '');
-          usaCodes['US-' + sigla] = 'visited';
-          worldCodes['US'] = 'visited';
-        } else {
-          worldCodes[c] = 'visited';
+        } else if (item.region !== 'Brasil') {
+          if (!addedCountries.has(c)) {
+            worldRows.push([c, 2, `${item.name} (${item.year || 'Visitado'})`]);
+            addedCountries.add(c);
+          }
         }
       });
 
-      try {
-        new jsVectorMap({
-          selector: '#world-map',
-          map: 'world',
-          zoomOnScroll: true,
-          regionStyle: { initial: { fill: unvisitedColor, stroke: '#1e293b', strokeWidth: 0.5 } },
-          series: {
-            regions: [{
-              values: worldCodes,
-              scale: { 'visited': visitedColor },
-              attribute: 'fill'
-            }]
-          }
-        });
-      } catch (e) { console.error("Erro mapa mundo:", e); }
+      const worldData = google.visualization.arrayToDataTable(worldRows);
+      const worldChart = new google.visualization.GeoChart(document.getElementById('world-map'));
+      worldChart.draw(worldData, {
+        backgroundColor: '#0f172a',
+        datalessRegionColor: '#334155',
+        defaultColor: '#10b981',
+        colorAxis: { values: [1, 2], colors: ['#3b82f6', '#10b981'] },
+        legend: 'none'
+      });
 
-      try {
-        new jsVectorMap({
-          selector: '#brazil-map',
-          map: 'brazil',
-          zoomOnScroll: true,
-          regionStyle: { initial: { fill: unvisitedColor, stroke: '#1e293b', strokeWidth: 0.8 } },
-          series: {
-            regions: [{
-              values: brazilCodes,
-              scale: {
-                'home': homeColor,
-                'visited': visitedColor
-              },
-              attribute: 'fill'
-            }]
-          }
-        });
-      } catch (e) { console.error("Erro mapa brasil:", e); }
+      // 2. MAPA DO BRASIL DETALHADO POR ESTADOS (26 estados + DF)
+      // Valor 1 = Azul (Residência RJ), Valor 2 = Verde (Visitado)
+      const brRows = [['State', 'Status', { role: 'tooltip', p: { html: false } }]];
+      brRows.push(['BR-RJ', 1, 'Rio de Janeiro (Residência)']);
 
-      try {
-        new jsVectorMap({
-          selector: '#usa-map',
-          map: 'us_aea_en',
-          zoomOnScroll: true,
-          regionStyle: { initial: { fill: unvisitedColor, stroke: '#1e293b', strokeWidth: 0.8 } },
-          series: {
-            regions: [{
-              values: usaCodes,
-              scale: { 'visited': visitedColor },
-              attribute: 'fill'
-            }]
+      const addedBrStates = new Set(['BR-RJ']);
+      filteredDb.forEach(item => {
+        if (item.region === 'Brasil') {
+          const sigla = item.code.toUpperCase().replace('BR-', '');
+          const fullCode = 'BR-' + sigla;
+          if (!addedBrStates.has(fullCode)) {
+            brRows.push([fullCode, 2, `${item.name} (${item.year || 'Visitado'})`]);
+            addedBrStates.add(fullCode);
           }
-        });
-      } catch (e) { console.error("Erro mapa EUA:", e); }
+        }
+      });
+
+      const brData = google.visualization.arrayToDataTable(brRows);
+      const brChart = new google.visualization.GeoChart(document.getElementById('brazil-map'));
+      brChart.draw(brData, {
+        region: 'BR',
+        resolution: 'provinces',
+        backgroundColor: '#0f172a',
+        datalessRegionColor: '#334155',
+        colorAxis: { values: [1, 2], colors: ['#3b82f6', '#10b981'] },
+        legend: 'none'
+      });
+
+      // 3. MAPA DOS ESTADOS UNIDOS DETALHADO POR ESTADOS (50 estados)
+      const usRows = [['State', 'Status', { role: 'tooltip', p: { html: false } }]];
+      const addedUsStates = new Set();
+
+      filteredDb.forEach(item => {
+        if (item.region === 'EUA') {
+          const sigla = item.code.toUpperCase().replace('US-', '');
+          const fullCode = 'US-' + sigla;
+          if (!addedUsStates.has(fullCode)) {
+            usRows.push([fullCode, 2, `${item.name} (${item.year || 'Visitado'})`]);
+            addedUsStates.add(fullCode);
+          }
+        }
+      });
+
+      const usData = google.visualization.arrayToDataTable(usRows);
+      const usChart = new google.visualization.GeoChart(document.getElementById('usa-map'));
+      usChart.draw(usData, {
+        region: 'US',
+        resolution: 'provinces',
+        backgroundColor: '#0f172a',
+        datalessRegionColor: '#334155',
+        defaultColor: '#10b981',
+        colorAxis: { values: [1, 2], colors: ['#3b82f6', '#10b981'] },
+        legend: 'none'
+      });
     }
+
+    window.addEventListener('resize', () => {
+      if (document.getElementById('tab-dashboard').classList.contains('active')) {
+        drawAllMaps();
+      }
+    });
 
     async function handleSaveDestination(e) {
       e.preventDefault();
@@ -646,7 +665,7 @@
       selectedYearFilter = year;
       document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
       document.getElementById('chip-' + year).classList.add('active');
-      initMaps();
+      drawAllMaps();
     }
 
     function renderFilterChips() {
