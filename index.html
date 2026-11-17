@@ -4,9 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#090d16">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/jpeg" href="/logo-app.jpg">
+  <link rel="apple-touch-icon" href="/logo-app.jpg">
   <title>Diário de Viagens & Passaporte</title>
   
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
@@ -16,7 +19,7 @@
   <style>
     :root {
       --bg-color: #090d16;
-      --card-bg: rgba(23, 32, 51, 0.85);
+      --card-bg: rgba(23, 32, 51, 0.88);
       --card-border: rgba(255, 255, 255, 0.08);
       --accent: #10b981;
       --accent-glow: rgba(16, 185, 129, 0.25);
@@ -58,6 +61,16 @@
       text-align: center;
     }
 
+    .app-logo-preview {
+      width: 76px;
+      height: 76px;
+      border-radius: 18px;
+      object-fit: cover;
+      border: 2px solid var(--accent);
+      margin-bottom: 14px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
     #app-screen { display: none; max-width: 1400px; margin: 0 auto; }
 
     /* HEADER & NAVEGAÇÃO */
@@ -76,11 +89,11 @@
     }
 
     .brand { display: flex; align-items: center; gap: 12px; }
-    .brand-icon {
-      width: 40px; height: 40px; border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent), #059669);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem; box-shadow: 0 4px 12px var(--accent-glow);
+    .brand-img {
+      width: 44px; height: 44px; border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid var(--accent);
+      box-shadow: 0 4px 12px var(--accent-glow);
     }
     h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
 
@@ -222,12 +235,12 @@
     .badge-title { font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: block; }
     .badge-desc { font-size: 0.7rem; color: var(--text-muted); margin-top: 3px; display: block; }
 
-    /* ABA PASSAPORTE CARIMBADO */
+    /* ABA PASSAPORTE CARIMBADO COM FOTOS */
     .passport-book {
       background: #131c2e;
       border: 2px solid #334155;
       border-radius: 20px;
-      padding: 30px;
+      padding: 28px;
       position: relative;
       box-shadow: inset 0 0 60px rgba(0,0,0,0.6), 0 15px 35px rgba(0,0,0,0.4);
     }
@@ -244,45 +257,61 @@
     .passport-id { font-family: 'Courier Prime', monospace; color: #eab308; letter-spacing: 2px; font-size: 0.9rem; }
     .stamps-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 24px;
     }
     .passport-stamp {
-      border: 3px double var(--stamp-color, #10b981);
-      color: var(--stamp-color, #10b981);
-      border-radius: 14px;
-      padding: 16px;
-      text-align: center;
+      border: 4px double var(--stamp-color, #10b981);
+      border-radius: 16px;
+      overflow: hidden;
       position: relative;
-      background: rgba(255, 255, 255, 0.015);
-      box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
-      transition: transform 0.2s;
+      height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 14px;
+      background-size: cover;
+      background-position: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+      transition: transform 0.25s ease;
+    }
+    .passport-stamp::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(9, 13, 22, 0.72) 0%, rgba(9, 13, 22, 0.25) 45%, rgba(9, 13, 22, 0.88) 100%);
+      z-index: 1;
     }
     .passport-stamp:hover { transform: scale(1.03) rotate(0deg) !important; }
+    .stamp-top, .stamp-bottom { position: relative; z-index: 2; }
     .stamp-type {
       font-family: 'Courier Prime', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 2px;
+      font-size: 0.68rem;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      border-bottom: 1px solid currentColor;
-      padding-bottom: 4px;
-      margin-bottom: 8px;
-      display: block;
+      color: #fff;
+      background: var(--stamp-color, #10b981);
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      font-weight: 700;
     }
-    .stamp-symbol { font-size: 2.3rem; margin: 6px 0; display: block; }
     .stamp-country {
       font-family: 'Courier Prime', monospace;
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       font-weight: 700;
       text-transform: uppercase;
+      color: #fff;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.9);
       display: block;
     }
     .stamp-meta {
       font-family: 'Courier Prime', monospace;
-      font-size: 0.72rem;
-      margin-top: 6px;
-      opacity: 0.85;
+      font-size: 0.75rem;
+      color: #e2e8f0;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
       display: block;
+      margin-top: 2px;
     }
 
     /* FILTROS & COUNTDOWN */
@@ -356,7 +385,7 @@
   <!-- TELA DE LOGIN EXCLUSIVO -->
   <div id="auth-screen">
     <div class="auth-card">
-      <div style="font-size: 2.5rem; margin-bottom: 10px;">🛂</div>
+      <img src="/logo-app.jpg" alt="Logo Diário" class="app-logo-preview" onerror="this.style.display='none'">
       <h1 style="margin-bottom: 8px; font-size: 1.5rem;">Acesso ao Passaporte</h1>
       <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 26px;">Entre com suas credenciais para sincronizar seus mapas e carimbos</p>
       
@@ -379,7 +408,7 @@
   <div id="app-screen">
     <header>
       <div class="brand">
-        <div class="brand-icon">🌍</div>
+        <img src="/logo-app.jpg" alt="Logo" class="brand-img" onerror="this.style.display='none'">
         <div>
           <h1>Diário de Viagens</h1>
           <span style="font-size: 0.75rem; color: var(--text-muted);">Exploração Global & Passaporte Digital</span>
@@ -474,7 +503,7 @@
         <div class="passport-header">
           <div>
             <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px;">República Federativa do Brasil • Documento de Exploração</span>
-            <h2 style="margin: 4px 0 0 0; font-size: 1.4rem;">🛂 Passaporte de Carimbos Oficiais</h2>
+            <h2 style="margin: 4px 0 0 0; font-size: 1.4rem;">🛂 Passaporte de Carimbos Fotográficos</h2>
           </div>
           <div style="text-align: right;">
             <span class="passport-id">TITULAR: GUILHERME F. CARVALHO</span><br>
@@ -605,7 +634,6 @@
   </div>
 
   <script>
-    // Registro do Service Worker para PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW:', err));
@@ -620,27 +648,27 @@
 
     const HOME_STATE_BR = "BR-RJ";
 
-    // Dicionário de símbolos culturais para o Passaporte Carimbado
-    const COUNTRY_SYMBOLS = {
-      'BR': { name: 'Brasil', symbol: '🗿', landmark: 'Cristo Redentor • RJ', color: '#10b981' },
-      'JP': { name: 'Japão', symbol: '🗻', landmark: 'Monte Fuji & Torii', color: '#f43f5e' },
-      'US': { name: 'Estados Unidos', symbol: '🗽', landmark: 'Estátua da Liberdade', color: '#3b82f6' },
-      'FR': { name: 'França', symbol: '🗼', landmark: 'Torre Eiffel • Paris', color: '#6366f1' },
-      'IT': { name: 'Itália', symbol: '🏛️', landmark: 'Coliseu • Roma', color: '#10b981' },
-      'GB': { name: 'Reino Unido', symbol: '🎡', landmark: 'Big Ben & London Eye', color: '#ec4899' },
-      'PT': { name: 'Portugal', symbol: '🚋', landmark: 'Torre de Belém & Elétrico', color: '#eab308' },
-      'ES': { name: 'Espanha', symbol: '💃', landmark: 'Sagrada Família', color: '#f97316' },
-      'DE': { name: 'Alemanha', symbol: '🏰', landmark: 'Portão de Brandemburgo', color: '#eab308' },
-      'RO': { name: 'Romênia', symbol: '🧛', landmark: 'Castelo de Bran • Transilvânia', color: '#a855f7' },
-      'GE': { name: 'Geórgia', symbol: '⛰️', landmark: 'Montanhas do Cáucaso', color: '#f43f5e' },
-      'AR': { name: 'Argentina', symbol: '🥩', landmark: 'Obelisco & Patagônia', color: '#38bdf8' },
-      'CL': { name: 'Chile', symbol: '🏔️', landmark: 'Cordilheira dos Andes', color: '#ef4444' },
-      'UY': { name: 'Uruguai', symbol: '🧉', landmark: 'Punta del Este', color: '#38bdf8' },
-      'CW': { name: 'Curaçao', symbol: '🏝️', landmark: 'Willemstad • Caribe', color: '#06b6d4' },
-      'EG': { name: 'Egito', symbol: '🏜️', landmark: 'Pirâmides de Gizé', color: '#eab308' },
-      'AU': { name: 'Austrália', symbol: '🦘', landmark: 'Sydney Opera House', color: '#f97316' },
-      'CA': { name: 'Canadá', symbol: '🍁', landmark: 'Cataratas do Niágara', color: '#ef4444' },
-      'MX': { name: 'México', symbol: '🌮', landmark: 'Chichén Itzá', color: '#10b981' }
+    // Fotos dos monumentos mais famosos por país (Brasil usa a sua foto local /cristo-br.jpg)
+    const COUNTRY_LANDMARKS = {
+      'BR': { name: 'Brasil', landmark: 'Cristo Redentor • Rio de Janeiro', photo: '/cristo-br.jpg', color: '#10b981' },
+      'JP': { name: 'Japão', landmark: 'Monte Fuji & Pagode Chureito', photo: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80', color: '#f43f5e' },
+      'US': { name: 'Estados Unidos', landmark: 'Estátua da Liberdade • NY', photo: 'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&w=600&q=80', color: '#3b82f6' },
+      'FR': { name: 'França', landmark: 'Torre Eiffel • Paris', photo: 'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?auto=format&fit=crop&w=600&q=80', color: '#6366f1' },
+      'IT': { name: 'Itália', landmark: 'Coliseu • Roma', photo: 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=600&q=80', color: '#10b981' },
+      'GB': { name: 'Reino Unido', landmark: 'Big Ben & Parlamento • Londres', photo: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=600&q=80', color: '#ec4899' },
+      'PT': { name: 'Portugal', landmark: 'Torre de Belém • Lisboa', photo: 'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=600&q=80', color: '#eab308' },
+      'ES': { name: 'Espanha', landmark: 'Sagrada Família • Barcelona', photo: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&w=600&q=80', color: '#f97316' },
+      'DE': { name: 'Alemanha', landmark: 'Portão de Brandemburgo • Berlim', photo: 'https://images.unsplash.com/photo-1560969184-10fe8719e047?auto=format&fit=crop&w=600&q=80', color: '#eab308' },
+      'RO': { name: 'Romênia', landmark: 'Castelo de Bran • Transilvânia', photo: 'https://images.unsplash.com/photo-1584646098378-0874589d76b1?auto=format&fit=crop&w=600&q=80', color: '#a855f7' },
+      'GE': { name: 'Geórgia', landmark: 'Igreja Gergeti • Kazbegi', photo: 'https://images.unsplash.com/photo-1565008576549-57569a49371d?auto=format&fit=crop&w=600&q=80', color: '#f43f5e' },
+      'AR': { name: 'Argentina', landmark: 'Obelisco • Buenos Aires', photo: 'https://images.unsplash.com/photo-1589909202802-8f4aadce1849?auto=format&fit=crop&w=600&q=80', color: '#38bdf8' },
+      'CL': { name: 'Chile', landmark: 'Torres del Paine • Patagônia', photo: 'https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=600&q=80', color: '#ef4444' },
+      'UY': { name: 'Uruguai', landmark: 'La Mano • Punta del Este', photo: 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=600&q=80', color: '#38bdf8' },
+      'CW': { name: 'Curaçao', landmark: 'Handelskade • Willemstad', photo: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80', color: '#06b6d4' },
+      'EG': { name: 'Egito', landmark: 'Pirâmides de Gizé • Cairo', photo: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=600&q=80', color: '#eab308' },
+      'AU': { name: 'Austrália', landmark: 'Sydney Opera House', photo: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=600&q=80', color: '#f97316' },
+      'CA': { name: 'Canadá', landmark: 'Cataratas do Niágara & Banff', photo: 'https://images.unsplash.com/photo-1503614472-8c93d56e92ce?auto=format&fit=crop&w=600&q=80', color: '#ef4444' },
+      'MX': { name: 'México', landmark: 'Chichén Itzá • Yucatán', photo: 'https://images.unsplash.com/photo-1518638150340-f706e86654de?auto=format&fit=crop&w=600&q=80', color: '#10b981' }
     };
 
     let userAuth = JSON.parse(localStorage.getItem('app_user_auth')) || {
@@ -945,12 +973,11 @@
       downloadAnchor.remove();
     }
 
-    // RENDERIZAR CONQUISTAS & BADGES
     function renderBadges(uniqueBrCount, uniqueCountriesCount) {
       const hasRoteiro = db.some(d => d.roteiroLink && d.roteiroLink.trim() !== '');
       const hasPhotos = db.some(d => d.link && d.link.trim() !== '' && d.link !== '#');
       const continents = new Set(db.map(d => d.region).filter(r => r !== 'Brasil' && r !== 'EUA'));
-      continents.add('Americas'); // Brasil
+      continents.add('Americas');
 
       const badges = [
         { icon: '🏠', title: 'Base Carioca', desc: 'Residência no RJ ativa', unlocked: true },
@@ -973,41 +1000,39 @@
       `).join('');
     }
 
-    // RENDERIZAR PASSAPORTE CARIMBADO
     function renderPassport() {
       const stampsContainer = document.getElementById('passportStampsContainer');
       const stampedCountries = new Map();
 
-      // Carimbo oficial do Brasil já garantido
+      // Carimbo oficial do Brasil com a foto do Cristo Redentor (/cristo-br.jpg)
       stampedCountries.set('BR', {
         code: 'BR',
-        name: 'Brasil',
-        symbol: COUNTRY_SYMBOLS['BR'].symbol,
-        landmark: COUNTRY_SYMBOLS['BR'].landmark,
-        color: COUNTRY_SYMBOLS['BR'].color,
+        name: COUNTRY_LANDMARKS['BR'].name,
+        landmark: COUNTRY_LANDMARKS['BR'].landmark,
+        photo: COUNTRY_LANDMARKS['BR'].photo,
+        color: COUNTRY_LANDMARKS['BR'].color,
         year: 'BASE PERMANENTE',
         type: 'ORIGEM • RESIDÊNCIA'
       });
 
-      // Adiciona carimbos para cada país visitado
       db.forEach(item => {
         let countryCode = item.code.toUpperCase();
         if (item.region === 'EUA') countryCode = 'US';
         if (item.region === 'Brasil') countryCode = 'BR';
 
         if (!stampedCountries.has(countryCode)) {
-          const info = COUNTRY_SYMBOLS[countryCode] || {
+          const info = COUNTRY_LANDMARKS[countryCode] || {
             name: item.name,
-            symbol: '🌐',
-            landmark: item.region || 'Território Internacional',
+            landmark: item.region || 'Destino Internacional',
+            photo: '/logo-app.jpg',
             color: '#10b981'
           };
 
           stampedCountries.set(countryCode, {
             code: countryCode,
             name: info.name,
-            symbol: info.symbol,
             landmark: info.landmark,
+            photo: info.photo,
             color: info.color,
             year: item.year || 'CARIMBADO',
             type: 'ENTRADA AUTORIZADA'
@@ -1015,7 +1040,7 @@
         }
       });
 
-      const rotations = [-3, 2, -2, 3, -1, 2];
+      const rotations = [-2, 1.5, -1.5, 2, -1, 1.5];
       let index = 0;
       let html = '';
 
@@ -1023,12 +1048,15 @@
         const rot = rotations[index % rotations.length];
         index++;
         html += `
-          <div class="passport-stamp" style="--stamp-color: ${stamp.color}; transform: rotate(${rot}deg);">
-            <span class="stamp-type">${stamp.type}</span>
-            <span class="stamp-symbol">${stamp.symbol}</span>
-            <span class="stamp-country">${stamp.name} (${stamp.code})</span>
-            <span class="stamp-meta">${stamp.landmark}</span>
-            <span class="stamp-meta" style="font-weight:bold; margin-top:4px;">★ ${stamp.year} ★</span>
+          <div class="passport-stamp" style="--stamp-color: ${stamp.color}; background-image: url('${stamp.photo}'); transform: rotate(${rot}deg);">
+            <div class="stamp-top">
+              <span class="stamp-type">${stamp.type}</span>
+            </div>
+            <div class="stamp-bottom">
+              <span class="stamp-country">${stamp.name} (${stamp.code})</span>
+              <span class="stamp-meta">${stamp.landmark}</span>
+              <span class="stamp-meta" style="color: #fff; font-weight: bold; margin-top: 4px;">★ ${stamp.year} ★</span>
+            </div>
           </div>
         `;
       });
