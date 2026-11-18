@@ -212,7 +212,7 @@
     /* CONQUISTAS & BADGES */
     .badges-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
       gap: 12px;
     }
     .badge-item {
@@ -235,7 +235,7 @@
     .badge-title { font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: block; }
     .badge-desc { font-size: 0.7rem; color: var(--text-muted); margin-top: 3px; display: block; }
 
-    /* ABA PASSAPORTE CARIMBADO COM FOTOS */
+    /* ABA PASSAPORTE CARIMBADO COM FOTOS E SUB-ABAS */
     .passport-book {
       background: #131c2e;
       border: 2px solid #334155;
@@ -247,7 +247,7 @@
     .passport-header {
       border-bottom: 2px dashed #334155;
       padding-bottom: 18px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -255,6 +255,30 @@
       gap: 12px;
     }
     .passport-id { font-family: 'Courier Prime', monospace; color: #eab308; letter-spacing: 2px; font-size: 0.9rem; }
+    
+    .passport-subtabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .subtab-btn {
+      background: #0b1120;
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .subtab-btn.active {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
     .stamps-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -385,7 +409,7 @@
   <!-- TELA DE LOGIN EXCLUSIVO -->
   <div id="auth-screen">
     <div class="auth-card">
-      <img src="/logo-app.jpg" alt="Logo Diário" class="app-logo-preview" onerror="this.style.display='none'">
+      <img src="/logo-app.jpg" alt="Logo Diário" class="app-logo-preview" onerror="this.src='https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=300&q=80'">
       <h1 style="margin-bottom: 8px; font-size: 1.5rem;">Acesso ao Passaporte</h1>
       <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 26px;">Entre com suas credenciais para sincronizar seus mapas e carimbos</p>
       
@@ -408,7 +432,7 @@
   <div id="app-screen">
     <header>
       <div class="brand">
-        <img src="/logo-app.jpg" alt="Logo" class="brand-img" onerror="this.style.display='none'">
+        <img src="/logo-app.jpg" alt="Logo" class="brand-img" onerror="this.src='https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=300&q=80'">
         <div>
           <h1>Diário de Viagens</h1>
           <span style="font-size: 0.75rem; color: var(--text-muted);">Exploração Global & Passaporte Digital</span>
@@ -503,12 +527,18 @@
         <div class="passport-header">
           <div>
             <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px;">República Federativa do Brasil • Documento de Exploração</span>
-            <h2 style="margin: 4px 0 0 0; font-size: 1.4rem;">🛂 Passaporte de Carimbos Fotográficos</h2>
+            <h2 style="margin: 4px 0 0 0; font-size: 1.4rem;">🛂 Passaporte de Carimbos Oficiais</h2>
           </div>
           <div style="text-align: right;">
             <span class="passport-id">TITULAR: GUILHERME F. CARVALHO</span><br>
             <span style="font-size: 0.78rem; color: var(--text-muted);" id="passportStampCount">1 Carimbo Oficial</span>
           </div>
+        </div>
+
+        <!-- Sub-abas: Países vs Estados do Brasil -->
+        <div class="passport-subtabs">
+          <button id="subtab-countries" class="subtab-btn active" onclick="switchPassportView('countries')">🌍 Países (Geral)</button>
+          <button id="subtab-brazil" class="subtab-btn" onclick="switchPassportView('brazil')">🇧🇷 Estados do Brasil</button>
         </div>
 
         <div class="stamps-grid" id="passportStampsContainer"></div>
@@ -648,9 +678,15 @@
 
     const HOME_STATE_BR = "BR-RJ";
 
-    // Fotos dos monumentos mais famosos por país (Brasil usa a sua foto local /cristo-br.jpg)
+    // Fotos dos monumentos por país (Brasil usa /cristo-br.jpg com fallback automático)
     const COUNTRY_LANDMARKS = {
-      'BR': { name: 'Brasil', landmark: 'Cristo Redentor • Rio de Janeiro', photo: '/cristo-br.jpg', color: '#10b981' },
+      'BR': { 
+        name: 'Brasil', 
+        landmark: 'Cristo Redentor • Rio de Janeiro', 
+        photo: '/cristo-br.jpg', 
+        fallback: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=600&q=80',
+        color: '#10b981' 
+      },
       'JP': { name: 'Japão', landmark: 'Monte Fuji & Pagode Chureito', photo: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80', color: '#f43f5e' },
       'US': { name: 'Estados Unidos', landmark: 'Estátua da Liberdade • NY', photo: 'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&w=600&q=80', color: '#3b82f6' },
       'FR': { name: 'França', landmark: 'Torre Eiffel • Paris', photo: 'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?auto=format&fit=crop&w=600&q=80', color: '#6366f1' },
@@ -671,6 +707,21 @@
       'MX': { name: 'México', landmark: 'Chichén Itzá • Yucatán', photo: 'https://images.unsplash.com/photo-1518638150340-f706e86654de?auto=format&fit=crop&w=600&q=80', color: '#10b981' }
     };
 
+    // Fotos dos estados brasileiros para a sub-aba dedicada do Brasil
+    const BRAZIL_STATE_LANDMARKS = {
+      'BR-RJ': { name: 'Rio de Janeiro', landmark: 'Cristo Redentor & Pão de Açúcar', photo: '/cristo-br.jpg', fallback: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=600&q=80', color: '#3b82f6' },
+      'BR-SP': { name: 'São Paulo', landmark: 'Ponte Estaiada & Av. Paulista', photo: 'https://images.unsplash.com/photo-1543059080-f9b1272213d5?auto=format&fit=crop&w=600&q=80', color: '#10b981' },
+      'BR-MG': { name: 'Minas Gerais', landmark: 'Ouro Preto & Serra da Canastra', photo: 'https://images.unsplash.com/photo-1598439210625-5067c578f3f6?auto=format&fit=crop&w=600&q=80', color: '#10b981' },
+      'BR-BA': { name: 'Bahia', landmark: 'Pelourinho & Elevador Lacerda', photo: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=600&q=80', color: '#10b981' },
+      'BR-PR': { name: 'Paraná', landmark: 'Cataratas do Iguaçu & Jardim Botânico', photo: 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&w=600&q=80', color: '#10b981' },
+      'BR-SC': { name: 'Santa Catarina', landmark: 'Ponte Hercílio Luz & Floripa', photo: 'https://images.unsplash.com/photo-1597003940584-f7221d1601b9?auto=format&fit=crop&w=600&q=80', color: '#10b981' },
+      'BR-RS': { name: 'Rio Grande do Sul', landmark: 'Serra Gaúcha & Gramado', photo: 'https://images.unsplash.com/photo-1589802829985-817e51171b92?auto=format&fit=crop&w=600&q=80', color: '#10b981' },
+      'BR-DF': { name: 'Distrito Federal', landmark: 'Catedral & Congresso Nacional', photo: 'https://images.unsplash.com/photo-1599423300746-b62533397364?auto=format&fit=crop&w=600&q=80', color: '#10b981' },
+      'BR-PE': { name: 'Pernambuco', landmark: 'Recife Antigo & Porto de Galinhas', photo: 'https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?auto=format&fit=crop&w=600&q=80', color: '#10b981' },
+      'BR-CE': { name: 'Ceará', landmark: 'Jericoacoara & Praia do Futuro', photo: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80', color: '#10b981' },
+      'BR-AM': { name: 'Amazonas', landmark: 'Teatro Amazonas & Floresta Amazônica', photo: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80', color: '#10b981' }
+    };
+
     let userAuth = JSON.parse(localStorage.getItem('app_user_auth')) || {
       user: PADRAO_USUARIO,
       pass: PADRAO_SENHA
@@ -678,6 +729,7 @@
 
     let db = [];
     let selectedYearFilter = 'ALL';
+    let passportViewMode = 'countries'; // 'countries' ou 'brazil'
     let chartsLoaded = false;
     let isLoggedIn = sessionStorage.getItem('app_is_logged_in') === 'true';
 
@@ -786,6 +838,13 @@
       if (tab === 'dashboard') {
         setTimeout(drawAllMaps, 100);
       }
+    }
+
+    function switchPassportView(mode) {
+      passportViewMode = mode;
+      document.getElementById('subtab-countries').classList.toggle('active', mode === 'countries');
+      document.getElementById('subtab-brazil').classList.toggle('active', mode === 'brazil');
+      renderPassport();
     }
 
     function showApp() {
@@ -973,21 +1032,60 @@
       downloadAnchor.remove();
     }
 
+    // CONQUISTAS ATUALIZADAS CONFORME SUAS REGRAS
     function renderBadges(uniqueBrCount, uniqueCountriesCount) {
       const hasRoteiro = db.some(d => d.roteiroLink && d.roteiroLink.trim() !== '');
       const hasPhotos = db.some(d => d.link && d.link.trim() !== '' && d.link !== '#');
-      const continents = new Set(db.map(d => d.region).filter(r => r !== 'Brasil' && r !== 'EUA'));
-      continents.add('Americas');
+
+      // Continentes (Américas unificadas como 1 só: Brasil, EUA e Americas contam como 'Americas')
+      const continents = new Set(['Americas']); // Brasil já está nas Américas
+      db.forEach(d => {
+        if (d.region === 'Europa') continents.add('Europa');
+        if (d.region === 'Asia') continents.add('Asia');
+        if (d.region === 'Oceania') continents.add('Oceania');
+        if (d.region === 'Africa') continents.add('Africa');
+      });
+
+      const brPercent = (uniqueBrCount / 27) * 100;
+      const worldPercent = (uniqueCountriesCount / 195) * 100;
 
       const badges = [
-        { icon: '🏠', title: 'Base Carioca', desc: 'Residência no RJ ativa', unlocked: true },
-        { icon: '🇧🇷', title: 'Explorador Nacional', desc: '3+ estados do Brasil', unlocked: uniqueBrCount >= 3 },
-        { icon: '🛫', title: 'Passaporte Carimbado', desc: '1º país internacional', unlocked: uniqueCountriesCount >= 2 },
-        { icon: '🌐', title: 'Desbravador Global', desc: '5+ países visitados', unlocked: uniqueCountriesCount >= 5 },
-        { icon: '🧭', title: 'Intercontinental', desc: '2+ continentes explorados', unlocked: continents.size >= 2 },
-        { icon: '📋', title: 'Estrategista', desc: 'Roteiro PDF anexado', unlocked: hasRoteiro },
-        { icon: '📸', title: 'Memórias Vivas', desc: 'Álbum de fotos integrado', unlocked: hasPhotos },
-        { icon: '🧲', title: 'Colecionador', desc: '5+ destinos registrados', unlocked: db.length >= 5 }
+        { 
+          icon: '🏠', 
+          title: 'Base Carioca', 
+          desc: 'Residência no RJ ativa', 
+          unlocked: true 
+        },
+        { 
+          icon: '🇧🇷', 
+          title: 'Explorador Nacional', 
+          desc: `>50% dos estados BR (${uniqueBrCount}/27)`, 
+          unlocked: brPercent > 50 // Exige 14+ estados
+        },
+        { 
+          icon: '🌐', 
+          title: 'Desbravador Global', 
+          desc: `25% dos países (${uniqueCountriesCount}/195)`, 
+          unlocked: worldPercent >= 25 // Exige 49+ países
+        },
+        { 
+          icon: '🌍', 
+          title: 'Todos os Continentes', 
+          desc: `5 continentes (${continents.size}/5)`, 
+          unlocked: continents.size >= 5 // Américas (1), Europa, Ásia, Oceania, África
+        },
+        { 
+          icon: '📋', 
+          title: 'Estrategista', 
+          desc: 'Roteiro PDF anexado', 
+          unlocked: hasRoteiro 
+        },
+        { 
+          icon: '📸', 
+          title: 'Memórias Vivas', 
+          desc: 'Álbum de fotos integrado', 
+          unlocked: hasPhotos 
+        }
       ];
 
       const container = document.getElementById('badgesContainer');
@@ -1000,69 +1098,140 @@
       `).join('');
     }
 
+    // PASSAPORTE COM SUB-ABA GERAL (PAÍSES) E SUB-ABA ESTADOS DO BRASIL
     function renderPassport() {
       const stampsContainer = document.getElementById('passportStampsContainer');
-      const stampedCountries = new Map();
-
-      // Carimbo oficial do Brasil com a foto do Cristo Redentor (/cristo-br.jpg)
-      stampedCountries.set('BR', {
-        code: 'BR',
-        name: COUNTRY_LANDMARKS['BR'].name,
-        landmark: COUNTRY_LANDMARKS['BR'].landmark,
-        photo: COUNTRY_LANDMARKS['BR'].photo,
-        color: COUNTRY_LANDMARKS['BR'].color,
-        year: 'BASE PERMANENTE',
-        type: 'ORIGEM • RESIDÊNCIA'
-      });
-
-      db.forEach(item => {
-        let countryCode = item.code.toUpperCase();
-        if (item.region === 'EUA') countryCode = 'US';
-        if (item.region === 'Brasil') countryCode = 'BR';
-
-        if (!stampedCountries.has(countryCode)) {
-          const info = COUNTRY_LANDMARKS[countryCode] || {
-            name: item.name,
-            landmark: item.region || 'Destino Internacional',
-            photo: '/logo-app.jpg',
-            color: '#10b981'
-          };
-
-          stampedCountries.set(countryCode, {
-            code: countryCode,
-            name: info.name,
-            landmark: info.landmark,
-            photo: info.photo,
-            color: info.color,
-            year: item.year || 'CARIMBADO',
-            type: 'ENTRADA AUTORIZADA'
-          });
-        }
-      });
-
       const rotations = [-2, 1.5, -1.5, 2, -1, 1.5];
-      let index = 0;
       let html = '';
+      let index = 0;
 
-      stampedCountries.forEach(stamp => {
-        const rot = rotations[index % rotations.length];
-        index++;
-        html += `
-          <div class="passport-stamp" style="--stamp-color: ${stamp.color}; background-image: url('${stamp.photo}'); transform: rotate(${rot}deg);">
-            <div class="stamp-top">
-              <span class="stamp-type">${stamp.type}</span>
+      if (passportViewMode === 'countries') {
+        const stampedCountries = new Map();
+
+        // Carimbo geral do Brasil com a foto /cristo-br.jpg (e fallback caso ainda não tenha subido)
+        stampedCountries.set('BR', {
+          code: 'BR',
+          name: COUNTRY_LANDMARKS['BR'].name,
+          landmark: COUNTRY_LANDMARKS['BR'].landmark,
+          photo: COUNTRY_LANDMARKS['BR'].photo,
+          fallback: COUNTRY_LANDMARKS['BR'].fallback,
+          color: COUNTRY_LANDMARKS['BR'].color,
+          year: 'BASE PERMANENTE',
+          type: 'PAÍS DE ORIGEM'
+        });
+
+        db.forEach(item => {
+          let countryCode = item.code.toUpperCase();
+          if (item.region === 'EUA') countryCode = 'US';
+          if (item.region === 'Brasil') countryCode = 'BR';
+
+          if (!stampedCountries.has(countryCode)) {
+            const info = COUNTRY_LANDMARKS[countryCode] || {
+              name: item.name,
+              landmark: item.region || 'Destino Internacional',
+              photo: '/logo-app.jpg',
+              fallback: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=600&q=80',
+              color: '#10b981'
+            };
+
+            stampedCountries.set(countryCode, {
+              code: countryCode,
+              name: info.name,
+              landmark: info.landmark,
+              photo: info.photo,
+              fallback: info.fallback || info.photo,
+              color: info.color,
+              year: item.year || 'CARIMBADO',
+              type: 'ENTRADA INTERNACIONAL'
+            });
+          }
+        });
+
+        stampedCountries.forEach(stamp => {
+          const rot = rotations[index % rotations.length];
+          index++;
+          const bgStyle = `background-image: url('${stamp.photo}'), url('${stamp.fallback}');`;
+          html += `
+            <div class="passport-stamp" style="--stamp-color: ${stamp.color}; ${bgStyle} transform: rotate(${rot}deg);">
+              <div class="stamp-top">
+                <span class="stamp-type">${stamp.type}</span>
+              </div>
+              <div class="stamp-bottom">
+                <span class="stamp-country">${stamp.name} (${stamp.code})</span>
+                <span class="stamp-meta">${stamp.landmark}</span>
+                <span class="stamp-meta" style="color: #fff; font-weight: bold; margin-top: 4px;">★ ${stamp.year} ★</span>
+              </div>
             </div>
-            <div class="stamp-bottom">
-              <span class="stamp-country">${stamp.name} (${stamp.code})</span>
-              <span class="stamp-meta">${stamp.landmark}</span>
-              <span class="stamp-meta" style="color: #fff; font-weight: bold; margin-top: 4px;">★ ${stamp.year} ★</span>
+          `;
+        });
+
+        document.getElementById('passportStampCount').innerText = `${stampedCountries.size} País(es) Carimbado(s)`;
+
+      } else {
+        // MODO ESTADOS DO BRASIL
+        const stampedBrStates = new Map();
+
+        // Rio de Janeiro sempre presente como base
+        stampedBrStates.set('BR-RJ', {
+          code: 'BR-RJ',
+          name: BRAZIL_STATE_LANDMARKS['BR-RJ'].name,
+          landmark: BRAZIL_STATE_LANDMARKS['BR-RJ'].landmark,
+          photo: BRAZIL_STATE_LANDMARKS['BR-RJ'].photo,
+          fallback: BRAZIL_STATE_LANDMARKS['BR-RJ'].fallback,
+          color: '#3b82f6',
+          year: 'RESIDÊNCIA',
+          type: 'ESTADO BASE'
+        });
+
+        db.forEach(item => {
+          if (item.region === 'Brasil') {
+            const sigla = item.code.toUpperCase().replace('BR-', '');
+            const fullCode = 'BR-' + sigla;
+            if (!stampedBrStates.has(fullCode)) {
+              const info = BRAZIL_STATE_LANDMARKS[fullCode] || {
+                name: item.name,
+                landmark: 'Brasil • Estado Visitado',
+                photo: '/cristo-br.jpg',
+                fallback: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=600&q=80',
+                color: '#10b981'
+              };
+
+              stampedBrStates.set(fullCode, {
+                code: fullCode,
+                name: info.name,
+                landmark: info.landmark,
+                photo: info.photo,
+                fallback: info.fallback || info.photo,
+                color: '#10b981',
+                year: item.year || 'VISITADO',
+                type: 'ESTADO VISITADO'
+              });
+            }
+          }
+        });
+
+        stampedBrStates.forEach(stamp => {
+          const rot = rotations[index % rotations.length];
+          index++;
+          const bgStyle = `background-image: url('${stamp.photo}'), url('${stamp.fallback}');`;
+          html += `
+            <div class="passport-stamp" style="--stamp-color: ${stamp.color}; ${bgStyle} transform: rotate(${rot}deg);">
+              <div class="stamp-top">
+                <span class="stamp-type">${stamp.type}</span>
+              </div>
+              <div class="stamp-bottom">
+                <span class="stamp-country">${stamp.name} (${stamp.code.replace('BR-', '')})</span>
+                <span class="stamp-meta">${stamp.landmark}</span>
+                <span class="stamp-meta" style="color: #fff; font-weight: bold; margin-top: 4px;">★ ${stamp.year} ★</span>
+              </div>
             </div>
-          </div>
-        `;
-      });
+          `;
+        });
+
+        document.getElementById('passportStampCount').innerText = `${stampedBrStates.size} de 27 Estados Carimbados`;
+      }
 
       stampsContainer.innerHTML = html;
-      document.getElementById('passportStampCount').innerText = `${stampedCountries.size} Carimbo(s) Oficial(is)`;
     }
 
     function render() {
