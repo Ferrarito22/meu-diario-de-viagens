@@ -212,14 +212,14 @@
     /* CONQUISTAS & BADGES */
     .badges-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 12px;
     }
     .badge-item {
       background: #0b1120;
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 14px 10px;
+      padding: 16px 12px;
       text-align: center;
       opacity: 0.4;
       filter: grayscale(100%);
@@ -231,9 +231,9 @@
       border-color: rgba(16, 185, 129, 0.4);
       background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, #0b1120 100%);
     }
-    .badge-icon { font-size: 1.8rem; margin-bottom: 6px; display: block; }
-    .badge-title { font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: block; }
-    .badge-desc { font-size: 0.7rem; color: var(--text-muted); margin-top: 3px; display: block; }
+    .badge-icon { font-size: 1.9rem; margin-bottom: 6px; display: block; }
+    .badge-title { font-size: 0.85rem; font-weight: 700; color: var(--text-main); display: block; }
+    .badge-desc { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; display: block; }
 
     /* ABA PASSAPORTE CARIMBADO COM FOTOS E SUB-ABAS */
     .passport-book {
@@ -474,7 +474,7 @@
             </div>
           </div>
 
-          <!-- Conquistas & Badges -->
+          <!-- Conquistas & Medalhas -->
           <div class="card">
             <h2>🏆 Conquistas & Medalhas</h2>
             <div class="badges-grid" id="badgesContainer"></div>
@@ -678,7 +678,7 @@
 
     const HOME_STATE_BR = "BR-RJ";
 
-    // Fotos dos monumentos por país (Brasil usa /cristo-br.jpg com fallback automático)
+    // Fotos dos monumentos por país
     const COUNTRY_LANDMARKS = {
       'BR': { 
         name: 'Brasil', 
@@ -729,7 +729,7 @@
 
     let db = [];
     let selectedYearFilter = 'ALL';
-    let passportViewMode = 'countries'; // 'countries' ou 'brazil'
+    let passportViewMode = 'countries';
     let chartsLoaded = false;
     let isLoggedIn = sessionStorage.getItem('app_is_logged_in') === 'true';
 
@@ -1032,13 +1032,9 @@
       downloadAnchor.remove();
     }
 
-    // CONQUISTAS ATUALIZADAS CONFORME SUAS REGRAS
+    // CONQUISTAS GEOGRÁFICAS
     function renderBadges(uniqueBrCount, uniqueCountriesCount) {
-      const hasRoteiro = db.some(d => d.roteiroLink && d.roteiroLink.trim() !== '');
-      const hasPhotos = db.some(d => d.link && d.link.trim() !== '' && d.link !== '#');
-
-      // Continentes (Américas unificadas como 1 só: Brasil, EUA e Americas contam como 'Americas')
-      const continents = new Set(['Americas']); // Brasil já está nas Américas
+      const continents = new Set(['Americas']);
       db.forEach(d => {
         if (d.region === 'Europa') continents.add('Europa');
         if (d.region === 'Asia') continents.add('Asia');
@@ -1060,31 +1056,19 @@
           icon: '🇧🇷', 
           title: 'Explorador Nacional', 
           desc: `>50% dos estados BR (${uniqueBrCount}/27)`, 
-          unlocked: brPercent > 50 // Exige 14+ estados
+          unlocked: brPercent > 50 
         },
         { 
           icon: '🌐', 
           title: 'Desbravador Global', 
           desc: `25% dos países (${uniqueCountriesCount}/195)`, 
-          unlocked: worldPercent >= 25 // Exige 49+ países
+          unlocked: worldPercent >= 25 
         },
         { 
           icon: '🌍', 
           title: 'Todos os Continentes', 
           desc: `5 continentes (${continents.size}/5)`, 
-          unlocked: continents.size >= 5 // Américas (1), Europa, Ásia, Oceania, África
-        },
-        { 
-          icon: '📋', 
-          title: 'Estrategista', 
-          desc: 'Roteiro PDF anexado', 
-          unlocked: hasRoteiro 
-        },
-        { 
-          icon: '📸', 
-          title: 'Memórias Vivas', 
-          desc: 'Álbum de fotos integrado', 
-          unlocked: hasPhotos 
+          unlocked: continents.size >= 5 
         }
       ];
 
@@ -1108,7 +1092,6 @@
       if (passportViewMode === 'countries') {
         const stampedCountries = new Map();
 
-        // Carimbo geral do Brasil com a foto /cristo-br.jpg (e fallback caso ainda não tenha subido)
         stampedCountries.set('BR', {
           code: 'BR',
           name: COUNTRY_LANDMARKS['BR'].name,
@@ -1168,10 +1151,8 @@
         document.getElementById('passportStampCount').innerText = `${stampedCountries.size} País(es) Carimbado(s)`;
 
       } else {
-        // MODO ESTADOS DO BRASIL
         const stampedBrStates = new Map();
 
-        // Rio de Janeiro sempre presente como base
         stampedBrStates.set('BR-RJ', {
           code: 'BR-RJ',
           name: BRAZIL_STATE_LANDMARKS['BR-RJ'].name,
