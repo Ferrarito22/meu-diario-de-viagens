@@ -151,12 +151,6 @@
       align-items: center;
     }
 
-    /* Oculta os países vizinhos ao fundo do mapa do Brasil */
-    #brazil-map svg > g > g:nth-child(2) > g:first-child path {
-      fill: transparent !important;
-      stroke: transparent !important;
-    }
-
     .map-legend {
       display: flex;
       gap: 18px;
@@ -900,7 +894,7 @@
         legend: 'none'
       });
 
-      // 2. MAPA DO BRASIL ISOLADO (SEM PAÍSES VIZINHOS)
+      // 2. MAPA DO BRASIL POR ESTADOS
       const brRows = [['State', 'Status', { role: 'tooltip', p: { html: false } }]];
       brRows.push(['BR-RJ', 1, 'Rio de Janeiro (Residência)']);
 
@@ -916,25 +910,10 @@
         }
       });
 
-      const brContainer = document.getElementById('brazil-map');
       const brData = google.visualization.arrayToDataTable(brRows);
-      const brChart = new google.visualization.GeoChart(brContainer);
-
-      google.visualization.events.addListener(brChart, 'ready', () => {
-        const svg = brContainer.querySelector('svg');
-        if (svg) {
-          const groups = svg.querySelectorAll('g');
-          groups.forEach(g => {
-            if (g.children.length > 5 && g.children.length < 25) {
-              g.style.display = 'none';
-            }
-          });
-        }
-      });
-
+      const brChart = new google.visualization.GeoChart(document.getElementById('brazil-map'));
       brChart.draw(brData, {
         region: 'BR',
-        domain: 'BR',
         resolution: 'provinces',
         backgroundColor: '#0b1120',
         datalessRegionColor: '#263248',
