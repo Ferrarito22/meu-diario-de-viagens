@@ -474,7 +474,7 @@
             </div>
           </div>
 
-          <!-- Conquistas & Medalhas -->
+          <!-- Conquistas & Badges -->
           <div class="card">
             <h2>🏆 Conquistas & Medalhas</h2>
             <div class="badges-grid" id="badgesContainer"></div>
@@ -894,7 +894,7 @@
         legend: 'none'
       });
 
-      // 2. MAPA DO BRASIL POR ESTADOS
+      // 2. MAPA DO BRASIL ISOLADO (SEM PAÍSES VIZINHOS)
       const brRows = [['State', 'Status', { role: 'tooltip', p: { html: false } }]];
       brRows.push(['BR-RJ', 1, 'Rio de Janeiro (Residência)']);
 
@@ -914,6 +914,7 @@
       const brChart = new google.visualization.GeoChart(document.getElementById('brazil-map'));
       brChart.draw(brData, {
         region: 'BR',
+        domain: 'BR',
         resolution: 'provinces',
         backgroundColor: '#0b1120',
         datalessRegionColor: '#263248',
