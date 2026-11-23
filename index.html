@@ -164,7 +164,7 @@
     .legend-dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
 
     /* =====================================================================
-       ABA GALÁXIA 3D - RÉPLICA EXATA DO VÍDEO (@idontvibecode)
+       ABA GALÁXIA 3D - GARGANTUA + FOGUETES FUTUROS + SINGULARIDADE
        ===================================================================== */
     .galaxy-wrapper {
       position: relative;
@@ -185,7 +185,6 @@
     }
     #galaxy-canvas-container:active { cursor: grabbing; }
 
-    /* Barra Superior Minimalista igual ao vídeo (00:01 - 00:18) */
     .sb-top-bar {
       position: absolute;
       top: 18px;
@@ -232,12 +231,12 @@
       color: #fff;
     }
 
-    /* Overlay Typewriter + COMING UP Esquerdo (00:01 - 00:05 do vídeo) */
+    /* Briefing Typewriter + PRÓXIMAS ÓRBITAS */
     .sb-briefing-overlay {
       position: absolute;
       top: 74px;
       left: 28px;
-      width: 320px;
+      width: 335px;
       max-width: calc(100% - 56px);
       pointer-events: none;
       z-index: 15;
@@ -278,15 +277,16 @@
     }
     .sb-coming-row {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       font-size: 0.74rem;
       color: #94a3b8;
       margin-bottom: 5px;
+      align-items: center;
     }
     .sb-coming-date {
-      color: #64748b;
+      color: #38bdf8;
       font-family: 'Courier Prime', monospace;
-      min-width: 52px;
+      min-width: 78px;
     }
     .sb-briefing-footer {
       margin-top: 14px;
@@ -357,8 +357,34 @@
       font-size: 0.73rem;
       color: #e2e8f0;
     }
+    .cosmic-label.rocket-probe .lbl-title {
+      color: #38bdf8;
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-shadow: 0 0 14px rgba(56, 189, 248, 0.95), 0 2px 8px #000;
+    }
+    .cosmic-label.rocket-probe .lbl-sub {
+      color: #bae6fd;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.65rem;
+      background: rgba(14, 165, 233, 0.16);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 2px 7px;
+      border-radius: 999px;
+      margin-top: 3px;
+      display: inline-block;
+    }
+    .cosmic-label.singularity-transit .lbl-title {
+      color: #fbbf24;
+      font-weight: 700;
+      text-shadow: 0 0 14px rgba(251, 191, 36, 0.95), 0 2px 8px #000;
+    }
+    .cosmic-label.singularity-transit .lbl-sub {
+      color: #fde68a;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.64rem;
+    }
 
-    /* Tooltip Hover Flutuante (00:09 - 00:15 do vídeo) */
     .sb-hover-tooltip {
       position: absolute;
       pointer-events: none;
@@ -377,7 +403,6 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.85);
     }
 
-    /* Dock Inferior Flutuante (00:01 - 00:24 do vídeo) */
     .sb-bottom-dock {
       position: absolute;
       bottom: 18px;
@@ -413,7 +438,7 @@
       color: #fff;
     }
 
-    /* Painel Lateral Direito IDÊNTICO ao vídeo (00:16 - 00:17) */
+    /* Painel Lateral Direito */
     .galaxy-drawer {
       position: absolute;
       top: 14px;
@@ -492,9 +517,7 @@
       color: #cbd5e1;
     }
 
-    /* =====================================================================
-       MODAL HOME / ANALYTICS IDÊNTICO AO VÍDEO (00:19 - 00:23)
-       ===================================================================== */
+    /* Modal Home / Analytics */
     .sb-home-modal {
       position: absolute;
       inset: 52px 20px 60px 20px;
@@ -541,7 +564,6 @@
       margin-bottom: 18px;
     }
 
-    /* 4 KPI Cards com Mini-Barras Coloridas (igual 00:19 - 00:23) */
     .sb-kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -598,7 +620,6 @@
       min-height: 4px;
     }
 
-    /* 3 Colunas Centrais do Home Modal (00:20 - 00:23) */
     .sb-mid-grid {
       display: grid;
       grid-template-columns: 1fr 1.15fr 1.15fr;
@@ -652,7 +673,6 @@
       border-radius: 999px;
     }
 
-    /* 2 Colunas Inferiores do Home Modal */
     .sb-bottom-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -968,10 +988,9 @@
     <!-- ABA 1: DASHBOARD -->
     <div id="tab-dashboard" class="view-panel active">
       
-      <!-- Card do Próximo Destino (Countdown) -->
       <div id="countdownBox" class="countdown-card" style="display: none;">
         <div>
-          <span style="font-size: 0.82rem; color: var(--text-muted);">✈️ Próxima Expedição Programada:</span>
+          <span style="font-size: 0.82rem; color: var(--text-muted);">🚀 Próxima Expedição Programada:</span>
           <h3 id="nextTripName" style="margin: 4px 0 0 0; font-size: 1.25rem;">-</h3>
         </div>
         <div class="countdown-timer" id="nextTripTimer">00d 00h 00m</div>
@@ -979,7 +998,6 @@
 
       <div class="grid-layout">
         <div>
-          <!-- Estatísticas -->
           <div class="card">
             <h2>📊 Estatísticas de Exploração</h2>
             <div class="stats-container">
@@ -991,13 +1009,11 @@
             </div>
           </div>
 
-          <!-- Conquistas & Badges -->
           <div class="card">
             <h2>🏆 Conquistas & Medalhas</h2>
             <div class="badges-grid" id="badgesContainer"></div>
           </div>
           
-          <!-- Mapa do Mundo -->
           <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
               <h2 style="margin:0;">🗺️ Mapa do Mundo</h2>
@@ -1006,7 +1022,6 @@
             <div id="world-map" class="map-container"></div>
           </div>
 
-          <!-- Mapa do Brasil -->
           <div class="card">
             <h2>🇧🇷 Brasil - Divisão por Estados</h2>
             <div class="map-legend">
@@ -1017,7 +1032,6 @@
             <div id="brazil-map" class="map-container"></div>
           </div>
 
-          <!-- Mapa dos EUA -->
           <div class="card">
             <h2>🇺🇸 Estados Unidos - Divisão por Estados</h2>
             <div class="map-legend">
@@ -1028,7 +1042,6 @@
           </div>
         </div>
 
-        <!-- Coluna Direita: Lista de Viagens -->
         <div>
           <div class="card">
             <h2>📍 Viagens Registradas</h2>
@@ -1038,11 +1051,10 @@
       </div>
     </div>
 
-    <!-- ABA 2: GALÁXIA 3D INTERATIVA (RÉPLICA EXATA DO VÍDEO + PLANETAS/LUAS) -->
+    <!-- ABA 2: GALÁXIA 3D INTERATIVA -->
     <div id="tab-galaxy" class="view-panel">
       <div class="galaxy-wrapper">
         
-        <!-- Top Bar Minimalista igual ao vídeo (00:01 - 00:18) -->
         <div class="sb-top-bar">
           <div class="sb-brand-meta" id="sbLeftHeaderContainer">
             <span class="sb-title" id="sbTopContextTitle">Atlas Cósmico</span>
@@ -1052,7 +1064,6 @@
           <button class="sb-pill" onclick="openDestinationsListDrawer()">Destinos</button>
         </div>
 
-        <!-- Briefing Typewriter + COMING UP Esquerdo (igual 00:01 - 00:05 do vídeo) -->
         <div id="sbBriefingOverlay" class="sb-briefing-overlay">
           <h3 class="sb-briefing-greeting" id="sbGreetingText">Olá, Guilherme.</h3>
           <div class="sb-briefing-body" id="sbBriefingBody"></div>
@@ -1063,7 +1074,6 @@
         <div id="sbHoverTooltip" class="sb-hover-tooltip"></div>
         <div id="galaxy-canvas-container"></div>
 
-        <!-- Dock Inferior Flutuante igual ao vídeo -->
         <div class="sb-bottom-dock">
           <button class="sb-dock-btn" title="Afastar" onclick="adjustGalaxyZoom(6)">−</button>
           <button class="sb-dock-btn" title="Aproximar" onclick="adjustGalaxyZoom(-6)">+</button>
@@ -1071,7 +1081,6 @@
           <button class="sb-dock-btn" title="Home & Estatísticas" onclick="toggleHomeAnalyticsModal()">☷</button>
         </div>
 
-        <!-- Painel Lateral Direito IDÊNTICO ao vídeo (00:16 - 00:17) -->
         <div id="galaxyDrawer" class="galaxy-drawer">
           <div>
             <div class="drawer-header-bar">
@@ -1097,27 +1106,22 @@
           <div id="drawerActions" style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; margin-top: 18px;"></div>
         </div>
 
-        <!-- Modal Estilo Home / Analytics IDÊNTICO ao vídeo (00:19 - 00:23) -->
         <div id="sbHomeModal" class="sb-home-modal">
           <div class="sb-home-header">
             <div class="sb-home-title-wrap">
               <h3 style="margin: 0; font-size: 1.35rem; font-weight: 700;">Home</h3>
-              <span class="sb-date-chip" id="sbHomeDateChip">Nov 23, 2026</span>
+              <span class="sb-date-chip" id="sbHomeDateChip">-</span>
             </div>
             <button class="sb-pill" onclick="toggleHomeAnalyticsModal()">✕</button>
           </div>
 
-          <input type="text" id="sbSearchInput" class="sb-global-search" placeholder="🔍 Buscar cada destino, lua, país ou roteiro..." oninput="filterCosmosSearch(this.value)">
+          <input type="text" id="sbSearchInput" class="sb-global-search" placeholder="🔍 Buscar cada destino, foguete, lua, país ou roteiro..." oninput="filterCosmosSearch(this.value)">
           
-          <!-- Resultados rápidos quando digitando na busca -->
           <div id="sbSearchResultsGrid" style="display: none; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; margin-bottom: 18px;"></div>
 
-          <!-- Dashboard Visual 00:20 - 00:23 -->
           <div id="sbHomeAnalyticsBody">
-            <!-- 4 KPI Cards com mini-barras coloridas -->
             <div class="sb-kpi-grid" id="sbKpiGrid"></div>
 
-            <!-- 3 Colunas Centrais -->
             <div class="sb-mid-grid">
               <div class="sb-panel-box">
                 <div class="sb-panel-head">
@@ -1144,7 +1148,6 @@
               </div>
             </div>
 
-            <!-- 2 Colunas Inferiores -->
             <div class="sb-bottom-grid">
               <div class="sb-panel-box">
                 <div class="sb-panel-head">
@@ -1193,16 +1196,16 @@
       <div class="grid-layout">
         <div>
           <div class="card">
-            <h2>➕ Adicionar Destino ou Estado</h2>
+            <h2>➕ Adicionar Destino ou Viagem Futura</h2>
             <form id="addDestinationForm" onsubmit="handleSaveDestination(event)">
               <div class="form-group">
                 <label>Nome do País / Estado / Território</label>
-                <input type="text" id="adminName" placeholder="Ex: São Paulo, Flórida, Japão, Geórgia" required>
+                <input type="text" id="adminName" placeholder="Ex: Japão, São Paulo, Flórida, Geórgia" required>
               </div>
 
               <div class="form-group">
-                <label>Código ISO / Sigla (Ex: SP, FL, JP, GE, RO)</label>
-                <input type="text" id="adminCode" placeholder="Ex: SP, FL, JP, GE" maxlength="5" style="text-transform: uppercase;" required>
+                <label>Código ISO / Sigla (Ex: JP, SP, FL, GE, RO)</label>
+                <input type="text" id="adminCode" placeholder="Ex: JP, SP, FL, GE" maxlength="5" style="text-transform: uppercase;" required>
               </div>
               
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -1220,13 +1223,19 @@
                 </div>
                 <div class="form-group">
                   <label>Ano da Viagem</label>
-                  <input type="text" id="adminYear" placeholder="Ex: 2026">
+                  <input type="text" id="adminYear" placeholder="Ex: 2028">
                 </div>
               </div>
 
-              <div class="form-group">
-                <label>Data Exata de Início (Para Viagens Futuras / Countdown)</label>
-                <input type="date" id="adminStartDate">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="form-group">
+                  <label>Data de Início (Embarque / Foguete)</label>
+                  <input type="date" id="adminStartDate">
+                </div>
+                <div class="form-group">
+                  <label>Data Prevista de Retorno (Ejeção do Planeta)</label>
+                  <input type="date" id="adminEndDate">
+                </div>
               </div>
 
               <div class="form-group">
@@ -1376,6 +1385,41 @@
       }
     });
 
+    function getTripTimelineState(item) {
+      if (!item || !item.startDate) {
+        return { phase: 'completed', startMs: 0, endMs: 0, remainingMs: 0 };
+      }
+      const now = Date.now();
+      const startMs = new Date(item.startDate + 'T00:00:00').getTime();
+      const endMs = item.endDate
+        ? new Date(item.endDate + 'T23:59:59').getTime()
+        : (startMs + 24 * 60 * 60 * 1000);
+
+      if (now < startMs) {
+        return { phase: 'upcoming', startMs, endMs, remainingMs: startMs - now };
+      } else if (now >= startMs && now <= endMs) {
+        return { phase: 'in_transit', startMs, endMs, remainingMs: endMs - now };
+      } else {
+        return { phase: 'completed', startMs, endMs, remainingMs: 0 };
+      }
+    }
+
+    function formatCosmicCountdown(ms) {
+      if (ms <= 0) return 'Embarque Iminente';
+      const totalDays = Math.floor(ms / (1000 * 60 * 60 * 24));
+      const years = Math.floor(totalDays / 365);
+      const months = Math.floor((totalDays % 365) / 30);
+      const days = (totalDays % 365) % 30;
+      const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+      const parts = [];
+      if (years > 0) parts.push(`${years}a`);
+      if (months > 0) parts.push(`${months}m`);
+      if (days > 0 || parts.length === 0) parts.push(`${days}d`);
+      if (years === 0 && months === 0) parts.push(`${hours}h`);
+      return parts.join(' ');
+    }
+
     function initAuth() {
       if (isLoggedIn) {
         showApp();
@@ -1499,7 +1543,6 @@
       loadCloudData();
     }
 
-    // Atalho "/" igual ao vídeo ("Search pages (press / anywhere)")
     window.addEventListener('keydown', (e) => {
       if (e.key === '/' && document.getElementById('tab-galaxy').classList.contains('active')) {
         if (document.activeElement.tagName !== 'INPUT') {
@@ -1512,7 +1555,7 @@
     });
 
     // =========================================================================
-    // MOTOR WEBGL / GLSL CUSTOM SHADERS - RÉPLICA EXATA DO VÍDEO (@idontvibecode)
+    // MOTOR WEBGL / GLSL - GARGANTUA + FOGUETES + SINGULARIDADE + EJEÇÃO
     // =========================================================================
     let galaxyInitialized = false;
     let gScene, gCamera, gRenderer, gRaycaster, gMouse, gClock;
@@ -1520,6 +1563,8 @@
     let clusterObjects = [];
     let clickableBodies = [];
     let orbitingMoons = [];
+    let futureRockets = [];
+    let singularityTransits = [];
     let activeFocusedCluster = null;
     let briefingTimerId = null;
 
@@ -1550,6 +1595,7 @@
 
     const ACCRETION_FRAGMENT_SHADER = `
       uniform float uTime;
+      uniform float uPulse;
       varying vec2 vUv;
 
       float hash(vec2 p) {
@@ -1605,6 +1651,7 @@
         float heat = clamp(1.0 - (r - 0.30) / 0.52, 0.0, 1.0);
         vec3 color = mix(colOuter, colMid, smoothstep(0.0, 0.6, heat));
         color = mix(color, colInner, smoothstep(0.55, 1.0, heat) * rings);
+        color += vec3(0.15, 0.45, 0.95) * uPulse * (1.0 - r) * 0.65;
 
         gl_FragColor = vec4(color * intensity * 1.45, clamp(intensity * 1.3, 0.0, 1.0));
       }
@@ -1665,6 +1712,55 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 256, 256);
       return new THREE.CanvasTexture(canvas);
+    }
+
+    // Constrói modelo 3D de Foguete Espacial com propulsor luminoso
+    function createRocketProbeMesh() {
+      const rocketGroup = new THREE.Group();
+
+      // Fuselagem metálica branca/prateada
+      const bodyGeo = new THREE.CylinderGeometry(0.14, 0.17, 0.65, 16);
+      bodyGeo.rotateZ(-Math.PI / 2);
+      const bodyMesh = new THREE.Mesh(bodyGeo, new THREE.MeshBasicMaterial({ color: 0xf8fafc }));
+      rocketGroup.add(bodyMesh);
+
+      // Coifa frontal cônica ciano/azul
+      const noseGeo = new THREE.ConeGeometry(0.14, 0.32, 16);
+      noseGeo.rotateZ(-Math.PI / 2);
+      const noseMesh = new THREE.Mesh(noseGeo, new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+      noseMesh.position.x = 0.48;
+      rocketGroup.add(noseMesh);
+
+      // Aletas estabilizadoras
+      const finGeo = new THREE.BoxGeometry(0.22, 0.44, 0.04);
+      const finMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
+      const fin1 = new THREE.Mesh(finGeo, finMat);
+      fin1.position.x = -0.22;
+      rocketGroup.add(fin1);
+
+      const fin2 = new THREE.Mesh(finGeo, finMat);
+      fin2.rotation.x = Math.PI / 2;
+      fin2.position.x = -0.22;
+      rocketGroup.add(fin2);
+
+      // Chama e brilho do propulsor traseiro
+      const thrusterGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: createStarGlowTexture('#bae6fd', 'rgba(56, 189, 248, 0.85)'),
+        transparent: true,
+        blending: THREE.AdditiveBlending
+      }));
+      thrusterGlow.scale.set(2.4, 2.4, 1);
+      thrusterGlow.position.x = -0.45;
+      rocketGroup.add(thrusterGlow);
+
+      // Hitbox invisível para facilitar o clique e hover no foguete
+      const hitMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.75, 12, 12),
+        new THREE.MeshBasicMaterial({ visible: false })
+      );
+      rocketGroup.add(hitMesh);
+
+      return { group: rocketGroup, hitMesh, thrusterGlow };
     }
 
     function initGalaxyEngine() {
@@ -1744,7 +1840,7 @@
       lensPlane.name = 'gargantuaLens';
       bhGroup.add(lensPlane);
 
-      diskUniforms = { uTime: { value: 0 } };
+      diskUniforms = { uTime: { value: 0 }, uPulse: { value: 0 } };
       const diskMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(16.8, 16.8),
         new THREE.ShaderMaterial({
@@ -1774,7 +1870,7 @@
           curvePoints.push(new THREE.Vector3(Math.cos(a) * arcR, (i - 2) * 2.4, Math.sin(a) * arcR));
         }
         const arcGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
-        const arcLine = new THREE.Line(arcGeo, new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.24 }));
+        const arcLine = new THREE.Line(arcGeo, new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.22 }));
         gScene.add(arcLine);
 
         const cometHead = new THREE.Sprite(new THREE.SpriteMaterial({
@@ -1839,6 +1935,19 @@
       return new THREE.Line(geo, new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity }));
     }
 
+    function createGravitySpiralTrail(startRadius, endRadius, startAngle, yOffset) {
+      const pts = [];
+      const steps = 64;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const r = startRadius + (endRadius - startRadius) * t;
+        const a = startAngle + t * Math.PI * 1.45;
+        pts.push(new THREE.Vector3(Math.cos(a) * r, yOffset * (1 - t * 0.6), Math.sin(a) * r));
+      }
+      const geo = new THREE.BufferGeometry().setFromPoints(pts);
+      return new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.35 }));
+    }
+
     function buildGalaxyUniverse() {
       if (!universeGroup) return;
 
@@ -1850,6 +1959,8 @@
       clusterObjects = [];
       clickableBodies = [];
       orbitingMoons = [];
+      futureRockets = [];
+      singularityTransits = [];
 
       const warmPalettes = [
         { core: '#fde047', halo: 'rgba(234, 179, 8, 0.55)', line: 0xeab308, planetHex: 0xf59e0b },
@@ -1858,10 +1969,111 @@
         { core: '#fed7aa', halo: 'rgba(251, 146, 60, 0.50)', line: 0xfb923c, planetHex: 0xc2410c }
       ];
 
+      // Separa viagens futuras (Foguetes) e em trânsito (Engolidas pelo Disco de Acreção)
+      const completedItems = [];
+      const upcomingItems = [];
+      const transitItems = [];
+
+      db.forEach(item => {
+        const state = getTripTimelineState(item);
+        if (state.phase === 'upcoming') {
+          upcomingItems.push({ item, state });
+        } else if (state.phase === 'in_transit') {
+          transitItems.push({ item, state });
+        } else {
+          completedItems.push(item);
+        }
+      });
+
+      // 1. RENDERIZA FOGUETES ESPACIAIS EM APROXIMAÇÃO GRAVITACIONAL AO GARGANTUA
+      upcomingItems.forEach((entry, rIdx) => {
+        const { item, state } = entry;
+        const daysLeft = state.remainingMs / (1000 * 60 * 60 * 24);
+        // Janela de 2 anos (730 dias): quanto mais próximo de 0 dias, mais perto da borda do disco de acreção (raio 8.6)
+        const approachFactor = 1 - Math.min(1, Math.max(0, daysLeft / 730));
+        const currentRadius = 27.5 - approachFactor * 18.9; // De 27.5 até 8.6 (borda interna do disco)
+        const baseAngle = rIdx * 2.1 + 0.8;
+        const yOffset = (rIdx % 2 === 0 ? 1 : -1) * 1.8;
+
+        const rocketModel = createRocketProbeMesh();
+        rocketModel.group.position.set(
+          Math.cos(baseAngle) * currentRadius,
+          yOffset,
+          Math.sin(baseAngle) * currentRadius
+        );
+        universeGroup.add(rocketModel.group);
+
+        // Trilha espiral mostrando a queda rumo ao disco de acreção
+        const trailLine = createGravitySpiralTrail(currentRadius, 8.2, baseAngle, yOffset);
+        universeGroup.add(trailLine);
+
+        const rLabel = document.createElement('div');
+        rLabel.className = 'cosmic-label rocket-probe';
+        const countdownTxt = formatCosmicCountdown(state.remainingMs);
+        rLabel.innerHTML = `<span class="lbl-title">🚀 ${item.name}</span><span class="lbl-sub">Faltam ${countdownTxt}</span>`;
+        labelsLayer.appendChild(rLabel);
+
+        const rocketBodyObj = {
+          mesh: rocketModel.hitMesh,
+          labelEl: rLabel,
+          data: item,
+          parentClusterKey: 'Rockets',
+          isRioOrigin: false,
+          isRocket: true,
+          timelineState: state
+        };
+
+        rLabel.onclick = () => focusOnBody(rocketBodyObj);
+        clickableBodies.push(rocketBodyObj);
+
+        futureRockets.push({
+          group: rocketModel.group,
+          thruster: rocketModel.thrusterGlow,
+          labelEl: rLabel,
+          item,
+          state,
+          baseRadius: currentRadius,
+          angle: baseAngle,
+          yOffset
+        });
+      });
+
+      // 2. RENDERIZA VIAGENS ENGOLIDAS PELO DISCO DE ACREÇÃO (ENTRE IDA E VOLTA)
+      transitItems.forEach((entry, tIdx) => {
+        const { item, state } = entry;
+        const angle = tIdx * 1.9;
+        const transitAnchor = new THREE.Mesh(
+          new THREE.SphereGeometry(0.45, 16, 16),
+          new THREE.MeshBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.35 })
+        );
+        transitAnchor.position.set(Math.cos(angle) * 5.2, 0.4, Math.sin(angle) * 5.2);
+        universeGroup.add(transitAnchor);
+
+        const tLabel = document.createElement('div');
+        tLabel.className = 'cosmic-label singularity-transit';
+        tLabel.innerHTML = `<span class="lbl-title">🌀 ${item.name} (Em Viagem)</span><span class="lbl-sub">No disco de acreção • Volta em ${formatCosmicCountdown(state.remainingMs)}</span>`;
+        labelsLayer.appendChild(tLabel);
+
+        const transitBodyObj = {
+          mesh: transitAnchor,
+          labelEl: tLabel,
+          data: item,
+          parentClusterKey: 'Singularity',
+          isRioOrigin: false,
+          isInTransit: true,
+          timelineState: state
+        };
+
+        tLabel.onclick = () => focusOnBody(transitBodyObj);
+        clickableBodies.push(transitBodyObj);
+        singularityTransits.push({ mesh: transitAnchor, labelEl: tLabel, angle, state, item });
+      });
+
+      // 3. RENDERIZA PLANETAS, LUAS E CONSTELAÇÕES DE VIAGENS CONCLUÍDAS / EJETADAS
       const grouped = new Map();
       grouped.set('Brasil', []);
 
-      db.forEach(item => {
+      completedItems.forEach(item => {
         const reg = item.region || 'Destinos';
         if (!grouped.has(reg)) grouped.set(reg, []);
         grouped.get(reg).push(item);
@@ -2173,7 +2385,6 @@
       });
     }
 
-    // Briefing Esquerdo com COMING UP igual aos segundos 00:01 - 00:05 do vídeo
     function startBriefingTypewriter() {
       const overlay = document.getElementById('sbBriefingOverlay');
       const bodyEl = document.getElementById('sbBriefingBody');
@@ -2189,28 +2400,36 @@
       const todayName = daysPt[new Date().getDay()];
       greetEl.innerText = `Ótimo(a) ${todayName}, Guilherme.`;
 
-      const brCount = new Set(db.filter(d => d.region === 'Brasil').map(d => d.code.toUpperCase())).size + 1;
-      const countriesCount = new Set(db.filter(d => d.region !== 'Brasil' && d.region !== 'EUA').map(d => d.code.toUpperCase())).size + 1;
+      const completedDb = db.filter(d => getTripTimelineState(d).phase === 'completed');
+      const brCount = new Set(completedDb.filter(d => d.region === 'Brasil').map(d => d.code.toUpperCase())).size + 1;
+      const countriesCount = new Set(completedDb.filter(d => d.region !== 'Brasil' && d.region !== 'EUA').map(d => d.code.toUpperCase())).size + 1;
       const mediaCount = db.filter(d => (d.link && d.link !== '#') || d.roteiroLink).length;
 
-      const text = `Seu mapa cósmico está sincronizado. Você possui ${countriesCount} país(es) e ${brCount} estado(s) brasileiro(s) em órbita ao redor do Gargantua, partindo da sua Lua Base Rio de Janeiro (2004 - ♾️).`;
+      const upcomingList = db
+        .map(d => ({ item: d, state: getTripTimelineState(d) }))
+        .filter(x => x.state.phase === 'upcoming' || x.state.phase === 'in_transit')
+        .sort((a, b) => a.state.startMs - b.state.startMs);
 
-      // Prepara o bloco COMING UP igual ao segundo 00:04 do vídeo
-      const now = new Date().getTime();
-      const futureTrips = db
-        .filter(d => d.startDate && new Date(d.startDate).getTime() > now)
-        .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
-        .slice(0, 3);
+      const rocketSummary = upcomingList.length > 0
+        ? ` Há ${upcomingList.length} sonda(s) em rota de aproximação gravitacional rumo ao disco de acreção.`
+        : '';
+
+      const text = `Seu mapa cósmico está sincronizado. Você possui ${countriesCount} país(es) e ${brCount} estado(s) brasileiro(s) estabilizados em órbita a partir da sua Lua Base Rio de Janeiro (2004 - ♾️).${rocketSummary}`;
 
       let comingRowsHtml = '';
-      if (futureTrips.length > 0) {
-        comingRowsHtml = futureTrips.map(t => `<div class="sb-coming-row"><span class="sb-coming-date">${t.startDate}</span><span>${t.name}</span></div>`).join('');
+      if (upcomingList.length > 0) {
+        comingRowsHtml = upcomingList.slice(0, 3).map(u => {
+          const badge = u.state.phase === 'in_transit'
+            ? `🌀 No Disco (${formatCosmicCountdown(u.state.remainingMs)})`
+            : `🚀 -${formatCosmicCountdown(u.state.remainingMs)}`;
+          return `<div class="sb-coming-row"><span class="sb-coming-date">${badge}</span><span>${u.item.name} (${u.item.startDate})</span></div>`;
+        }).join('');
       } else {
         comingRowsHtml = `<div class="sb-coming-row"><span class="sb-coming-date">2004 - ♾️</span><span>Lua Base Rio de Janeiro ativa</span></div>`;
       }
 
       comingUpEl.innerHTML = `
-        <span class="sb-coming-label">PRÓXIMAS ÓRBITAS</span>
+        <span class="sb-coming-label">PRÓXIMAS ÓRBITAS & FOGUETES</span>
         ${comingRowsHtml}
         <div class="sb-briefing-footer">
           ${countriesCount} países • ${brCount} luas no Brasil<br>
@@ -2227,7 +2446,7 @@
         } else {
           clearInterval(briefingTimerId);
           comingUpEl.classList.add('visible');
-          setTimeout(fadeOutBriefing, 5500);
+          setTimeout(fadeOutBriefing, 6000);
         }
       }, 22);
     }
@@ -2241,7 +2460,6 @@
       fadeOutBriefing();
       activeFocusedCluster = clusterRec.key;
 
-      // Atualiza a pílula superior esquerda igual ao vídeo em 00:12 ("← Trackside knowledge")
       const leftContainer = document.getElementById('sbLeftHeaderContainer');
       leftContainer.innerHTML = `<button class="sb-pill" onclick="resetGalaxyCamera()">← ${clusterRec.title}</button>`;
 
@@ -2260,22 +2478,38 @@
       camState.targetPanOffsetX = 2.4;
 
       const d = bodyObj.data;
+      const tState = getTripTimelineState(d);
+
       document.getElementById('drawerQuickFilterResults').style.display = 'none';
       document.getElementById('drawerSingleDetailView').style.display = 'block';
       document.getElementById('drawerQuickSearchInput').value = '';
 
-      document.getElementById('drawerTag').innerText = bodyObj.isRioOrigin
-        ? 'LUA BASE • ORIGEM DA VIDA'
-        : `REGISTRO ORBITAL • ${(d.region || 'DESTINO').toUpperCase()}`;
-      document.getElementById('drawerTitle').innerText = d.name;
-      document.getElementById('drawerMeta').innerText = bodyObj.isRioOrigin
-        ? `Ciclo: 2004 - ♾️ • Código BR-RJ`
-        : `Atualizado: ${d.startDate || d.year || 'Registrado'} • Código ${d.code}`;
+      if (bodyObj.isRocket || tState.phase === 'upcoming') {
+        document.getElementById('drawerTag').innerText = `SONDA EM APROXIMAÇÃO • ${(d.region || 'EXPEDIÇÃO').toUpperCase()}`;
+        document.getElementById('drawerTitle').innerText = `🚀 ${d.name}`;
+        document.getElementById('drawerMeta').innerText = `Embarque: ${d.startDate} • Retorno: ${d.endDate || 'A definir'} • Faltam ${formatCosmicCountdown(tState.remainingMs)}`;
+        document.getElementById('drawerDesc').innerText = `Nave em trajetória espiral de aproximação gravitacional ao Gargantua. A cada dia que passa no calendário, a órbita encolhe rumo ao disco de acreção.`;
+        document.getElementById('drawerSummaryText').innerText = `No dia ${d.startDate}, a sonda será engolida pelo horizonte de eventos durante a viagem e ejetada como planeta consolidado na constelação ${d.region} em ${d.endDate || 'sua data de retorno'}.`;
+      } else if (bodyObj.isInTransit || tState.phase === 'in_transit') {
+        document.getElementById('drawerTag').innerText = `SINGULARIDADE • VIAGEM EM ANDAMENTO`;
+        document.getElementById('drawerTitle').innerText = `🌀 ${d.name}`;
+        document.getElementById('drawerMeta').innerText = `Absorvida em ${d.startDate} • Ejeção prevista em ${d.endDate}`;
+        document.getElementById('drawerDesc').innerText = `Expedição em andamento dentro do disco de acreção do Gargantua. Faltam ${formatCosmicCountdown(tState.remainingMs)} para o retorno e consolidação orbital.`;
+        document.getElementById('drawerSummaryText').innerText = `Assim que a data de retorno (${d.endDate}) for atingida, o buraco negro ejetará ${d.name} como um novo astro na constelação ${d.region}.`;
+      } else {
+        document.getElementById('drawerTag').innerText = bodyObj.isRioOrigin
+          ? 'LUA BASE • ORIGEM DA VIDA'
+          : `REGISTRO ORBITAL • ${(d.region || 'DESTINO').toUpperCase()}`;
+        document.getElementById('drawerTitle').innerText = d.name;
+        document.getElementById('drawerMeta').innerText = bodyObj.isRioOrigin
+          ? `Ciclo: 2004 - ♾️ • Código BR-RJ`
+          : `Atualizado: ${d.startDate || d.year || 'Registrado'} • Código ${d.code}`;
 
-      document.getElementById('drawerDesc').innerText = d.desc || `Corpo celeste catalogado no sistema ${d.region || 'Global'} (${d.code}), orbitando o Gargantua em trajetória estável.`;
-      document.getElementById('drawerSummaryText').innerText = bodyObj.isRioOrigin
-        ? `Ponto zero de partida e retorno de todas as expedições do passaporte digital. Órbita azul exclusiva vinculada ao Planeta Brasil.`
-        : `Destino registrado no ano de ${d.year || '—'}. Utilize os controles abaixo para abrir a galeria de fotos no Google Drive ou consultar o roteiro detalhado em PDF.`;
+        document.getElementById('drawerDesc').innerText = d.desc || `Corpo celeste catalogado no sistema ${d.region || 'Global'} (${d.code}), orbitando o Gargantua em trajetória estável.`;
+        document.getElementById('drawerSummaryText').innerText = bodyObj.isRioOrigin
+          ? `Ponto zero de partida e retorno de todas as expedições do passaporte digital. Órbita azul exclusiva vinculada ao Planeta Brasil.`
+          : `Destino registrado no ano de ${d.year || '—'}. Utilize os controles abaixo para abrir a galeria de fotos no Google Drive ou consultar o roteiro detalhado em PDF.`;
+      }
 
       let actionsHtml = '';
       if (d.link && d.link !== '#') {
@@ -2314,8 +2548,8 @@
       );
       box.innerHTML = matches.map((b, i) => `
         <div onclick="selectFromDrawerList(${i}, '${term.replace(/'/g, "\\'")}')" style="padding: 9px 11px; border-radius: 9px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); margin-bottom: 6px; cursor: pointer;">
-          <div style="font-size: 0.78rem; font-weight: 600; color: ${b.isRioOrigin ? '#60a5fa' : '#f8fafc'};">${b.isRioOrigin ? '🔵 ' : ''}${b.data.name}</div>
-          <div style="font-size: 0.67rem; color: #64748b;">${b.data.region} • ${b.data.year || b.data.code}</div>
+          <div style="font-size: 0.78rem; font-weight: 600; color: ${b.isRocket ? '#38bdf8' : (b.isRioOrigin ? '#60a5fa' : '#f8fafc')};">${b.isRocket ? '🚀 ' : (b.isRioOrigin ? '🔵 ' : '')}${b.data.name}</div>
+          <div style="font-size: 0.67rem; color: #64748b;">${b.isRocket ? 'Faltam ' + formatCosmicCountdown(b.timelineState.remainingMs) : (b.data.region + ' • ' + (b.data.year || b.data.code))}</div>
         </div>
       `).join('');
     }
@@ -2353,7 +2587,6 @@
       camState.targetRadius = Math.max(8, Math.min(72, camState.targetRadius + delta));
     }
 
-    // Modal Estilo Home (00:19 - 00:23 do vídeo)
     function toggleHomeAnalyticsModal() {
       const modal = document.getElementById('sbHomeModal');
       modal.classList.toggle('open');
@@ -2369,19 +2602,19 @@
       const nowStr = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
       document.getElementById('sbHomeDateChip').innerText = nowStr;
 
-      const uniqueBr = new Set(db.filter(d => d.region === 'Brasil').map(d => d.code.toUpperCase())).size + 1;
-      const uniqueUs = new Set(db.filter(d => d.region === 'EUA').map(d => d.code.toUpperCase())).size;
-      const uniqueCountries = new Set(db.filter(d => d.region !== 'Brasil' && d.region !== 'EUA').map(d => d.code.toUpperCase())).size + 1 + (uniqueUs > 0 ? 1 : 0);
+      const completedDb = db.filter(d => getTripTimelineState(d).phase === 'completed');
+      const uniqueBr = new Set(completedDb.filter(d => d.region === 'Brasil').map(d => d.code.toUpperCase())).size + 1;
+      const uniqueUs = new Set(completedDb.filter(d => d.region === 'EUA').map(d => d.code.toUpperCase())).size;
+      const uniqueCountries = new Set(completedDb.filter(d => d.region !== 'Brasil' && d.region !== 'EUA').map(d => d.code.toUpperCase())).size + 1 + (uniqueUs > 0 ? 1 : 0);
       const totalMoons = uniqueBr + uniqueUs;
       const linkedMedia = db.filter(d => (d.link && d.link !== '#') || d.roteiroLink).length;
       const worldPct = ((uniqueCountries / 195) * 100).toFixed(1) + '%';
 
-      // 4 KPI Cards com Mini-Barras Coloridas (igual 00:19 - 00:23)
       const kpis = [
-        { num: uniqueCountries, badge: `${worldPct} mundo`, badgeBg: 'rgba(249,115,22,0.18)', badgeCol: '#fb923c', sub: 'Países', hint: 'de 195 nações', barCol: '#f97316', heights: [30, 50, 40, 75, 60, 90, 100] },
+        { num: uniqueCountries, badge: `${worldPct} mundo`, badgeBg: 'rgba(249,115,22,0.18)', badgeCol: '#fb923c', sub: 'Países Consolidados', hint: 'de 195 nações', barCol: '#f97316', heights: [30, 50, 40, 75, 60, 90, 100] },
         { num: totalMoons, badge: `${uniqueBr}/27 BR`, badgeBg: 'rgba(16,185,129,0.18)', badgeCol: '#34d399', sub: 'Luas (Estados)', hint: 'Brasil & EUA', barCol: '#10b981', heights: [45, 65, 55, 80, 95, 70, 100] },
-        { num: linkedMedia, badge: 'Drive & PDF', badgeBg: 'rgba(236,72,153,0.18)', badgeCol: '#f472b6', sub: 'Mídias', hint: 'Álbuns e roteiros', barCol: '#ec4899', heights: [20, 40, 70, 50, 85, 90, 100] },
-        { num: clickableBodies.length, badge: 'Órbita ativa', badgeBg: 'rgba(139,92,246,0.18)', badgeCol: '#a78bfa', sub: 'Corpos Celestes', hint: 'Total mapeado', barCol: '#8b5cf6', heights: [35, 55, 60, 70, 85, 95, 100] }
+        { num: futureRockets.length, badge: 'Em órbita', badgeBg: 'rgba(56,189,248,0.18)', badgeCol: '#38bdf8', sub: 'Foguetes Futuros', hint: 'Rumo ao disco', barCol: '#38bdf8', heights: [25, 45, 65, 85, 100, 70, 90] },
+        { num: linkedMedia, badge: 'Drive & PDF', badgeBg: 'rgba(236,72,153,0.18)', badgeCol: '#f472b6', sub: 'Mídias & Roteiros', hint: 'Álbuns vinculados', barCol: '#ec4899', heights: [35, 55, 60, 70, 85, 95, 100] }
       ];
 
       document.getElementById('sbKpiGrid').innerHTML = kpis.map(k => `
@@ -2400,7 +2633,6 @@
         </div>
       `).join('');
 
-      // Coluna 1: Viagens por Ano
       const yearCounts = {};
       db.forEach(d => {
         const y = d.year || '2026';
@@ -2417,7 +2649,6 @@
         `).join('')
         : `<div style="font-size:0.75rem; color:#64748b;">Adicione anos às suas viagens para visualizar o gráfico.</div>`;
 
-      // Coluna 2: Destinos por Grupo (Planetas & Constelações)
       document.getElementById('sbGroupsCountLbl').innerText = `${clusterObjects.length} grupos`;
       const maxGroupVal = Math.max(...clusterObjects.map(c => c.childBodies.length), 1);
       document.getElementById('sbGroupsBarsContainer').innerHTML = clusterObjects.map(c => `
@@ -2427,12 +2658,11 @@
         </div>
       `).join('');
 
-      // Coluna 3: Principais Marcos
       const milestones = [
         { label: 'Lua Base Rio de Janeiro', val: '2004 - ♾️', pct: 100 },
         { label: 'Planeta Brasil (Estados)', val: `${uniqueBr}/27`, pct: (uniqueBr / 27) * 100 },
         { label: 'Planeta EUA (Estados)', val: `${uniqueUs}/50`, pct: Math.max((uniqueUs / 50) * 100, 8) },
-        { label: 'Países Visitados', val: `${uniqueCountries}`, pct: Math.min(uniqueCountries * 8, 100) }
+        { label: 'Foguetes em Órbita', val: `${futureRockets.length}`, pct: Math.min(futureRockets.length * 25, 100) }
       ];
       document.getElementById('sbTopMilestonesContainer').innerHTML = milestones.map(m => `
         <div class="sb-bar-row">
@@ -2441,16 +2671,14 @@
         </div>
       `).join('');
 
-      // Rodapé Esquerdo: Atividade Recente
       const recentList = clickableBodies.slice(0, 5);
       document.getElementById('sbRecentActivityList').innerHTML = recentList.map((b, i) => `
         <div class="sb-activity-item" onclick="document.getElementById('sbHomeModal').classList.remove('open'); focusOnBody(clickableBodies[${i}]);">
-          <span>${b.isRioOrigin ? '🔵' : '✨'} ${b.data.name}</span>
-          <span style="font-size:0.68rem; color:#64748b;">${b.data.year || b.data.code}</span>
+          <span>${b.isRocket ? '🚀' : (b.isRioOrigin ? '🔵' : '✨')} ${b.data.name}</span>
+          <span style="font-size:0.68rem; color:#64748b;">${b.isRocket ? 'Embarque ' + b.data.startDate : (b.data.year || b.data.code)}</span>
         </div>
       `).join('');
 
-      // Rodapé Direito: Roteiros & Galerias
       const mediaBodies = clickableBodies.filter(b => (b.data.link && b.data.link !== '#') || b.data.roteiroLink).slice(0, 5);
       document.getElementById('sbMediaLinkedList').innerHTML = mediaBodies.length > 0
         ? mediaBodies.map(b => `
@@ -2484,8 +2712,8 @@
 
       grid.innerHTML = filtered.map((b, idx) => `
         <div onclick="selectFromSearch(${idx}, '${q.replace(/'/g, "\\'")}')" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 14px; border-radius: 12px; cursor: pointer;">
-          <div style="font-size: 0.7rem; color: ${b.isRioOrigin ? '#60a5fa' : '#fbbf24'}; font-weight: 600; margin-bottom: 4px;">
-            ${b.isRioOrigin ? '🔵 LUA BASE (2004 - ♾️)' : (b.data.region || 'DESTINO')}
+          <div style="font-size: 0.7rem; color: ${b.isRocket ? '#38bdf8' : (b.isRioOrigin ? '#60a5fa' : '#fbbf24')}; font-weight: 600; margin-bottom: 4px;">
+            ${b.isRocket ? '🚀 SONDA FUTURA' : (b.isRioOrigin ? '🔵 LUA BASE (2004 - ♾️)' : (b.data.region || 'DESTINO'))}
           </div>
           <div style="font-weight: 700; font-size: 0.95rem; color: #fff;">${b.data.name}</div>
           <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 4px;">${b.data.code} • ${b.data.year || ''}</div>
@@ -2523,7 +2751,14 @@
         const hit = intersects[0].object;
         const foundCluster = clusterObjects.find(c => c.centerMesh === hit);
         const foundBody = clickableBodies.find(s => s.mesh === hit);
-        const label = foundCluster ? foundCluster.title : (foundBody ? `${foundBody.data.name} (${foundBody.data.year || foundBody.data.code})` : '');
+        let label = '';
+        if (foundCluster) {
+          label = foundCluster.title;
+        } else if (foundBody) {
+          label = foundBody.isRocket
+            ? `🚀 ${foundBody.data.name} • Faltam ${formatCosmicCountdown(foundBody.timelineState.remainingMs)}`
+            : `${foundBody.data.name} (${foundBody.data.year || foundBody.data.code})`;
+        }
 
         if (label) {
           tooltip.innerText = label;
@@ -2579,12 +2814,19 @@
       }
     }
 
+    let lastCountdownRefresh = 0;
+
     function animateGalaxy() {
       requestAnimationFrame(animateGalaxy);
       if (!document.getElementById('tab-galaxy').classList.contains('active')) return;
 
       const elapsed = gClock ? gClock.getElapsedTime() : 0;
-      if (diskUniforms) diskUniforms.uTime.value = elapsed;
+      if (diskUniforms) {
+        diskUniforms.uTime.value = elapsed;
+        diskUniforms.uPulse.value = singularityTransits.length > 0
+          ? (0.55 + 0.45 * Math.sin(elapsed * 3.5))
+          : 0.0;
+      }
       if (lensUniforms) lensUniforms.uTime.value = elapsed;
 
       const lensObj = gScene.getObjectByName('gargantuaLens');
@@ -2594,6 +2836,7 @@
         universeGroup.rotation.y += 0.001;
       }
 
+      // Órbita das luas nos Planetas Brasil e EUA
       orbitingMoons.forEach(m => {
         m.angle += m.speed;
         const x = Math.cos(m.angle) * m.radius;
@@ -2602,6 +2845,7 @@
         m.mesh.position.set(x, y, z);
       });
 
+      // Cometas nas órbitas externas
       outerComets.forEach(c => {
         c.angle += c.speed;
         c.mesh.position.set(Math.cos(c.angle) * c.radius, c.y, Math.sin(c.angle) * c.radius);
@@ -2610,6 +2854,47 @@
       const container = document.getElementById('galaxy-canvas-container');
       const w = container.clientWidth;
       const h = container.clientHeight;
+
+      const shouldUpdateText = (elapsed - lastCountdownRefresh) > 1.0;
+      if (shouldUpdateText) lastCountdownRefresh = elapsed;
+
+      // Atualiza Foguetes Futuros (aproximação gravitacional + orientação tangencial + rótulo)
+      futureRockets.forEach(r => {
+        const freshState = getTripTimelineState(r.item);
+        const daysLeft = freshState.remainingMs / (1000 * 60 * 60 * 24);
+        const approachFactor = 1 - Math.min(1, Math.max(0, daysLeft / 730));
+        const dynamicRadius = 27.5 - approachFactor * 18.9;
+
+        r.angle += 0.0022 + approachFactor * 0.0035;
+        const nx = Math.cos(r.angle) * dynamicRadius;
+        const nz = Math.sin(r.angle) * dynamicRadius;
+        const ny = r.yOffset * (1 - approachFactor * 0.65);
+
+        r.group.position.set(nx, ny, nz);
+
+        // Orienta o nariz do foguete na direção do movimento espiral rumo ao centro
+        const nextAngle = r.angle + 0.08;
+        const nextR = Math.max(4.0, dynamicRadius - 0.35);
+        const targetVec = new THREE.Vector3(Math.cos(nextAngle) * nextR, ny, Math.sin(nextAngle) * nextR);
+        r.group.lookAt(targetVec);
+        r.group.rotateY(-Math.PI / 2);
+
+        const pulseScale = 2.1 + Math.sin(elapsed * 9) * 0.45;
+        r.thruster.scale.set(pulseScale, pulseScale, 1);
+
+        if (shouldUpdateText) {
+          const subEl = r.labelEl.querySelector('.lbl-sub');
+          if (subEl) subEl.innerText = `Faltam ${formatCosmicCountdown(freshState.remainingMs)}`;
+        }
+        updateCosmicLabel(r.group, r.labelEl, w, h, true);
+      });
+
+      // Atualiza viagens em andamento dentro do disco de acreção
+      singularityTransits.forEach(st => {
+        st.angle += 0.015;
+        st.mesh.position.set(Math.cos(st.angle) * 5.2, 0.4, Math.sin(st.angle) * 5.2);
+        updateCosmicLabel(st.mesh, st.labelEl, w, h, true);
+      });
 
       clusterObjects.forEach(c => {
         updateCosmicLabel(c.centerMesh, c.labelEl, w, h, true);
@@ -2662,9 +2947,10 @@
     function drawAllMaps() {
       if (!chartsLoaded || typeof google === 'undefined' || !google.visualization) return;
 
+      const completedOnly = db.filter(item => getTripTimelineState(item).phase === 'completed');
       const filteredDb = (selectedYearFilter === 'ALL') 
-        ? db 
-        : db.filter(item => String(item.year) === String(selectedYearFilter));
+        ? completedOnly 
+        : completedOnly.filter(item => String(item.year) === String(selectedYearFilter));
 
       const worldRows = [['Country', 'Status', { role: 'tooltip', p: { html: false } }]];
       const addedCountries = new Set(['BR']);
@@ -2763,15 +3049,16 @@
       const region = document.getElementById('adminRegion').value;
       const year = document.getElementById('adminYear').value;
       const startDate = document.getElementById('adminStartDate').value;
+      const endDate = document.getElementById('adminEndDate').value;
       const link = document.getElementById('adminDriveLink').value;
       const roteiroLink = document.getElementById('adminRoteiroLink').value;
 
       if (region === 'Brasil' && !code.startsWith('BR-')) code = 'BR-' + code;
       if (region === 'EUA' && !code.startsWith('US-')) code = 'US-' + code;
 
-      const id = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
+      const id = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4);
 
-      db.push({ id, code, name, region, year, startDate, link, roteiroLink });
+      db.push({ id, code, name, region, year, startDate, endDate, link, roteiroLink });
       document.getElementById('addDestinationForm').reset();
       await saveCloudData();
     }
@@ -2790,7 +3077,8 @@
 
     function renderFilterChips() {
       const yearBar = document.getElementById('yearFilterBar');
-      const years = Array.from(new Set(db.map(d => d.year).filter(Boolean))).sort();
+      const completedOnly = db.filter(d => getTripTimelineState(d).phase === 'completed');
+      const years = Array.from(new Set(completedOnly.map(d => d.year).filter(Boolean))).sort();
       
       let html = `<div id="chip-ALL" class="filter-chip ${selectedYearFilter === 'ALL' ? 'active' : ''}" onclick="setYearFilter('ALL')">Todos</div>`;
       years.forEach(y => {
@@ -2800,24 +3088,16 @@
     }
 
     function updateCountdown() {
-      const now = new Date().getTime();
-      const futureTrips = db
-        .filter(d => d.startDate && new Date(d.startDate).getTime() > now)
-        .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+      const upcomingTrips = db
+        .map(d => ({ item: d, state: getTripTimelineState(d) }))
+        .filter(x => x.state.phase === 'upcoming')
+        .sort((a, b) => a.state.startMs - b.state.startMs);
 
-      if (futureTrips.length > 0) {
-        const next = futureTrips[0];
-        document.getElementById('nextTripName').innerText = `${next.name} (${next.year || ''})`;
+      if (upcomingTrips.length > 0) {
+        const next = upcomingTrips[0];
+        document.getElementById('nextTripName').innerText = `${next.item.name} (${next.item.startDate})`;
         document.getElementById('countdownBox').style.display = 'flex';
-
-        const targetTime = new Date(next.startDate).getTime();
-        const diff = targetTime - now;
-
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-        document.getElementById('nextTripTimer').innerText = `${days}d ${hours}h ${mins}m`;
+        document.getElementById('nextTripTimer').innerText = formatCosmicCountdown(next.state.remainingMs);
       } else {
         document.getElementById('countdownBox').style.display = 'none';
       }
@@ -2834,8 +3114,9 @@
     }
 
     function renderBadges(uniqueBrCount, uniqueCountriesCount) {
+      const completedOnly = db.filter(d => getTripTimelineState(d).phase === 'completed');
       const continents = new Set(['Americas']);
-      db.forEach(d => {
+      completedOnly.forEach(d => {
         if (d.region === 'Europa') continents.add('Europa');
         if (d.region === 'Asia') continents.add('Asia');
         if (d.region === 'Oceania') continents.add('Oceania');
@@ -2868,6 +3149,8 @@
       let html = '';
       let index = 0;
 
+      const completedOnly = db.filter(d => getTripTimelineState(d).phase === 'completed');
+
       if (passportViewMode === 'countries') {
         const stampedCountries = new Map();
 
@@ -2882,7 +3165,7 @@
           type: 'PAÍS DE ORIGEM'
         });
 
-        db.forEach(item => {
+        completedOnly.forEach(item => {
           let countryCode = item.code.toUpperCase();
           if (item.region === 'EUA') countryCode = 'US';
           if (item.region === 'Brasil') countryCode = 'BR';
@@ -2943,7 +3226,7 @@
           type: 'ESTADO BASE'
         });
 
-        db.forEach(item => {
+        completedOnly.forEach(item => {
           if (item.region === 'Brasil') {
             const sigla = item.code.toUpperCase().replace('BR-', '');
             const fullCode = 'BR-' + sigla;
@@ -3000,9 +3283,13 @@
       const tbody = document.getElementById('adminTableBody');
       tbody.innerHTML = '';
       db.forEach(item => {
+        const tState = getTripTimelineState(item);
+        const statusBadge = tState.phase === 'upcoming'
+          ? '🚀 Foguete'
+          : (tState.phase === 'in_transit' ? '🌀 Em Trânsito' : (item.year || ''));
         tbody.innerHTML += `
           <tr>
-            <td><strong>${item.name}</strong> <br><small style="color:var(--text-muted)">${item.year || ''}</small></td>
+            <td><strong>${item.name}</strong> <br><small style="color:var(--text-muted)">${statusBadge}</small></td>
             <td><code>${item.code}</code></td>
             <td>
               <button class="btn" style="padding: 6px 10px; font-size: 0.8rem;" onclick="openQrModal('${item.id}', '${item.name}', '${item.link}')">QR</button>
@@ -3015,14 +3302,18 @@
       const pubList = document.getElementById('publicTravelList');
       pubList.innerHTML = '';
       db.forEach(item => {
+        const tState = getTripTimelineState(item);
         const isHome = item.code.toUpperCase() === HOME_STATE_BR || item.name.toLowerCase().includes('rio de janeiro');
-        const icon = isHome ? '🏠' : '📍';
+        const icon = tState.phase === 'upcoming' ? '🚀' : (tState.phase === 'in_transit' ? '🌀' : (isHome ? '🏠' : '📍'));
+        const badgeText = tState.phase === 'upcoming'
+          ? `Faltam ${formatCosmicCountdown(tState.remainingMs)}`
+          : (tState.phase === 'in_transit' ? 'Em Viagem' : (item.year || item.code));
         
         pubList.innerHTML += `
           <div class="trip-item">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <strong>${icon} ${item.name}</strong>
-              <span style="font-size: 0.78rem; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 6px;">${item.year || item.code}</span>
+              <span style="font-size: 0.78rem; color: ${tState.phase === 'upcoming' ? '#38bdf8' : 'var(--text-muted)'}; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 6px;">${badgeText}</span>
             </div>
             <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px;">
               ${item.link && item.link !== '#' ? `<button onclick="openMediaModal('Galeria: ${item.name}', '${item.link}')" style="background:none; border:none; color: var(--accent); cursor:pointer; font-size: 0.82rem; font-weight: 600; padding:0;">🖼️ Ver Fotos</button>` : ''}
@@ -3032,25 +3323,27 @@
         `;
       });
 
+      const completedOnly = db.filter(d => getTripTimelineState(d).phase === 'completed');
+
       const totalWorld = 195;
       const totalBRStates = 27;
       const totalUSStates = 50;
 
       const uniqueBrStates = new Set(
-        db.filter(d => d.region === 'Brasil')
+        completedOnly.filter(d => d.region === 'Brasil')
           .map(d => 'BR-' + d.code.toUpperCase().replace('BR-', ''))
       );
       uniqueBrStates.add(HOME_STATE_BR);
       document.getElementById('stat-brazil').innerText = ((uniqueBrStates.size / totalBRStates) * 100).toFixed(1) + '%';
 
       const uniqueUsStates = new Set(
-        db.filter(d => d.region === 'EUA')
+        completedOnly.filter(d => d.region === 'EUA')
           .map(d => 'US-' + d.code.toUpperCase().replace('US-', ''))
       );
       document.getElementById('stat-usa').innerText = ((uniqueUsStates.size / totalUSStates) * 100).toFixed(1) + '%';
 
       const uniqueCountries = new Set(
-        db.filter(d => d.region !== 'Brasil' && d.region !== 'EUA')
+        completedOnly.filter(d => d.region !== 'Brasil' && d.region !== 'EUA')
           .map(d => d.code.toUpperCase())
       );
       uniqueCountries.add('BR');
@@ -3058,11 +3351,11 @@
       document.getElementById('stat-world').innerText = ((uniqueCountries.size / totalWorld) * 100).toFixed(1) + '%';
 
       const totalEurope = 44;
-      const europeCount = new Set(db.filter(d => d.region === 'Europa').map(d => d.code.toUpperCase())).size;
+      const europeCount = new Set(completedOnly.filter(d => d.region === 'Europa').map(d => d.code.toUpperCase())).size;
       document.getElementById('stat-europe').innerText = ((europeCount / totalEurope) * 100).toFixed(1) + '%';
 
       const totalAsia = 48;
-      const asiaCount = new Set(db.filter(d => d.region === 'Asia').map(d => d.code.toUpperCase())).size;
+      const asiaCount = new Set(completedOnly.filter(d => d.region === 'Asia').map(d => d.code.toUpperCase())).size;
       document.getElementById('stat-asia').innerText = ((asiaCount / totalAsia) * 100).toFixed(1) + '%';
 
       renderBadges(uniqueBrStates.size, uniqueCountries.size);
