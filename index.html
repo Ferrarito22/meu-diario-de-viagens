@@ -730,6 +730,8 @@
     }
     .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px var(--accent-glow); }
     .btn-secondary { background: #3b82f6; color: #fff; }
+    .btn-edit { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.35); padding: 6px 9px; }
+    .btn-edit:hover { background: #3b82f6; color: #fff; }
     .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); padding: 6px 10px; }
     .btn-danger:hover { background: #ef4444; color: #fff; }
 
@@ -1088,7 +1090,7 @@
               <button class="sb-pill" style="padding: 3px 9px;" onclick="closeGalaxyDrawer()">✕</button>
             </div>
 
-            <input type="text" id="drawerQuickSearchInput" class="drawer-quick-search" placeholder="Buscar destinos (pressione /)" oninput="handleDrawerQuickFilter(this.value)">
+            <input type="text" id="drawerQuickSearchInput" class="drawer-quick-search" placeholder="Buscar destinos ou cidades (pressione /)" oninput="handleDrawerQuickFilter(this.value)">
             <div id="drawerQuickFilterResults" style="display: none; margin-bottom: 14px;"></div>
 
             <div id="drawerSingleDetailView">
@@ -1115,7 +1117,7 @@
             <button class="sb-pill" onclick="toggleHomeAnalyticsModal()">✕</button>
           </div>
 
-          <input type="text" id="sbSearchInput" class="sb-global-search" placeholder="🔍 Buscar cada destino, foguete, lua, país ou roteiro..." oninput="filterCosmosSearch(this.value)">
+          <input type="text" id="sbSearchInput" class="sb-global-search" placeholder="🔍 Buscar cada destino, cidade, foguete, lua ou roteiro..." oninput="filterCosmosSearch(this.value)">
           
           <div id="sbSearchResultsGrid" style="display: none; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; margin-bottom: 18px;"></div>
 
@@ -1196,16 +1198,22 @@
       <div class="grid-layout">
         <div>
           <div class="card">
-            <h2>➕ Adicionar Destino ou Viagem Futura</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h2 id="adminFormHeading" style="margin: 0;">➕ Adicionar Destino ou Viagem Futura</h2>
+              <button type="button" id="cancelEditBtn" class="btn btn-danger" style="display: none; font-size: 0.78rem;" onclick="cancelEditDestination()">✕ Cancelar Edição</button>
+            </div>
+            
             <form id="addDestinationForm" onsubmit="handleSaveDestination(event)">
+              <input type="hidden" id="editingDestinationId" value="">
+
               <div class="form-group">
                 <label>Nome do País / Estado / Território</label>
-                <input type="text" id="adminName" placeholder="Ex: Japão, São Paulo, Flórida, Geórgia" required>
+                <input type="text" id="adminName" placeholder="Ex: Paraná, Japão, São Paulo, Flórida" required>
               </div>
 
               <div class="form-group">
-                <label>Código ISO / Sigla (Ex: JP, SP, FL, GE, RO)</label>
-                <input type="text" id="adminCode" placeholder="Ex: JP, SP, FL, GE" maxlength="5" style="text-transform: uppercase;" required>
+                <label>Código ISO / Sigla (Ex: PR, JP, SP, FL, GE)</label>
+                <input type="text" id="adminCode" placeholder="Ex: PR, JP, SP, FL" maxlength="5" style="text-transform: uppercase;" required>
               </div>
               
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -1223,7 +1231,7 @@
                 </div>
                 <div class="form-group">
                   <label>Ano da Viagem</label>
-                  <input type="text" id="adminYear" placeholder="Ex: 2028">
+                  <input type="text" id="adminYear" placeholder="Ex: 2025 ou 2028">
                 </div>
               </div>
 
@@ -1248,7 +1256,12 @@
                 <input type="text" id="adminRoteiroLink" placeholder="Ex: /roteiro-japao.pdf ou https://...">
               </div>
 
-              <button type="submit" class="btn" style="width: 100%; padding: 12px;">Salvar e Carimbar Passaporte</button>
+              <div class="form-group">
+                <label>Cidades Visitadas / Roteiro Rápido (opcional, caso não tenha PDF)</label>
+                <input type="text" id="adminCities" placeholder="Ex: Curitiba, Foz do Iguaçu, Morretes">
+              </div>
+
+              <button type="submit" id="adminSubmitBtn" class="btn" style="width: 100%; padding: 12px;">Salvar e Carimbar Passaporte</button>
             </form>
           </div>
 
@@ -1277,7 +1290,7 @@
 
         <div>
           <div class="card">
-            <h2>📋 Gerenciador de Ímãs & QR Codes</h2>
+            <h2>📋 Gerenciador de Ímãs, Edição & QR Codes</h2>
             <table>
               <thead>
                 <tr>
@@ -1714,24 +1727,20 @@
       return new THREE.CanvasTexture(canvas);
     }
 
-    // Constrói modelo 3D de Foguete Espacial com propulsor luminoso
     function createRocketProbeMesh() {
       const rocketGroup = new THREE.Group();
 
-      // Fuselagem metálica branca/prateada
       const bodyGeo = new THREE.CylinderGeometry(0.14, 0.17, 0.65, 16);
       bodyGeo.rotateZ(-Math.PI / 2);
       const bodyMesh = new THREE.Mesh(bodyGeo, new THREE.MeshBasicMaterial({ color: 0xf8fafc }));
       rocketGroup.add(bodyMesh);
 
-      // Coifa frontal cônica ciano/azul
       const noseGeo = new THREE.ConeGeometry(0.14, 0.32, 16);
       noseGeo.rotateZ(-Math.PI / 2);
       const noseMesh = new THREE.Mesh(noseGeo, new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
       noseMesh.position.x = 0.48;
       rocketGroup.add(noseMesh);
 
-      // Aletas estabilizadoras
       const finGeo = new THREE.BoxGeometry(0.22, 0.44, 0.04);
       const finMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
       const fin1 = new THREE.Mesh(finGeo, finMat);
@@ -1743,7 +1752,6 @@
       fin2.position.x = -0.22;
       rocketGroup.add(fin2);
 
-      // Chama e brilho do propulsor traseiro
       const thrusterGlow = new THREE.Sprite(new THREE.SpriteMaterial({
         map: createStarGlowTexture('#bae6fd', 'rgba(56, 189, 248, 0.85)'),
         transparent: true,
@@ -1753,7 +1761,6 @@
       thrusterGlow.position.x = -0.45;
       rocketGroup.add(thrusterGlow);
 
-      // Hitbox invisível para facilitar o clique e hover no foguete
       const hitMesh = new THREE.Mesh(
         new THREE.SphereGeometry(0.75, 12, 12),
         new THREE.MeshBasicMaterial({ visible: false })
@@ -1816,7 +1823,6 @@
       const bgStars = new THREE.Points(bgGeo, new THREE.PointsMaterial({ color: 0xe2e8f0, size: 0.32, transparent: true, opacity: 0.65 }));
       gScene.add(bgStars);
 
-      // BURACO NEGRO CENTRAL (GARGANTUA)
       const bhGroup = new THREE.Group();
 
       const blackHoleSphere = new THREE.Mesh(
@@ -1859,7 +1865,6 @@
 
       gScene.add(bhGroup);
 
-      // Arcos Orbitais Externos com Cometas Deslizantes
       for (let i = 0; i < 5; i++) {
         const arcR = 24.5 + i * 3.5;
         const startA = i * 1.25;
@@ -1969,7 +1974,6 @@
         { core: '#fed7aa', halo: 'rgba(251, 146, 60, 0.50)', line: 0xfb923c, planetHex: 0xc2410c }
       ];
 
-      // Separa viagens futuras (Foguetes) e em trânsito (Engolidas pelo Disco de Acreção)
       const completedItems = [];
       const upcomingItems = [];
       const transitItems = [];
@@ -1985,13 +1989,12 @@
         }
       });
 
-      // 1. RENDERIZA FOGUETES ESPACIAIS EM APROXIMAÇÃO GRAVITACIONAL AO GARGANTUA
+      // 1. FOGUETES ESPACIAIS EM APROXIMAÇÃO GRAVITACIONAL
       upcomingItems.forEach((entry, rIdx) => {
         const { item, state } = entry;
         const daysLeft = state.remainingMs / (1000 * 60 * 60 * 24);
-        // Janela de 2 anos (730 dias): quanto mais próximo de 0 dias, mais perto da borda do disco de acreção (raio 8.6)
         const approachFactor = 1 - Math.min(1, Math.max(0, daysLeft / 730));
-        const currentRadius = 27.5 - approachFactor * 18.9; // De 27.5 até 8.6 (borda interna do disco)
+        const currentRadius = 27.5 - approachFactor * 18.9;
         const baseAngle = rIdx * 2.1 + 0.8;
         const yOffset = (rIdx % 2 === 0 ? 1 : -1) * 1.8;
 
@@ -2003,7 +2006,6 @@
         );
         universeGroup.add(rocketModel.group);
 
-        // Trilha espiral mostrando a queda rumo ao disco de acreção
         const trailLine = createGravitySpiralTrail(currentRadius, 8.2, baseAngle, yOffset);
         universeGroup.add(trailLine);
 
@@ -2038,7 +2040,7 @@
         });
       });
 
-      // 2. RENDERIZA VIAGENS ENGOLIDAS PELO DISCO DE ACREÇÃO (ENTRE IDA E VOLTA)
+      // 2. VIAGENS ENGOLIDAS PELO DISCO DE ACREÇÃO
       transitItems.forEach((entry, tIdx) => {
         const { item, state } = entry;
         const angle = tIdx * 1.9;
@@ -2069,7 +2071,7 @@
         singularityTransits.push({ mesh: transitAnchor, labelEl: tLabel, angle, state, item });
       });
 
-      // 3. RENDERIZA PLANETAS, LUAS E CONSTELAÇÕES DE VIAGENS CONCLUÍDAS / EJETADAS
+      // 3. PLANETAS, LUAS E CONSTELAÇÕES CONSOLIDADAS
       const grouped = new Map();
       grouped.set('Brasil', []);
 
@@ -2141,6 +2143,7 @@
               code: 'BR-RJ',
               region: 'Brasil • Lua Base',
               year: '2004 - ♾️',
+              cities: rjEntry ? rjEntry.cities : '',
               desc: 'Lua azul exclusiva em órbita do Planeta Brasil, marcando a base permanente e origem da vida (2004 - ♾️).',
               link: rjEntry ? rjEntry.link : '',
               roteiroLink: rjEntry ? rjEntry.roteiroLink : '',
@@ -2479,6 +2482,7 @@
 
       const d = bodyObj.data;
       const tState = getTripTimelineState(d);
+      const citiesBlock = d.cities ? `<br><br><strong>🏙️ Cidades / Roteiro Rápido:</strong> ${d.cities}` : '';
 
       document.getElementById('drawerQuickFilterResults').style.display = 'none';
       document.getElementById('drawerSingleDetailView').style.display = 'block';
@@ -2489,13 +2493,13 @@
         document.getElementById('drawerTitle').innerText = `🚀 ${d.name}`;
         document.getElementById('drawerMeta').innerText = `Embarque: ${d.startDate} • Retorno: ${d.endDate || 'A definir'} • Faltam ${formatCosmicCountdown(tState.remainingMs)}`;
         document.getElementById('drawerDesc').innerText = `Nave em trajetória espiral de aproximação gravitacional ao Gargantua. A cada dia que passa no calendário, a órbita encolhe rumo ao disco de acreção.`;
-        document.getElementById('drawerSummaryText').innerText = `No dia ${d.startDate}, a sonda será engolida pelo horizonte de eventos durante a viagem e ejetada como planeta consolidado na constelação ${d.region} em ${d.endDate || 'sua data de retorno'}.`;
+        document.getElementById('drawerSummaryText').innerHTML = `No dia ${d.startDate}, a sonda será engolida pelo horizonte de eventos durante a viagem e ejetada como planeta consolidado na constelação ${d.region} em ${d.endDate || 'sua data de retorno'}.${citiesBlock}`;
       } else if (bodyObj.isInTransit || tState.phase === 'in_transit') {
         document.getElementById('drawerTag').innerText = `SINGULARIDADE • VIAGEM EM ANDAMENTO`;
         document.getElementById('drawerTitle').innerText = `🌀 ${d.name}`;
         document.getElementById('drawerMeta').innerText = `Absorvida em ${d.startDate} • Ejeção prevista em ${d.endDate}`;
         document.getElementById('drawerDesc').innerText = `Expedição em andamento dentro do disco de acreção do Gargantua. Faltam ${formatCosmicCountdown(tState.remainingMs)} para o retorno e consolidação orbital.`;
-        document.getElementById('drawerSummaryText').innerText = `Assim que a data de retorno (${d.endDate}) for atingida, o buraco negro ejetará ${d.name} como um novo astro na constelação ${d.region}.`;
+        document.getElementById('drawerSummaryText').innerHTML = `Assim que a data de retorno (${d.endDate}) for atingida, o buraco negro ejetará ${d.name} como um novo astro na constelação ${d.region}.${citiesBlock}`;
       } else {
         document.getElementById('drawerTag').innerText = bodyObj.isRioOrigin
           ? 'LUA BASE • ORIGEM DA VIDA'
@@ -2506,9 +2510,9 @@
           : `Atualizado: ${d.startDate || d.year || 'Registrado'} • Código ${d.code}`;
 
         document.getElementById('drawerDesc').innerText = d.desc || `Corpo celeste catalogado no sistema ${d.region || 'Global'} (${d.code}), orbitando o Gargantua em trajetória estável.`;
-        document.getElementById('drawerSummaryText').innerText = bodyObj.isRioOrigin
-          ? `Ponto zero de partida e retorno de todas as expedições do passaporte digital. Órbita azul exclusiva vinculada ao Planeta Brasil.`
-          : `Destino registrado no ano de ${d.year || '—'}. Utilize os controles abaixo para abrir a galeria de fotos no Google Drive ou consultar o roteiro detalhado em PDF.`;
+        document.getElementById('drawerSummaryText').innerHTML = bodyObj.isRioOrigin
+          ? `Ponto zero de partida e retorno de todas as expedições do passaporte digital. Órbita azul exclusiva vinculada ao Planeta Brasil.${citiesBlock}`
+          : `Destino registrado no ano de ${d.year || '—'}.${citiesBlock}`;
       }
 
       let actionsHtml = '';
@@ -2518,7 +2522,7 @@
       if (d.roteiroLink) {
         actionsHtml += `<button class="btn btn-secondary" style="width:100%;" onclick="openMediaModal('Roteiro: ${d.name}', '${d.roteiroLink}')">📋 Ver Roteiro (PDF)</button>`;
       }
-      if (!actionsHtml) {
+      if (!actionsHtml && !d.cities) {
         actionsHtml = `<span style="font-size: 0.76rem; color: #64748b; text-align: center;">Nenhum álbum ou roteiro PDF vinculado a este registro.</span>`;
       }
       document.getElementById('drawerActions').innerHTML = actionsHtml;
@@ -2544,12 +2548,13 @@
       const matches = clickableBodies.filter(b =>
         b.data.name.toLowerCase().includes(term) ||
         (b.data.code && b.data.code.toLowerCase().includes(term)) ||
-        (b.data.region && b.data.region.toLowerCase().includes(term))
+        (b.data.region && b.data.region.toLowerCase().includes(term)) ||
+        (b.data.cities && b.data.cities.toLowerCase().includes(term))
       );
       box.innerHTML = matches.map((b, i) => `
         <div onclick="selectFromDrawerList(${i}, '${term.replace(/'/g, "\\'")}')" style="padding: 9px 11px; border-radius: 9px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); margin-bottom: 6px; cursor: pointer;">
           <div style="font-size: 0.78rem; font-weight: 600; color: ${b.isRocket ? '#38bdf8' : (b.isRioOrigin ? '#60a5fa' : '#f8fafc')};">${b.isRocket ? '🚀 ' : (b.isRioOrigin ? '🔵 ' : '')}${b.data.name}</div>
-          <div style="font-size: 0.67rem; color: #64748b;">${b.isRocket ? 'Faltam ' + formatCosmicCountdown(b.timelineState.remainingMs) : (b.data.region + ' • ' + (b.data.year || b.data.code))}</div>
+          <div style="font-size: 0.67rem; color: #64748b;">${b.isRocket ? 'Faltam ' + formatCosmicCountdown(b.timelineState.remainingMs) : (b.data.region + ' • ' + (b.data.year || b.data.code))}${b.data.cities ? ' • ' + b.data.cities : ''}</div>
         </div>
       `).join('');
     }
@@ -2558,7 +2563,8 @@
       const matches = clickableBodies.filter(b =>
         b.data.name.toLowerCase().includes(term) ||
         (b.data.code && b.data.code.toLowerCase().includes(term)) ||
-        (b.data.region && b.data.region.toLowerCase().includes(term))
+        (b.data.region && b.data.region.toLowerCase().includes(term)) ||
+        (b.data.cities && b.data.cities.toLowerCase().includes(term))
       );
       if (matches[idx]) focusOnBody(matches[idx]);
     }
@@ -2607,14 +2613,14 @@
       const uniqueUs = new Set(completedDb.filter(d => d.region === 'EUA').map(d => d.code.toUpperCase())).size;
       const uniqueCountries = new Set(completedDb.filter(d => d.region !== 'Brasil' && d.region !== 'EUA').map(d => d.code.toUpperCase())).size + 1 + (uniqueUs > 0 ? 1 : 0);
       const totalMoons = uniqueBr + uniqueUs;
-      const linkedMedia = db.filter(d => (d.link && d.link !== '#') || d.roteiroLink).length;
+      const linkedMedia = db.filter(d => (d.link && d.link !== '#') || d.roteiroLink || d.cities).length;
       const worldPct = ((uniqueCountries / 195) * 100).toFixed(1) + '%';
 
       const kpis = [
         { num: uniqueCountries, badge: `${worldPct} mundo`, badgeBg: 'rgba(249,115,22,0.18)', badgeCol: '#fb923c', sub: 'Países Consolidados', hint: 'de 195 nações', barCol: '#f97316', heights: [30, 50, 40, 75, 60, 90, 100] },
         { num: totalMoons, badge: `${uniqueBr}/27 BR`, badgeBg: 'rgba(16,185,129,0.18)', badgeCol: '#34d399', sub: 'Luas (Estados)', hint: 'Brasil & EUA', barCol: '#10b981', heights: [45, 65, 55, 80, 95, 70, 100] },
         { num: futureRockets.length, badge: 'Em órbita', badgeBg: 'rgba(56,189,248,0.18)', badgeCol: '#38bdf8', sub: 'Foguetes Futuros', hint: 'Rumo ao disco', barCol: '#38bdf8', heights: [25, 45, 65, 85, 100, 70, 90] },
-        { num: linkedMedia, badge: 'Drive & PDF', badgeBg: 'rgba(236,72,153,0.18)', badgeCol: '#f472b6', sub: 'Mídias & Roteiros', hint: 'Álbuns vinculados', barCol: '#ec4899', heights: [35, 55, 60, 70, 85, 95, 100] }
+        { num: linkedMedia, badge: 'Drive, PDF & Cidades', badgeBg: 'rgba(236,72,153,0.18)', badgeCol: '#f472b6', sub: 'Roteiros & Mídias', hint: 'Registros detalhados', barCol: '#ec4899', heights: [35, 55, 60, 70, 85, 95, 100] }
       ];
 
       document.getElementById('sbKpiGrid').innerHTML = kpis.map(k => `
@@ -2679,15 +2685,15 @@
         </div>
       `).join('');
 
-      const mediaBodies = clickableBodies.filter(b => (b.data.link && b.data.link !== '#') || b.data.roteiroLink).slice(0, 5);
+      const mediaBodies = clickableBodies.filter(b => (b.data.link && b.data.link !== '#') || b.data.roteiroLink || b.data.cities).slice(0, 5);
       document.getElementById('sbMediaLinkedList').innerHTML = mediaBodies.length > 0
         ? mediaBodies.map(b => `
           <div class="sb-activity-item" onclick="document.getElementById('sbHomeModal').classList.remove('open'); focusOnBody(clickableBodies.find(x => x.data.id === '${b.data.id}'));">
             <span>📂 ${b.data.name}</span>
-            <span style="font-size:0.68rem; color:#38bdf8;">${b.data.roteiroLink ? 'PDF + Fotos' : 'Galeria'}</span>
+            <span style="font-size:0.68rem; color:#38bdf8;">${b.data.roteiroLink ? 'PDF' : (b.data.cities ? 'Cidades' : 'Galeria')}</span>
           </div>
         `).join('')
-        : `<div style="font-size:0.74rem; color:#64748b;">Vincule links do Drive ou PDFs no Admin para listar aqui.</div>`;
+        : `<div style="font-size:0.74rem; color:#64748b;">Vincule links do Drive, PDFs ou cidades no Admin para listar aqui.</div>`;
     }
 
     function filterCosmosSearch(query) {
@@ -2707,7 +2713,8 @@
       const filtered = clickableBodies.filter(b =>
         b.data.name.toLowerCase().includes(q) ||
         (b.data.code && b.data.code.toLowerCase().includes(q)) ||
-        (b.data.region && b.data.region.toLowerCase().includes(q))
+        (b.data.region && b.data.region.toLowerCase().includes(q)) ||
+        (b.data.cities && b.data.cities.toLowerCase().includes(q))
       );
 
       grid.innerHTML = filtered.map((b, idx) => `
@@ -2716,7 +2723,7 @@
             ${b.isRocket ? '🚀 SONDA FUTURA' : (b.isRioOrigin ? '🔵 LUA BASE (2004 - ♾️)' : (b.data.region || 'DESTINO'))}
           </div>
           <div style="font-weight: 700; font-size: 0.95rem; color: #fff;">${b.data.name}</div>
-          <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 4px;">${b.data.code} • ${b.data.year || ''}</div>
+          <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 4px;">${b.data.code} • ${b.data.year || ''}${b.data.cities ? ' • ' + b.data.cities : ''}</div>
         </div>
       `).join('');
     }
@@ -2725,7 +2732,8 @@
       const filtered = clickableBodies.filter(b =>
         b.data.name.toLowerCase().includes(query) ||
         (b.data.code && b.data.code.toLowerCase().includes(query)) ||
-        (b.data.region && b.data.region.toLowerCase().includes(query))
+        (b.data.region && b.data.region.toLowerCase().includes(query)) ||
+        (b.data.cities && b.data.cities.toLowerCase().includes(query))
       );
       if (filtered[idx]) {
         document.getElementById('sbHomeModal').classList.remove('open');
@@ -2836,7 +2844,6 @@
         universeGroup.rotation.y += 0.001;
       }
 
-      // Órbita das luas nos Planetas Brasil e EUA
       orbitingMoons.forEach(m => {
         m.angle += m.speed;
         const x = Math.cos(m.angle) * m.radius;
@@ -2845,7 +2852,6 @@
         m.mesh.position.set(x, y, z);
       });
 
-      // Cometas nas órbitas externas
       outerComets.forEach(c => {
         c.angle += c.speed;
         c.mesh.position.set(Math.cos(c.angle) * c.radius, c.y, Math.sin(c.angle) * c.radius);
@@ -2858,7 +2864,6 @@
       const shouldUpdateText = (elapsed - lastCountdownRefresh) > 1.0;
       if (shouldUpdateText) lastCountdownRefresh = elapsed;
 
-      // Atualiza Foguetes Futuros (aproximação gravitacional + orientação tangencial + rótulo)
       futureRockets.forEach(r => {
         const freshState = getTripTimelineState(r.item);
         const daysLeft = freshState.remainingMs / (1000 * 60 * 60 * 24);
@@ -2872,7 +2877,6 @@
 
         r.group.position.set(nx, ny, nz);
 
-        // Orienta o nariz do foguete na direção do movimento espiral rumo ao centro
         const nextAngle = r.angle + 0.08;
         const nextR = Math.max(4.0, dynamicRadius - 0.35);
         const targetVec = new THREE.Vector3(Math.cos(nextAngle) * nextR, ny, Math.sin(nextAngle) * nextR);
@@ -2889,7 +2893,6 @@
         updateCosmicLabel(r.group, r.labelEl, w, h, true);
       });
 
-      // Atualiza viagens em andamento dentro do disco de acreção
       singularityTransits.forEach(st => {
         st.angle += 0.015;
         st.mesh.position.set(Math.cos(st.angle) * 5.2, 0.4, Math.sin(st.angle) * 5.2);
@@ -3042,8 +3045,42 @@
       }
     });
 
+    // =========================================================================
+    // ADMIN: CRIAR, EDITAR E EXCLUIR DESTINOS
+    // =========================================================================
+    function startEditDestination(id) {
+      const item = db.find(d => d.id === id);
+      if (!item) return;
+
+      document.getElementById('editingDestinationId').value = item.id;
+      document.getElementById('adminName').value = item.name || '';
+      document.getElementById('adminCode').value = (item.code || '').replace(/^BR-|^US-/, '');
+      document.getElementById('adminRegion').value = item.region || 'Brasil';
+      document.getElementById('adminYear').value = item.year || '';
+      document.getElementById('adminStartDate').value = item.startDate || '';
+      document.getElementById('adminEndDate').value = item.endDate || '';
+      document.getElementById('adminDriveLink').value = item.link || '';
+      document.getElementById('adminRoteiroLink').value = item.roteiroLink || '';
+      document.getElementById('adminCities').value = item.cities || '';
+
+      document.getElementById('adminFormHeading').innerText = `✏️ Editando: ${item.name}`;
+      document.getElementById('adminSubmitBtn').innerText = 'Salvar Alterações';
+      document.getElementById('cancelEditBtn').style.display = 'inline-block';
+
+      document.getElementById('addDestinationForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function cancelEditDestination() {
+      document.getElementById('editingDestinationId').value = '';
+      document.getElementById('addDestinationForm').reset();
+      document.getElementById('adminFormHeading').innerText = '➕ Adicionar Destino ou Viagem Futura';
+      document.getElementById('adminSubmitBtn').innerText = 'Salvar e Carimbar Passaporte';
+      document.getElementById('cancelEditBtn').style.display = 'none';
+    }
+
     async function handleSaveDestination(e) {
       e.preventDefault();
+      const editingId = document.getElementById('editingDestinationId').value;
       const name = document.getElementById('adminName').value;
       let code = document.getElementById('adminCode').value.toUpperCase();
       const region = document.getElementById('adminRegion').value;
@@ -3052,14 +3089,33 @@
       const endDate = document.getElementById('adminEndDate').value;
       const link = document.getElementById('adminDriveLink').value;
       const roteiroLink = document.getElementById('adminRoteiroLink').value;
+      const cities = document.getElementById('adminCities').value.trim();
 
       if (region === 'Brasil' && !code.startsWith('BR-')) code = 'BR-' + code;
       if (region === 'EUA' && !code.startsWith('US-')) code = 'US-' + code;
 
-      const id = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4);
+      if (editingId) {
+        const index = db.findIndex(d => d.id === editingId);
+        if (index !== -1) {
+          db[index] = {
+            ...db[index],
+            code,
+            name,
+            region,
+            year,
+            startDate,
+            endDate,
+            link,
+            roteiroLink,
+            cities
+          };
+        }
+      } else {
+        const id = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4);
+        db.push({ id, code, name, region, year, startDate, endDate, link, roteiroLink, cities });
+      }
 
-      db.push({ id, code, name, region, year, startDate, endDate, link, roteiroLink });
-      document.getElementById('addDestinationForm').reset();
+      cancelEditDestination();
       await saveCloudData();
     }
 
@@ -3173,7 +3229,7 @@
           if (!stampedCountries.has(countryCode)) {
             const info = COUNTRY_LANDMARKS[countryCode] || {
               name: item.name,
-              landmark: item.region || 'Destino Internacional',
+              landmark: item.cities || item.region || 'Destino Internacional',
               photo: '/logo-app.jpg',
               fallback: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=600&q=80',
               color: '#10b981'
@@ -3182,7 +3238,7 @@
             stampedCountries.set(countryCode, {
               code: countryCode,
               name: info.name,
-              landmark: info.landmark,
+              landmark: item.cities || info.landmark,
               photo: info.photo,
               fallback: info.fallback || info.photo,
               color: info.color,
@@ -3233,7 +3289,7 @@
             if (!stampedBrStates.has(fullCode)) {
               const info = BRAZIL_STATE_LANDMARKS[fullCode] || {
                 name: item.name,
-                landmark: 'Brasil • Estado Visitado',
+                landmark: item.cities || 'Brasil • Estado Visitado',
                 photo: '/cristo-br.jpg',
                 fallback: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=600&q=80',
                 color: '#10b981'
@@ -3242,7 +3298,7 @@
               stampedBrStates.set(fullCode, {
                 code: fullCode,
                 name: info.name,
-                landmark: info.landmark,
+                landmark: item.cities || info.landmark,
                 photo: info.photo,
                 fallback: info.fallback || info.photo,
                 color: '#10b981',
@@ -3289,9 +3345,13 @@
           : (tState.phase === 'in_transit' ? '🌀 Em Trânsito' : (item.year || ''));
         tbody.innerHTML += `
           <tr>
-            <td><strong>${item.name}</strong> <br><small style="color:var(--text-muted)">${statusBadge}</small></td>
-            <td><code>${item.code}</code></td>
             <td>
+              <strong>${item.name}</strong>
+              <br><small style="color:var(--text-muted)">${statusBadge}${item.cities ? ' • ' + item.cities : ''}</small>
+            </td>
+            <td><code>${item.code}</code></td>
+            <td style="white-space: nowrap;">
+              <button class="btn btn-edit" title="Editar Viagem" onclick="startEditDestination('${item.id}')">✏️</button>
               <button class="btn" style="padding: 6px 10px; font-size: 0.8rem;" onclick="openQrModal('${item.id}', '${item.name}', '${item.link}')">QR</button>
               <button class="btn btn-danger" onclick="deleteDestination('${item.id}')">✕</button>
             </td>
@@ -3315,6 +3375,7 @@
               <strong>${icon} ${item.name}</strong>
               <span style="font-size: 0.78rem; color: ${tState.phase === 'upcoming' ? '#38bdf8' : 'var(--text-muted)'}; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 6px;">${badgeText}</span>
             </div>
+            ${item.cities ? `<div style="font-size: 0.78rem; color: #94a3b8; margin-top: 4px;">🏙️ <strong>Cidades:</strong> ${item.cities}</div>` : ''}
             <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px;">
               ${item.link && item.link !== '#' ? `<button onclick="openMediaModal('Galeria: ${item.name}', '${item.link}')" style="background:none; border:none; color: var(--accent); cursor:pointer; font-size: 0.82rem; font-weight: 600; padding:0;">🖼️ Ver Fotos</button>` : ''}
               ${item.roteiroLink ? `<button onclick="openMediaModal('Roteiro: ${item.name}', '${item.roteiroLink}')" style="background:none; border:none; color: #38bdf8; cursor:pointer; font-size: 0.82rem; font-weight: 600; padding:0;">📋 Ver Roteiro (PDF)</button>` : ''}
