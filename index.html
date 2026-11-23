@@ -163,17 +163,19 @@
     .legend-item { display: flex; align-items: center; gap: 6px; }
     .legend-dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
 
-    /* ABA GALÁXIA 3D - GARGANTUA + PLANETAS & LUAS */
+    /* =====================================================================
+       ABA GALÁXIA 3D - RÉPLICA EXATA DO VÍDEO (@idontvibecode / GARGANTUA)
+       ===================================================================== */
     .galaxy-wrapper {
       position: relative;
       width: 100%;
-      height: 80vh;
-      min-height: 580px;
-      background: #030407;
+      height: 82vh;
+      min-height: 600px;
+      background: #020305;
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.85);
+      box-shadow: 0 25px 65px rgba(0,0,0,0.9);
     }
     #galaxy-canvas-container {
       width: 100%;
@@ -183,7 +185,8 @@
     }
     #galaxy-canvas-container:active { cursor: grabbing; }
 
-    .galaxy-hud-top {
+    /* Barra Superior Minimalista igual ao vídeo (00:01 - 00:18) */
+    .sb-top-bar {
       position: absolute;
       top: 18px;
       left: 22px;
@@ -192,33 +195,90 @@
       justify-content: space-between;
       align-items: center;
       pointer-events: none;
-      z-index: 15;
+      z-index: 20;
     }
-    .galaxy-pill-btn {
-      background: rgba(15, 18, 26, 0.78);
-      backdrop-filter: blur(12px);
+    .sb-brand-meta {
+      pointer-events: auto;
+      text-align: left;
+    }
+    .sb-brand-meta .sb-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #f8fafc;
+      display: block;
+    }
+    .sb-brand-meta .sb-sub {
+      font-size: 0.7rem;
+      color: #64748b;
+      display: block;
+      margin-top: 2px;
+    }
+    .sb-pill {
+      background: rgba(16, 18, 24, 0.78);
+      backdrop-filter: blur(14px);
       color: #e2e8f0;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      padding: 8px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 7px 16px;
       border-radius: 999px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 500;
       cursor: pointer;
       pointer-events: auto;
       transition: all 0.2s ease;
     }
-    .galaxy-pill-btn:hover {
-      border-color: rgba(251, 191, 36, 0.6);
-      color: #fef3c7;
-      background: rgba(25, 30, 44, 0.9);
+    .sb-pill:hover {
+      background: rgba(30, 34, 46, 0.92);
+      border-color: rgba(255, 255, 255, 0.28);
+      color: #fff;
     }
 
+    /* Overlay Typewriter Esquerdo (igual aos segundos 00:01 - 00:05 do vídeo) */
+    .sb-briefing-overlay {
+      position: absolute;
+      top: 72px;
+      left: 28px;
+      width: 340px;
+      max-width: calc(100% - 56px);
+      pointer-events: none;
+      z-index: 15;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .sb-briefing-overlay.faded {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    .sb-briefing-greeting {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #f8fafc;
+      margin: 0 0 14px 0;
+      letter-spacing: -0.02em;
+      text-shadow: 0 2px 14px rgba(0,0,0,0.9);
+    }
+    .sb-briefing-body {
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: #cbd5e1;
+      text-shadow: 0 1px 10px rgba(0,0,0,0.95);
+    }
+    .sb-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 13px;
+      background: #f8fafc;
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blinkCursor 0.8s infinite;
+    }
+    @keyframes blinkCursor { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+    /* Camada de Rótulos 3D -> 2D */
     #galaxy-labels-layer {
       position: absolute;
       inset: 0;
       pointer-events: none;
       overflow: hidden;
-      z-index: 8;
+      z-index: 10;
     }
     .cosmic-label {
       position: absolute;
@@ -227,85 +287,136 @@
       pointer-events: auto;
       cursor: pointer;
       user-select: none;
-      transition: transform 0.18s ease, opacity 0.2s ease;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.95), 0 0 20px rgba(0,0,0,0.9);
+      transition: transform 0.16s ease, opacity 0.2s ease;
+      text-shadow: 0 2px 10px rgba(0,0,0,1), 0 0 18px rgba(0,0,0,0.95);
     }
     .cosmic-label:hover {
-      transform: translate(-50%, -54%) scale(1.08);
+      transform: translate(-50%, -55%) scale(1.08);
     }
     .cosmic-label .lbl-title {
       display: block;
-      font-size: 0.84rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      color: #f8fafc;
+      color: #f1f5f9;
       letter-spacing: 0.01em;
     }
     .cosmic-label .lbl-sub {
       display: block;
-      font-size: 0.68rem;
-      color: #94a3b8;
+      font-size: 0.65rem;
+      color: #64748b;
       margin-top: 1px;
     }
     .cosmic-label.planet-star .lbl-title {
-      font-size: 0.9rem;
       color: #fde68a;
+      font-size: 0.84rem;
     }
     .cosmic-label.home-moon .lbl-title {
       color: #60a5fa;
       font-weight: 700;
-      text-shadow: 0 0 14px rgba(59, 130, 246, 0.9), 0 2px 6px #000;
+      text-shadow: 0 0 14px rgba(59, 130, 246, 0.95), 0 2px 6px #000;
     }
     .cosmic-label.home-moon .lbl-sub {
       color: #93c5fd;
     }
     .cosmic-label.dest-star .lbl-title {
-      font-size: 0.75rem;
-      color: #fef3c7;
+      font-size: 0.74rem;
+      color: #e2e8f0;
     }
 
-    /* Painel Lateral Translúcido */
+    /* Tooltip Hover Flutuante (igual 00:09 - 00:15 do vídeo) */
+    .sb-hover-tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: rgba(14, 16, 22, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #f8fafc;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.74rem;
+      font-weight: 500;
+      white-space: nowrap;
+      z-index: 30;
+      transform: translate(-50%, -140%);
+      display: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.85);
+    }
+
+    /* Dock Inferior Flutuante (igual 00:01 - 00:24 do vídeo) */
+    .sb-bottom-dock {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(16, 18, 24, 0.82);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 6px 12px;
+      border-radius: 999px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      z-index: 20;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+    .sb-dock-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.15s;
+    }
+    .sb-dock-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    /* Painel Lateral Translúcido (igual 00:16 - 00:17 do vídeo) */
     .galaxy-drawer {
       position: absolute;
       top: 16px;
       right: 16px;
       bottom: 16px;
-      width: 360px;
+      width: 370px;
       max-width: calc(100% - 32px);
-      background: rgba(12, 14, 20, 0.86);
-      backdrop-filter: blur(22px);
+      background: rgba(12, 14, 19, 0.86);
+      backdrop-filter: blur(24px);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 16px;
       padding: 24px;
-      z-index: 25;
+      z-index: 35;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transform: translateX(115%);
+      transform: translateX(118%);
       transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+      box-shadow: -20px 0 55px rgba(0,0,0,0.85);
     }
     .galaxy-drawer.open { transform: translateX(0); }
 
-    .galaxy-bottom-dock {
+    /* Modal de Busca & Analytics Estilo Home (igual 00:19 - 00:22 do vídeo) */
+    .sb-home-modal {
       position: absolute;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15, 18, 26, 0.82);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 7px 16px;
-      border-radius: 999px;
-      font-size: 0.73rem;
-      color: #94a3b8;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      z-index: 12;
-      white-space: nowrap;
-      max-width: 94%;
-      overflow-x: auto;
+      inset: 56px 24px 64px 24px;
+      background: rgba(13, 15, 20, 0.92);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      padding: 24px;
+      z-index: 40;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.95);
     }
+    .sb-home-modal.open { display: flex; }
 
     /* FORMULÁRIOS & BOTÕES */
     .form-group { margin-bottom: 16px; text-align: left; }
@@ -667,34 +778,44 @@
       </div>
     </div>
 
-    <!-- ABA 2: GALÁXIA 3D INTERATIVA (GARGANTUA + PLANETAS BRASIL/EUA E SUAS LUAS) -->
+    <!-- ABA 2: GALÁXIA 3D INTERATIVA (RÉPLICA EXATA DO VÍDEO + PLANETAS/LUAS) -->
     <div id="tab-galaxy" class="view-panel">
       <div class="galaxy-wrapper">
-        <div class="galaxy-hud-top">
-          <button id="galaxyBreadcrumbBtn" class="galaxy-pill-btn" onclick="resetGalaxyCamera()">← Visão Geral</button>
-          <span style="font-size: 0.78rem; color: #94a3b8; background: rgba(15,18,26,0.75); padding: 6px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.08);">
-            Gargantua • Planetas & Luas
-          </span>
-          <button class="galaxy-pill-btn" onclick="resetGalaxyCamera()">Centralizar</button>
+        
+        <!-- Top Bar Minimalista igual ao vídeo -->
+        <div class="sb-top-bar">
+          <div class="sb-brand-meta">
+            <span class="sb-title" id="sbTopContextTitle">Atlas Cósmico</span>
+            <span class="sb-sub" id="sbTopContextSub">Gargantua • Órbitas Estáveis</span>
+          </div>
+          <button id="galaxyCenterPill" class="sb-pill" onclick="toggleHomeAnalyticsModal()">Home</button>
+          <button class="sb-pill" onclick="resetGalaxyCamera()">Destinos</button>
+        </div>
+
+        <!-- Briefing Typewriter Esquerdo (igual 00:01 - 00:05 do vídeo) -->
+        <div id="sbBriefingOverlay" class="sb-briefing-overlay">
+          <h3 class="sb-briefing-greeting" id="sbGreetingText">Bem-vindo, Guilherme.</h3>
+          <div class="sb-briefing-body" id="sbBriefingBody"></div>
         </div>
 
         <div id="galaxy-labels-layer"></div>
+        <div id="sbHoverTooltip" class="sb-hover-tooltip"></div>
         <div id="galaxy-canvas-container"></div>
 
-        <div class="galaxy-bottom-dock">
-          <span>⚫ Gargantua</span>
-          <span>•</span>
-          <span style="color: #fde68a;">🪐 Planetas (Brasil & EUA)</span>
-          <span>•</span>
-          <span style="color: #60a5fa;">🔵 Lua Rio de Janeiro (Base: 2004 - ♾️)</span>
+        <!-- Dock Inferior Flutuante igual ao vídeo -->
+        <div class="sb-bottom-dock">
+          <button class="sb-dock-btn" title="Afastar" onclick="adjustGalaxyZoom(6)">−</button>
+          <button class="sb-dock-btn" title="Aproximar" onclick="adjustGalaxyZoom(-6)">+</button>
+          <button class="sb-dock-btn" title="Centralizar Órbita" onclick="resetGalaxyCamera()">⌖</button>
+          <button class="sb-dock-btn" title="Busca e Resumo" onclick="toggleHomeAnalyticsModal()">☷</button>
         </div>
 
-        <!-- Painel Lateral Translúcido -->
+        <!-- Painel Lateral Translúcido (igual 00:16 - 00:17 do vídeo) -->
         <div id="galaxyDrawer" class="galaxy-drawer">
           <div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
               <span id="drawerTag" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.2px; color: #fbbf24; font-weight: 700;">DESTINO</span>
-              <button class="galaxy-pill-btn" style="padding: 4px 10px;" onclick="closeGalaxyDrawer()">✕</button>
+              <button class="sb-pill" style="padding: 4px 10px;" onclick="closeGalaxyDrawer()">✕</button>
             </div>
             <h3 id="drawerTitle" style="margin: 0 0 6px 0; font-size: 1.45rem; font-weight: 700; color: #fff;">-</h3>
             <p id="drawerMeta" style="margin: 0 0 18px 0; font-size: 0.8rem; color: #94a3b8; font-family: 'Courier Prime', monospace;">-</p>
@@ -706,6 +827,16 @@
           </div>
 
           <div id="drawerActions" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;"></div>
+        </div>
+
+        <!-- Modal Estilo Home / Busca do Vídeo (00:19 - 00:22) -->
+        <div id="sbHomeModal" class="sb-home-modal">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="margin: 0; font-size: 1.3rem;">Explorador Cósmico</h3>
+            <button class="sb-pill" onclick="toggleHomeAnalyticsModal()">✕ Fechar</button>
+          </div>
+          <input type="text" id="sbSearchInput" placeholder="Buscar país, estado, lua ou código ISO..." oninput="filterCosmosSearch(this.value)" style="margin-bottom: 18px; background: rgba(255,255,255,0.04);">
+          <div id="sbSearchResultsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;"></div>
         </div>
       </div>
     </div>
@@ -1022,6 +1153,7 @@
         setTimeout(() => {
           initGalaxyEngine();
           resizeGalaxy();
+          startBriefingTypewriter();
         }, 60);
       }
     }
@@ -1044,83 +1176,143 @@
     }
 
     // =========================================================================
-    // MOTOR 3D: GARGANTUA + PLANETAS (BRASIL & EUA) COM LUAS ORBITAIS
+    // MOTOR WEBGL / GLSL CUSTOM SHADERS - RÉPLICA EXATA DO VÍDEO (@idontvibecode)
     // =========================================================================
     let galaxyInitialized = false;
-    let gScene, gCamera, gRenderer, gRaycaster, gMouse;
-    let accretionDiskMesh, outerComets = [], nebulaSprites = [], universeGroup;
+    let gScene, gCamera, gRenderer, gRaycaster, gMouse, gClock;
+    let diskUniforms, lensUniforms, outerComets = [], nebulaSprites = [], universeGroup;
     let clusterObjects = [];
     let clickableBodies = [];
-    let orbitingMoons = []; // Luas dos estados orbitando Brasil e EUA
+    let orbitingMoons = [];
     let activeFocusedCluster = null;
+    let hoveredBody = null;
+    let briefingTimerId = null;
 
     let camState = {
-      theta: 0.25,
-      phi: 1.12,
-      radius: 38,
-      targetTheta: 0.25,
-      targetPhi: 1.12,
-      targetRadius: 38,
+      theta: 0.22,
+      phi: 1.14,
+      radius: 36,
+      targetTheta: 0.22,
+      targetPhi: 1.14,
+      targetRadius: 36,
       lookAt: new THREE.Vector3(0, 0, 0),
       targetLookAt: new THREE.Vector3(0, 0, 0),
+      panOffsetX: 0,
+      targetPanOffsetX: 0,
       isDragging: false,
       prevX: 0,
       prevY: 0,
       dragMoved: false
     };
 
-    function createAccretionDiskTexture() {
-      const canvas = document.createElement('canvas');
-      canvas.width = 512;
-      canvas.height = 512;
-      const ctx = canvas.getContext('2d');
-      const cx = 256, cy = 256;
-
-      const grad = ctx.createRadialGradient(cx, cy, 78, cx, cy, 250);
-      grad.addColorStop(0.00, 'rgba(0, 0, 0, 0)');
-      grad.addColorStop(0.06, 'rgba(255, 253, 240, 1)');
-      grad.addColorStop(0.18, 'rgba(253, 224, 130, 0.92)');
-      grad.addColorStop(0.40, 'rgba(217, 145, 58, 0.65)');
-      grad.addColorStop(0.68, 'rgba(146, 82, 24, 0.28)');
-      grad.addColorStop(1.00, 'rgba(0, 0, 0, 0)');
-
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 512, 512);
-
-      ctx.save();
-      ctx.translate(cx, cy);
-      for (let i = 0; i < 55; i++) {
-        const r = 86 + i * 2.8;
-        ctx.beginPath();
-        ctx.arc(0, 0, r, 0, Math.PI * 2);
-        const alpha = (1 - i / 55) * 0.24;
-        ctx.strokeStyle = i % 3 === 0 ? `rgba(255, 248, 220, ${alpha})` : `rgba(245, 158, 11, ${alpha})`;
-        ctx.lineWidth = (i % 4 === 0) ? 1.8 : 0.8;
-        ctx.stroke();
+    // GLSL Shader para o Disco de Acreção Turbulento (efeito plasma FBM + efeito Doppler do Gargantua)
+    const ACCRETION_VERTEX_SHADER = `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
-      ctx.restore();
+    `;
 
-      return new THREE.CanvasTexture(canvas);
-    }
+    const ACCRETION_FRAGMENT_SHADER = `
+      uniform float uTime;
+      varying vec2 vUv;
 
-    function createGravitationalLensTexture() {
-      const canvas = document.createElement('canvas');
-      canvas.width = 512;
-      canvas.height = 512;
-      const ctx = canvas.getContext('2d');
-      const cx = 256, cy = 256;
+      float hash(vec2 p) {
+        return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+      }
 
-      const grad = ctx.createRadialGradient(cx, cy, 82, cx, cy, 165);
-      grad.addColorStop(0.00, 'rgba(0,0,0,0)');
-      grad.addColorStop(0.08, 'rgba(255, 250, 230, 0.98)');
-      grad.addColorStop(0.24, 'rgba(251, 191, 36, 0.72)');
-      grad.addColorStop(0.55, 'rgba(217, 119, 6, 0.22)');
-      grad.addColorStop(1.00, 'rgba(0,0,0,0)');
+      float noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        f = f * f * (3.0 - 2.0 * f);
+        return mix(
+          mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), f.x),
+          mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x),
+          f.y
+        );
+      }
 
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 512, 512);
-      return new THREE.CanvasTexture(canvas);
-    }
+      float fbm(vec2 p) {
+        float v = 0.0;
+        float a = 0.5;
+        for (int i = 0; i < 5; i++) {
+          v += a * noise(p);
+          p *= 2.04;
+          a *= 0.5;
+        }
+        return v;
+      }
+
+      void main() {
+        vec2 p = (vUv - 0.5) * 2.0;
+        float r = length(p);
+        float angle = atan(p.y, p.x);
+
+        // Anel interno (borda do horizonte de eventos) até borda externa
+        float innerEdge = smoothstep(0.28, 0.34, r);
+        float outerEdge = 1.0 - smoothstep(0.55, 0.98, r);
+        float mask = innerEdge * outerEdge;
+
+        // Rotação diferencial Kepleriana (mais rápido perto do buraco negro)
+        float speed = uTime * (1.35 / (r + 0.25));
+        float spiralAngle = angle + speed + r * 4.5;
+
+        // Filamentos concêntricos de plasma
+        float rings = sin(r * 48.0 - uTime * 2.2 + fbm(vec2(r * 8.0, angle * 3.0)) * 4.0) * 0.5 + 0.5;
+        float turbulence = fbm(vec2(r * 11.0 - uTime * 0.6, sin(spiralAngle) * 3.5 + cos(spiralAngle) * 3.5));
+
+        float intensity = mask * (0.45 + 0.55 * rings) * (0.55 + 0.75 * turbulence);
+
+        // Efeito Doppler relativístico (lado esquerdo mais brilhante que o direito, igual ao vídeo)
+        float doppler = 1.0 + 0.28 * (-p.x / (r + 0.1));
+        intensity *= doppler;
+
+        // Paleta térmica Gargantua: branco incandescente -> amarelo ouro -> laranja âmbar
+        vec3 colOuter = vec3(0.85, 0.42, 0.08);
+        vec3 colMid   = vec3(0.98, 0.76, 0.32);
+        vec3 colInner = vec3(1.00, 0.97, 0.88);
+
+        float heat = clamp(1.0 - (r - 0.30) / 0.52, 0.0, 1.0);
+        vec3 color = mix(colOuter, colMid, smoothstep(0.0, 0.6, heat));
+        color = mix(color, colInner, smoothstep(0.55, 1.0, heat) * rings);
+
+        gl_FragColor = vec4(color * intensity * 1.45, clamp(intensity * 1.3, 0.0, 1.0));
+      }
+    `;
+
+    // GLSL Shader para o Arco de Lente Gravitacional Superior e Inferior
+    const LENS_FRAGMENT_SHADER = `
+      uniform float uTime;
+      varying vec2 vUv;
+
+      void main() {
+        vec2 p = (vUv - 0.5) * 2.0;
+        // Leve achatamento vertical estilo Gargantua
+        vec2 ep = vec2(p.x * 0.94, p.y * 1.05);
+        float r = length(ep);
+
+        // Anel fino ao redor do horizonte de eventos (r ~ 0.54)
+        float ringDist = abs(r - 0.54);
+        float sharpHalo = exp(-ringDist * 26.0);
+        float softGlow  = exp(-ringDist * 7.5) * 0.55;
+
+        // Feixe horizontal relativístico sutil
+        float horizBeam = exp(-abs(p.y) * 18.0) * (1.0 - smoothstep(0.45, 0.98, abs(p.x))) * 0.65;
+
+        float total = sharpHalo + softGlow + horizBeam;
+
+        // Máscara interna para manter o centro negro absoluto
+        float centerHole = smoothstep(0.48, 0.53, r);
+        total *= centerHole;
+
+        vec3 warmGold = vec3(0.98, 0.78, 0.38);
+        vec3 whiteHot = vec3(1.00, 0.97, 0.90);
+        vec3 col = mix(warmGold, whiteHot, clamp(sharpHalo, 0.0, 1.0));
+
+        gl_FragColor = vec4(col * total * 1.35, clamp(total, 0.0, 1.0));
+      }
+    `;
 
     function createStarGlowTexture(coreHex, haloRgba) {
       const canvas = document.createElement('canvas');
@@ -1129,8 +1321,8 @@
       const ctx = canvas.getContext('2d');
       const grad = ctx.createRadialGradient(64, 64, 2, 64, 64, 64);
       grad.addColorStop(0.0, '#ffffff');
-      grad.addColorStop(0.18, coreHex);
-      grad.addColorStop(0.48, haloRgba);
+      grad.addColorStop(0.16, coreHex);
+      grad.addColorStop(0.46, haloRgba);
       grad.addColorStop(1.0, 'rgba(0,0,0,0)');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 128, 128);
@@ -1143,8 +1335,8 @@
       canvas.height = 256;
       const ctx = canvas.getContext('2d');
       const grad = ctx.createRadialGradient(128, 128, 10, 128, 128, 128);
-      grad.addColorStop(0, 'rgba(148, 163, 184, 0.14)');
-      grad.addColorStop(0.5, 'rgba(71, 85, 105, 0.06)');
+      grad.addColorStop(0, 'rgba(148, 163, 184, 0.13)');
+      grad.addColorStop(0.5, 'rgba(71, 85, 105, 0.05)');
       grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 256, 256);
@@ -1158,10 +1350,11 @@
 
       galaxyInitialized = true;
       gScene = new THREE.Scene();
+      gClock = new THREE.Clock();
 
       const w = container.clientWidth || 900;
-      const h = container.clientHeight || 580;
-      gCamera = new THREE.PerspectiveCamera(46, w / h, 0.1, 1000);
+      const h = container.clientHeight || 600;
+      gCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
 
       gRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       gRenderer.setSize(w, h);
@@ -1171,30 +1364,30 @@
       gRaycaster = new THREE.Raycaster();
       gMouse = new THREE.Vector2();
 
-      // 1. Nuvens de Nebulosa Volumétrica ao Fundo
+      // 1. Nebulosas Volumétricas ao Fundo (igual ao vídeo)
       const nebTex = createNebulaCloudTexture();
-      for (let i = 0; i < 18; i++) {
+      for (let i = 0; i < 22; i++) {
         const sp = new THREE.Sprite(new THREE.SpriteMaterial({
           map: nebTex,
           transparent: true,
           opacity: 0.55,
           depthWrite: false
         }));
-        const angle = (i / 18) * Math.PI * 2;
-        const dist = 28 + Math.random() * 45;
-        sp.position.set(Math.cos(angle) * dist, (Math.random() - 0.5) * 24, Math.sin(angle) * dist);
-        const s = 38 + Math.random() * 35;
+        const angle = (i / 22) * Math.PI * 2;
+        const dist = 26 + Math.random() * 48;
+        sp.position.set(Math.cos(angle) * dist, (Math.random() - 0.5) * 26, Math.sin(angle) * dist);
+        const s = 38 + Math.random() * 38;
         sp.scale.set(s, s, 1);
         gScene.add(sp);
         nebulaSprites.push(sp);
       }
 
       // 2. Campo Estelar Profundo
-      const bgCount = 1600;
+      const bgCount = 1800;
       const bgGeo = new THREE.BufferGeometry();
       const bgPos = new Float32Array(bgCount * 3);
       for (let i = 0; i < bgCount; i++) {
-        const r = 45 + Math.random() * 140;
+        const r = 42 + Math.random() * 145;
         const th = Math.random() * Math.PI * 2;
         const ph = Math.acos(2 * Math.random() - 1);
         bgPos[i * 3] = r * Math.sin(ph) * Math.cos(th);
@@ -1202,100 +1395,104 @@
         bgPos[i * 3 + 2] = r * Math.sin(ph) * Math.sin(th);
       }
       bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
-      const bgStars = new THREE.Points(bgGeo, new THREE.PointsMaterial({ color: 0xe2e8f0, size: 0.35, transparent: true, opacity: 0.6 }));
+      const bgStars = new THREE.Points(bgGeo, new THREE.PointsMaterial({ color: 0xe2e8f0, size: 0.32, transparent: true, opacity: 0.65 }));
       gScene.add(bgStars);
 
-      // 3. BURACO NEGRO CENTRAL (GARGANTUA)
+      // 3. BURACO NEGRO CENTRAL (GARGANTUA COM GLSL SHADER)
       const bhGroup = new THREE.Group();
 
+      // Horizonte de Eventos (esfera negra absoluta)
       const blackHoleSphere = new THREE.Mesh(
-        new THREE.SphereGeometry(2.55, 64, 64),
+        new THREE.SphereGeometry(2.35, 64, 64),
         new THREE.MeshBasicMaterial({ color: 0x000000 })
       );
       bhGroup.add(blackHoleSphere);
 
-      const lensSprite = new THREE.Sprite(new THREE.SpriteMaterial({
-        map: createGravitationalLensTexture(),
-        transparent: true,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false
-      }));
-      lensSprite.scale.set(8.8, 7.6, 1);
-      bhGroup.add(lensSprite);
+      // Lente Gravitacional (Billboard sempre voltado para a câmera)
+      lensUniforms = { uTime: { value: 0 } };
+      const lensPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(9.6, 9.6),
+        new THREE.ShaderMaterial({
+          uniforms: lensUniforms,
+          vertexShader: ACCRETION_VERTEX_SHADER,
+          fragmentShader: LENS_FRAGMENT_SHADER,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        })
+      );
+      lensPlane.name = 'gargantuaLens';
+      bhGroup.add(lensPlane);
 
-      const diskTex = createAccretionDiskTexture();
-      const diskGeo = new THREE.PlaneGeometry(16.5, 16.5);
-      const diskMat = new THREE.MeshBasicMaterial({
-        map: diskTex,
-        transparent: true,
-        side: THREE.DoubleSide,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false
-      });
-      accretionDiskMesh = new THREE.Mesh(diskGeo, diskMat);
-      accretionDiskMesh.rotation.x = Math.PI / 2.12;
-      accretionDiskMesh.rotation.y = -0.14;
-      bhGroup.add(accretionDiskMesh);
-
-      const beamGeo = new THREE.PlaneGeometry(19.5, 1.4);
-      const beamMat = new THREE.MeshBasicMaterial({
-        map: createStarGlowTexture('#fef3c7', 'rgba(245, 158, 11, 0.35)'),
-        transparent: true,
-        side: THREE.DoubleSide,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false
-      });
-      const beamMesh = new THREE.Mesh(beamGeo, beamMat);
-      beamMesh.rotation.z = -0.08;
-      bhGroup.add(beamMesh);
+      // Disco de Acreção Principal (Plano inclinado com plasma turbulento FBM)
+      diskUniforms = { uTime: { value: 0 } };
+      const diskMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(16.8, 16.8),
+        new THREE.ShaderMaterial({
+          uniforms: diskUniforms,
+          vertexShader: ACCRETION_VERTEX_SHADER,
+          fragmentShader: ACCRETION_FRAGMENT_SHADER,
+          transparent: true,
+          side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        })
+      );
+      diskMesh.rotation.x = Math.PI / 2.12;
+      diskMesh.rotation.y = -0.14;
+      bhGroup.add(diskMesh);
 
       gScene.add(bhGroup);
 
-      // 4. Arcos Orbitais Externos com Cometas
-      for (let i = 0; i < 4; i++) {
-        const arcR = 26 + i * 3.8;
-        const startA = i * 1.5;
-        const arcLength = Math.PI * 0.55;
+      // 4. Arcos Orbitais Externos com Cometas Deslizantes (00:05 - 00:11 do vídeo)
+      for (let i = 0; i < 5; i++) {
+        const arcR = 24.5 + i * 3.5;
+        const startA = i * 1.25;
+        const arcLength = Math.PI * 0.52;
         const curvePoints = [];
-        for (let s = 0; s <= 40; s++) {
-          const a = startA + (s / 40) * arcLength;
-          curvePoints.push(new THREE.Vector3(Math.cos(a) * arcR, (i - 1.5) * 2.5, Math.sin(a) * arcR));
+        for (let s = 0; s <= 48; s++) {
+          const a = startA + (s / 48) * arcLength;
+          curvePoints.push(new THREE.Vector3(Math.cos(a) * arcR, (i - 2) * 2.4, Math.sin(a) * arcR));
         }
         const arcGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
-        const arcLine = new THREE.Line(arcGeo, new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.22 }));
+        const arcLine = new THREE.Line(arcGeo, new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.24 }));
         gScene.add(arcLine);
 
         const cometHead = new THREE.Sprite(new THREE.SpriteMaterial({
-          map: createStarGlowTexture('#ffffff', 'rgba(251, 191, 36, 0.5)'),
+          map: createStarGlowTexture('#ffffff', 'rgba(251, 191, 36, 0.55)'),
           transparent: true,
           blending: THREE.AdditiveBlending
         }));
-        cometHead.scale.set(1.3, 1.3, 1);
+        cometHead.scale.set(1.35, 1.35, 1);
         gScene.add(cometHead);
-        outerComets.push({ mesh: cometHead, radius: arcR, angle: startA + arcLength, speed: 0.002 + i * 0.0004, y: (i - 1.5) * 2.5 });
+        outerComets.push({ mesh: cometHead, radius: arcR, angle: startA + arcLength, speed: 0.0022 + i * 0.00035, y: (i - 2) * 2.4 });
       }
 
-      // Grupo giratório da Galáxia
+      // Grupo da Galáxia de Destinos
       universeGroup = new THREE.Group();
       gScene.add(universeGroup);
 
-      // Controles de Mouse / Touch
+      // Interações de Mouse & Touch
       container.addEventListener('pointerdown', (e) => {
         camState.isDragging = true;
         camState.dragMoved = false;
         camState.prevX = e.clientX;
         camState.prevY = e.clientY;
+        fadeOutBriefing();
       });
 
       window.addEventListener('pointermove', (e) => {
-        if (!camState.isDragging) return;
-        const dx = e.clientX - camState.prevX;
-        const dy = e.clientY - camState.prevY;
-        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) camState.dragMoved = true;
-        camState.targetTheta -= dx * 0.006;
-        camState.targetPhi = Math.max(0.2, Math.min(Math.PI - 0.2, camState.targetPhi - dy * 0.006));
-        camState.prevX = e.clientX;
-        camState.prevY = e.clientY;
+        if (camState.isDragging) {
+          const dx = e.clientX - camState.prevX;
+          const dy = e.clientY - camState.prevY;
+          if (Math.abs(dx) > 3 || Math.abs(dy) > 3) camState.dragMoved = true;
+          camState.targetTheta -= dx * 0.006;
+          camState.targetPhi = Math.max(0.22, Math.min(Math.PI - 0.22, camState.targetPhi - dy * 0.006));
+          camState.prevX = e.clientX;
+          camState.prevY = e.clientY;
+        } else if (document.getElementById('tab-galaxy').classList.contains('active')) {
+          handleGalaxyHover(e);
+        }
       });
 
       window.addEventListener('pointerup', (e) => {
@@ -1307,7 +1504,8 @@
 
       container.addEventListener('wheel', (e) => {
         e.preventDefault();
-        camState.targetRadius = Math.max(8, Math.min(75, camState.targetRadius + e.deltaY * 0.028));
+        fadeOutBriefing();
+        camState.targetRadius = Math.max(8, Math.min(72, camState.targetRadius + e.deltaY * 0.028));
       }, { passive: false });
 
       buildGalaxyUniverse();
@@ -1316,8 +1514,8 @@
 
     function createOrbitRing(radius, colorHex, opacity = 0.25) {
       const pts = [];
-      for (let i = 0; i <= 64; i++) {
-        const a = (i / 64) * Math.PI * 2;
+      for (let i = 0; i <= 72; i++) {
+        const a = (i / 72) * Math.PI * 2;
         pts.push(new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius));
       }
       const geo = new THREE.BufferGeometry().setFromPoints(pts);
@@ -1338,13 +1536,13 @@
 
       // Paleta quente dourada / laranja / âmbar (Azul reservado EXCLUSIVAMENTE para a Lua Rio de Janeiro)
       const warmPalettes = [
-        { core: '#fde047', halo: 'rgba(234, 179, 8, 0.55)', line: 0xeab308, planetHex: 0xf59e0b },  // Dourado Solar
-        { core: '#fdba74', halo: 'rgba(249, 115, 22, 0.55)', line: 0xf97316, planetHex: 0xea580c }, // Laranja Quente
-        { core: '#fef08a', halo: 'rgba(251, 191, 36, 0.55)', line: 0xfbbf24, planetHex: 0xd97706 }, // Âmbar Claro
-        { core: '#fed7aa', halo: 'rgba(251, 146, 60, 0.50)', line: 0xfb923c, planetHex: 0xc2410c }  // Cobre Estelar
+        { core: '#fde047', halo: 'rgba(234, 179, 8, 0.55)', line: 0xeab308, planetHex: 0xf59e0b },
+        { core: '#fdba74', halo: 'rgba(249, 115, 22, 0.55)', line: 0xf97316, planetHex: 0xea580c },
+        { core: '#fef08a', halo: 'rgba(251, 191, 36, 0.55)', line: 0xfbbf24, planetHex: 0xd97706 },
+        { core: '#fed7aa', halo: 'rgba(251, 146, 60, 0.50)', line: 0xfb923c, planetHex: 0xc2410c }
       ];
 
-      // Agrupar destinos por região (garantindo que 'Brasil' sempre exista como Planeta para abrigar a Lua RJ)
+      // Garante que o Planeta Brasil sempre exista para abrigar a Lua Azul do Rio de Janeiro
       const grouped = new Map();
       grouped.set('Brasil', []);
 
@@ -1371,8 +1569,8 @@
         const isPlanetSystem = (regionKey === 'Brasil' || regionKey === 'EUA');
         const pal = warmPalettes[idx % warmPalettes.length];
         const baseAngle = (idx / totalRegions) * Math.PI * 2 + 0.35;
-        const clusterRadius = 15.2; // Órbita segura ao redor do Gargantua
-        const clusterY = ((idx % 2 === 0) ? 1 : -1) * 1.6;
+        const clusterRadius = 15.0; // Órbita segura longe do horizonte de eventos
+        const clusterY = ((idx % 2 === 0) ? 1 : -1) * 1.5;
 
         const clusterCenter = new THREE.Vector3(
           Math.cos(baseAngle) * clusterRadius,
@@ -1388,34 +1586,30 @@
 
         if (isPlanetSystem) {
           // =================================================================
-          // MODO PLANETA + LUAS (BRASIL & ESTADOS UNIDOS)
+          // PLANETA BRASIL & PLANETA ESTADOS UNIDOS COM SUAS LUAS
           // =================================================================
-          const planetSize = regionKey === 'Brasil' ? 0.92 : 0.84;
+          const planetSize = regionKey === 'Brasil' ? 0.94 : 0.85;
           const planetMesh = new THREE.Mesh(
             new THREE.SphereGeometry(planetSize, 32, 32),
             new THREE.MeshBasicMaterial({ color: pal.planetHex })
           );
 
-          // Atmosfera luminosa dourada/âmbar do planeta
           const planetGlow = new THREE.Sprite(new THREE.SpriteMaterial({
             map: createStarGlowTexture(pal.core, pal.halo),
             transparent: true,
             blending: THREE.AdditiveBlending
           }));
-          planetGlow.scale.set(4.4, 4.4, 1);
+          planetGlow.scale.set(4.5, 4.5, 1);
           planetMesh.add(planetGlow);
 
-          // Anel planetário sutil ao redor do Planeta Brasil / EUA
-          const planetRing = createOrbitRing(planetSize * 1.65, pal.line, 0.35);
+          const planetRing = createOrbitRing(planetSize * 1.68, pal.line, 0.36);
           planetRing.rotation.x = 0.45;
           planetMesh.add(planetRing);
 
           clusterGroup.add(planetMesh);
 
-          // Monta lista de luas (estados)
           let moonsList = [];
           if (regionKey === 'Brasil') {
-            // Lua Exclusiva Azul: Rio de Janeiro (Base, origem da vida 2004 - ♾️)
             const rjEntry = items.find(i => i.code.toUpperCase() === 'BR-RJ' || i.name.toLowerCase().includes('rio de janeiro'));
             moonsList.push({
               id: 'br-rj-origin',
@@ -1429,35 +1623,31 @@
               isRioOrigin: true
             });
 
-            // Demais estados brasileiros visitados (excluindo duplicata do RJ)
             items.forEach(st => {
               if (st.code.toUpperCase() !== 'BR-RJ' && !st.name.toLowerCase().includes('rio de janeiro')) {
                 moonsList.push({ ...st, isRioOrigin: false });
               }
             });
           } else {
-            // Estados dos EUA como luas orbitando o Planeta Estados Unidos
             items.forEach(st => {
               moonsList.push({ ...st, isRioOrigin: false });
             });
           }
 
-          // Cria cada Lua orbitando o respectivo Planeta
           moonsList.forEach((moonData, mIdx) => {
-            const orbitRadius = 2.1 + mIdx * 0.72;
+            const orbitRadius = 2.15 + mIdx * 0.72;
             const orbitInclination = ((mIdx % 3) - 1) * 0.22;
 
-            // Linha da órbita da lua ao redor do planeta
             const moonOrbitLine = createOrbitRing(
               orbitRadius,
               moonData.isRioOrigin ? 0x3b82f6 : pal.line,
-              moonData.isRioOrigin ? 0.45 : 0.22
+              moonData.isRioOrigin ? 0.48 : 0.24
             );
             moonOrbitLine.rotation.x = orbitInclination;
             clusterGroup.add(moonOrbitLine);
 
-            // Esfera da Lua (Azul EXCLUSIVAMENTE para o Rio de Janeiro; Dourado/Âmbar para os demais)
-            const moonRadius = moonData.isRioOrigin ? 0.34 : 0.24;
+            // Azul EXCLUSIVAMENTE para a Lua Rio de Janeiro; Dourado/Âmbar para os demais estados
+            const moonRadius = moonData.isRioOrigin ? 0.35 : 0.24;
             const moonColorHex = moonData.isRioOrigin ? 0x3b82f6 : 0xfde047;
             const moonMesh = new THREE.Mesh(
               new THREE.SphereGeometry(moonRadius, 20, 20),
@@ -1466,12 +1656,12 @@
 
             const moonGlow = new THREE.Sprite(new THREE.SpriteMaterial({
               map: moonData.isRioOrigin
-                ? createStarGlowTexture('#93c5fd', 'rgba(59, 130, 246, 0.85)')
+                ? createStarGlowTexture('#93c5fd', 'rgba(59, 130, 246, 0.9)')
                 : createStarGlowTexture('#fef08a', 'rgba(251, 191, 36, 0.55)'),
               transparent: true,
               blending: THREE.AdditiveBlending
             }));
-            moonGlow.scale.set(moonData.isRioOrigin ? 2.2 : 1.4, moonData.isRioOrigin ? 2.2 : 1.4, 1);
+            moonGlow.scale.set(moonData.isRioOrigin ? 2.3 : 1.4, moonData.isRioOrigin ? 2.3 : 1.4, 1);
             moonMesh.add(moonGlow);
             clusterGroup.add(moonMesh);
 
@@ -1498,32 +1688,37 @@
               mesh: moonMesh,
               radius: orbitRadius,
               angle: (mIdx / Math.max(moonsList.length, 1)) * Math.PI * 2 + 0.5,
-              speed: moonData.isRioOrigin ? 0.008 : (0.005 + (mIdx % 3) * 0.002),
+              speed: moonData.isRioOrigin ? 0.0085 : (0.005 + (mIdx % 3) * 0.002),
               inclination: orbitInclination
             });
           });
 
-          // Pó estelar sutil ao redor do sistema planetário
+          // Malha estelar sutil ao redor do sistema planetário
           const dustGeo = new THREE.BufferGeometry();
-          const dustCount = 20;
+          const dustCount = 24;
           const dustPositions = new Float32Array(dustCount * 3);
           for (let k = 0; k < dustCount; k++) {
-            const r = 3.2 + Math.random() * 2.5;
+            const r = 3.2 + Math.random() * 2.8;
             const a1 = Math.random() * Math.PI * 2;
             const a2 = Math.acos(2 * Math.random() - 1);
-            dustPositions[k * 3] = r * Math.sin(a2) * Math.cos(a1);
-            dustPositions[k * 3 + 1] = r * Math.cos(a2) * 0.45;
-            dustPositions[k * 3 + 2] = r * Math.sin(a2) * Math.sin(a1);
+            const p = new THREE.Vector3(
+              r * Math.sin(a2) * Math.cos(a1),
+              r * Math.cos(a2) * 0.45,
+              r * Math.sin(a2) * Math.sin(a1)
+            );
+            allPointsInCluster.push(p);
+            dustPositions[k * 3] = p.x;
+            dustPositions[k * 3 + 1] = p.y;
+            dustPositions[k * 3 + 2] = p.z;
           }
           dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
           clusterGroup.add(new THREE.Points(dustGeo, new THREE.PointsMaterial({
             color: pal.core,
-            size: 0.18,
+            size: 0.19,
             transparent: true,
-            opacity: 0.65
+            opacity: 0.7
           })));
 
-          // Rótulo do Planeta
           const regLabel = document.createElement('div');
           regLabel.className = 'cosmic-label planet-star';
           const moonsCount = moonsList.length;
@@ -1532,6 +1727,7 @@
 
           const clusterRecord = {
             key: regionKey,
+            title: regionTitles[regionKey],
             group: clusterGroup,
             centerMesh: planetMesh,
             labelEl: regLabel,
@@ -1543,7 +1739,7 @@
 
         } else {
           // =================================================================
-          // MODO CONSTELAÇÃO PARA DEMAIS CONTINENTES / PAÍSES
+          // CONSTELAÇÕES DE CONTINENTES / PAÍSES (MALHA DENSA IGUAL AO VÍDEO)
           // =================================================================
           const centerStar = new THREE.Mesh(
             new THREE.SphereGeometry(0.42, 16, 16),
@@ -1562,7 +1758,7 @@
             const dPal = warmPalettes[(idx + dIdx + 1) % warmPalettes.length];
             const phi = Math.acos(1 - 2 * ((dIdx + 0.5) / Math.max(items.length, 1)));
             const theta = Math.PI * (1 + Math.sqrt(5)) * dIdx;
-            const dist = 2.5 + (dIdx % 3) * 1.1;
+            const dist = 2.5 + (dIdx % 3) * 1.15;
 
             const pos = new THREE.Vector3(
               dist * Math.sin(phi) * Math.cos(theta),
@@ -1603,16 +1799,17 @@
             destBodiesInCluster.push(starObj);
           });
 
+          // Nós auxiliares da teia neural/estelar (igual ao vídeo)
           const meshPointsGeo = new THREE.BufferGeometry();
-          const dustCount = 26;
+          const dustCount = 34;
           const dustPositions = new Float32Array(dustCount * 3);
           for (let k = 0; k < dustCount; k++) {
-            const r = 1.5 + Math.random() * 4.4;
+            const r = 1.4 + Math.random() * 4.6;
             const a1 = Math.random() * Math.PI * 2;
             const a2 = Math.acos(2 * Math.random() - 1);
             const p = new THREE.Vector3(
               r * Math.sin(a2) * Math.cos(a1),
-              r * Math.cos(a2) * 0.6,
+              r * Math.cos(a2) * 0.62,
               r * Math.sin(a2) * Math.sin(a1)
             );
             allPointsInCluster.push(p);
@@ -1625,13 +1822,14 @@
             color: pal.core,
             size: 0.22,
             transparent: true,
-            opacity: 0.75
+            opacity: 0.78
           })));
 
+          // Linhas finas conectando estrelas próximas formando a constelação
           const lineVertices = [];
           for (let a = 0; a < allPointsInCluster.length; a++) {
             for (let b = a + 1; b < allPointsInCluster.length; b++) {
-              if (allPointsInCluster[a].distanceTo(allPointsInCluster[b]) < 3.4) {
+              if (allPointsInCluster[a].distanceTo(allPointsInCluster[b]) < 3.5) {
                 lineVertices.push(
                   allPointsInCluster[a].x, allPointsInCluster[a].y, allPointsInCluster[a].z,
                   allPointsInCluster[b].x, allPointsInCluster[b].y, allPointsInCluster[b].z
@@ -1644,7 +1842,7 @@
           clusterGroup.add(new THREE.LineSegments(webGeo, new THREE.LineBasicMaterial({
             color: pal.line,
             transparent: true,
-            opacity: 0.24
+            opacity: 0.25
           })));
 
           const regLabel = document.createElement('div');
@@ -1654,6 +1852,7 @@
 
           const clusterRecord = {
             key: regionKey,
+            title: regionTitles[regionKey] || regionKey,
             group: clusterGroup,
             centerMesh: centerStar,
             labelEl: regLabel,
@@ -1669,20 +1868,57 @@
       });
     }
 
+    // Efeito Typewriter do Briefing Inicial (igual aos segundos 00:01 - 00:05 do vídeo)
+    function startBriefingTypewriter() {
+      const overlay = document.getElementById('sbBriefingOverlay');
+      const bodyEl = document.getElementById('sbBriefingBody');
+      if (!overlay || !bodyEl) return;
+
+      overlay.classList.remove('faded');
+      if (briefingTimerId) clearInterval(briefingTimerId);
+
+      const brCount = new Set(db.filter(d => d.region === 'Brasil').map(d => d.code.toUpperCase())).size + 1;
+      const countriesCount = new Set(db.filter(d => d.region !== 'Brasil' && d.region !== 'EUA').map(d => d.code.toUpperCase())).size + 1;
+      const text = `Seu universo de viagens está sincronizado. Você possui ${countriesCount} país(es) e ${brCount} estado(s) brasileiro(s) em órbita estável ao redor do Gargantua, partindo da sua Lua Base Rio de Janeiro (2004 - ♾️).`;
+
+      let i = 0;
+      bodyEl.innerHTML = '<span class="sb-cursor"></span>';
+      briefingTimerId = setInterval(() => {
+        if (i < text.length) {
+          bodyEl.innerHTML = text.slice(0, i + 1) + '<span class="sb-cursor"></span>';
+          i++;
+        } else {
+          clearInterval(briefingTimerId);
+          setTimeout(fadeOutBriefing, 4500);
+        }
+      }, 24);
+    }
+
+    function fadeOutBriefing() {
+      const overlay = document.getElementById('sbBriefingOverlay');
+      if (overlay) overlay.classList.add('faded');
+    }
+
+    // Zoom Cinematográfico Lateral (00:12 - 00:16 do vídeo: Gargantua desliza à esquerda, constelação abre à direita)
     function focusOnCluster(clusterRec) {
+      fadeOutBriefing();
       activeFocusedCluster = clusterRec.key;
-      document.getElementById('galaxyBreadcrumbBtn').innerText = `← Todos • ${clusterRec.key}`;
+      document.getElementById('sbTopContextTitle').innerText = clusterRec.title;
+      document.getElementById('sbTopContextSub').innerText = `${clusterRec.childBodies.length} corpos em órbita`;
+
       const worldPos = new THREE.Vector3();
       clusterRec.group.getWorldPosition(worldPos);
       camState.targetLookAt.copy(worldPos);
-      camState.targetRadius = clusterRec.isPlanetSystem ? 11.5 : 14.5;
+      camState.targetRadius = clusterRec.isPlanetSystem ? 11.5 : 14.0;
     }
 
     function focusOnBody(bodyObj) {
+      fadeOutBriefing();
       const worldPos = new THREE.Vector3();
       bodyObj.mesh.getWorldPosition(worldPos);
       camState.targetLookAt.copy(worldPos);
       camState.targetRadius = 9.5;
+      camState.targetPanOffsetX = 2.2; // Desloca o centro ligeiramente para a esquerda para dar espaço ao painel lateral (00:16)
 
       const d = bodyObj.data;
       document.getElementById('drawerTag').innerText = bodyObj.isRioOrigin
@@ -1702,7 +1938,7 @@
         actionsHtml += `<button class="btn btn-secondary" style="width:100%;" onclick="openMediaModal('Roteiro: ${d.name}', '${d.roteiroLink}')">📋 Ver Roteiro (PDF)</button>`;
       }
       if (!actionsHtml) {
-        actionsHtml = `<span style="font-size: 0.8rem; color: #64748b; text-align: center;">Nenhum álbum ou roteiro PDF vinculado.</span>`;
+        actionsHtml = `<span style="font-size: 0.8rem; color: #64748b; text-align: center;">Nenhum álbum ou roteiro PDF vinculado a este corpo celeste.</span>`;
       }
       document.getElementById('drawerActions').innerHTML = actionsHtml;
       document.getElementById('galaxyDrawer').classList.add('open');
@@ -1710,15 +1946,96 @@
 
     function closeGalaxyDrawer() {
       document.getElementById('galaxyDrawer').classList.remove('open');
+      camState.targetPanOffsetX = 0;
     }
 
     function resetGalaxyCamera() {
       activeFocusedCluster = null;
-      document.getElementById('galaxyBreadcrumbBtn').innerText = '← Visão Geral';
+      document.getElementById('sbTopContextTitle').innerText = 'Atlas Cósmico';
+      document.getElementById('sbTopContextSub').innerText = 'Gargantua • Órbitas Estáveis';
       closeGalaxyDrawer();
       camState.targetLookAt.set(0, 0, 0);
-      camState.targetRadius = 38;
-      camState.targetPhi = 1.12;
+      camState.targetPanOffsetX = 0;
+      camState.targetRadius = 36;
+      camState.targetPhi = 1.14;
+    }
+
+    function adjustGalaxyZoom(delta) {
+      fadeOutBriefing();
+      camState.targetRadius = Math.max(8, Math.min(72, camState.targetRadius + delta));
+    }
+
+    function toggleHomeAnalyticsModal() {
+      const modal = document.getElementById('sbHomeModal');
+      modal.classList.toggle('open');
+      if (modal.classList.contains('open')) {
+        filterCosmosSearch('');
+      }
+    }
+
+    function filterCosmosSearch(query) {
+      const grid = document.getElementById('sbSearchResultsGrid');
+      const q = query.toLowerCase().trim();
+      const filtered = clickableBodies.filter(b =>
+        b.data.name.toLowerCase().includes(q) ||
+        (b.data.code && b.data.code.toLowerCase().includes(q)) ||
+        (b.data.region && b.data.region.toLowerCase().includes(q))
+      );
+
+      grid.innerHTML = filtered.map((b, idx) => `
+        <div onclick="selectFromSearch(${idx}, '${q.replace(/'/g, "\\'")}')" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 14px; border-radius: 12px; cursor: pointer; transition: border-color 0.2s;">
+          <div style="font-size: 0.72rem; color: ${b.isRioOrigin ? '#60a5fa' : '#fbbf24'}; font-weight: 600; margin-bottom: 4px;">
+            ${b.isRioOrigin ? '🔵 LUA BASE (2004 - ♾️)' : (b.data.region || 'DESTINO')}
+          </div>
+          <div style="font-weight: 700; font-size: 0.98rem; color: #fff;">${b.data.name}</div>
+          <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">${b.data.code} • ${b.data.year || ''}</div>
+        </div>
+      `).join('');
+    }
+
+    function selectFromSearch(idx, query) {
+      const filtered = clickableBodies.filter(b =>
+        b.data.name.toLowerCase().includes(query) ||
+        (b.data.code && b.data.code.toLowerCase().includes(query)) ||
+        (b.data.region && b.data.region.toLowerCase().includes(query))
+      );
+      if (filtered[idx]) {
+        document.getElementById('sbHomeModal').classList.remove('open');
+        focusOnBody(filtered[idx]);
+      }
+    }
+
+    function handleGalaxyHover(e) {
+      if (!gRenderer || !gCamera) return;
+      const rect = gRenderer.domElement.getBoundingClientRect();
+      gMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      gMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      gRaycaster.setFromCamera(gMouse, gCamera);
+      const targets = [
+        ...clusterObjects.map(c => c.centerMesh),
+        ...clickableBodies.map(s => s.mesh)
+      ];
+      const intersects = gRaycaster.intersectObjects(targets, false);
+      const tooltip = document.getElementById('sbHoverTooltip');
+
+      if (intersects.length > 0) {
+        const hit = intersects[0].object;
+        const foundCluster = clusterObjects.find(c => c.centerMesh === hit);
+        const foundBody = clickableBodies.find(s => s.mesh === hit);
+        const label = foundCluster ? foundCluster.title : (foundBody ? `${foundBody.data.name} (${foundBody.data.year || foundBody.data.code})` : '');
+
+        if (label) {
+          tooltip.innerText = label;
+          tooltip.style.display = 'block';
+          tooltip.style.left = `${e.clientX - rect.left}px`;
+          tooltip.style.top = `${e.clientY - rect.top}px`;
+          gRenderer.domElement.style.cursor = 'pointer';
+          return;
+        }
+      }
+      tooltip.style.display = 'none';
+      gRenderer.domElement.style.cursor = camState.isDragging ? 'grabbing' : 'grab';
     }
 
     function handleGalaxyClick(e) {
@@ -1766,8 +2083,13 @@
       requestAnimationFrame(animateGalaxy);
       if (!document.getElementById('tab-galaxy').classList.contains('active')) return;
 
-      // Rotação do disco de acreção do Gargantua
-      if (accretionDiskMesh) accretionDiskMesh.rotation.z -= 0.008;
+      const elapsed = gClock ? gClock.getElapsedTime() : 0;
+      if (diskUniforms) diskUniforms.uTime.value = elapsed;
+      if (lensUniforms) lensUniforms.uTime.value = elapsed;
+
+      // Mantém o halo de lente gravitacional sempre voltado para a câmera
+      const lensObj = gScene.getObjectByName('gargantuaLens');
+      if (lensObj) lensObj.quaternion.copy(gCamera.quaternion);
 
       // Rotação lenta da galáxia ao redor do buraco negro
       if (universeGroup && !camState.isDragging) {
@@ -1797,8 +2119,7 @@
       clusterObjects.forEach(c => {
         updateCosmicLabel(c.centerMesh, c.labelEl, w, h, true);
         c.childBodies.forEach(cb => {
-          // A Lua Azul do Rio de Janeiro fica sempre visível; demais luas/estrelas aparecem ao focar ou aproximar
-          const showChild = cb.isRioOrigin || (activeFocusedCluster === c.key) || (camState.radius < 26);
+          const showChild = cb.isRioOrigin || (activeFocusedCluster === c.key) || (camState.radius < 25);
           updateCosmicLabel(cb.mesh, cb.labelEl, w, h, showChild);
         });
       });
@@ -1807,12 +2128,16 @@
       camState.theta += (camState.targetTheta - camState.theta) * 0.08;
       camState.phi += (camState.targetPhi - camState.phi) * 0.08;
       camState.radius += (camState.targetRadius - camState.radius) * 0.08;
+      camState.panOffsetX += (camState.targetPanOffsetX - camState.panOffsetX) * 0.08;
       camState.lookAt.lerp(camState.targetLookAt, 0.08);
 
-      gCamera.position.x = camState.lookAt.x + camState.radius * Math.sin(camState.phi) * Math.cos(camState.theta);
-      gCamera.position.y = camState.lookAt.y + camState.radius * Math.cos(camState.phi);
-      gCamera.position.z = camState.lookAt.z + camState.radius * Math.sin(camState.phi) * Math.sin(camState.theta);
-      gCamera.lookAt(camState.lookAt);
+      const rightVec = new THREE.Vector3(Math.sin(camState.theta), 0, -Math.cos(camState.theta));
+      const adjustedTarget = camState.lookAt.clone().addScaledVector(rightVec, camState.panOffsetX);
+
+      gCamera.position.x = adjustedTarget.x + camState.radius * Math.sin(camState.phi) * Math.cos(camState.theta);
+      gCamera.position.y = adjustedTarget.y + camState.radius * Math.cos(camState.phi);
+      gCamera.position.z = adjustedTarget.z + camState.radius * Math.sin(camState.phi) * Math.sin(camState.theta);
+      gCamera.lookAt(adjustedTarget);
 
       gRenderer.render(gScene, gCamera);
     }
