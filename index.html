@@ -14,6 +14,7 @@
   
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
 
   <style>
@@ -161,6 +162,150 @@
     }
     .legend-item { display: flex; align-items: center; gap: 6px; }
     .legend-dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+    /* ABA GALÁXIA 3D (BURACO NEGRO & DESTINOS EM ÓRBITA) */
+    .galaxy-wrapper {
+      position: relative;
+      width: 100%;
+      height: 76vh;
+      min-height: 540px;
+      background: radial-gradient(circle at center, #111625 0%, #05070c 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.65);
+    }
+    #galaxy-canvas-container {
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+      touch-action: none;
+    }
+    #galaxy-canvas-container:active { cursor: grabbing; }
+
+    .galaxy-hud-top {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+      z-index: 10;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .galaxy-title-box {
+      background: rgba(9, 13, 22, 0.72);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      padding: 12px 18px;
+      border-radius: 14px;
+      pointer-events: auto;
+    }
+    .galaxy-controls {
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+      flex-wrap: wrap;
+    }
+    .galaxy-btn {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(10px);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .galaxy-btn:hover {
+      border-color: #fbbf24;
+      color: #fbbf24;
+    }
+
+    #galaxy-labels-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 5;
+    }
+    .star-label {
+      position: absolute;
+      transform: translate(-50%, -135%);
+      background: rgba(9, 13, 22, 0.78);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #f8fafc;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: auto;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .star-label:hover {
+      transform: translate(-50%, -145%) scale(1.06);
+      border-color: #fbbf24;
+    }
+    .star-label.region-node {
+      font-size: 0.8rem;
+      border-color: rgba(251, 191, 36, 0.45);
+      color: #fde68a;
+      background: rgba(15, 23, 42, 0.88);
+    }
+    .star-label.home-node {
+      border-color: rgba(59, 130, 246, 0.7);
+      color: #93c5fd;
+    }
+
+    /* PAINEL LATERAL DESLIZANTE AO CLICAR EM UMA ESTRELA */
+    .galaxy-drawer {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      bottom: 18px;
+      width: 330px;
+      max-width: calc(100% - 36px);
+      background: rgba(13, 19, 33, 0.86);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      border-radius: 18px;
+      padding: 22px;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transform: translateX(120%);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: -15px 0 40px rgba(0,0,0,0.65);
+    }
+    .galaxy-drawer.open { transform: translateX(0); }
+
+    .galaxy-legend-bottom {
+      position: absolute;
+      bottom: 16px;
+      left: 20px;
+      background: rgba(9, 13, 22, 0.72);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--card-border);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      z-index: 10;
+      pointer-events: none;
+    }
 
     /* FORMULÁRIOS & BOTÕES */
     .form-group { margin-bottom: 16px; text-align: left; }
@@ -440,6 +585,7 @@
       </div>
       <div class="nav-tabs">
         <button id="btn-tab-dashboard" class="tab-btn active" onclick="switchTab('dashboard')">🗺️ Dashboard</button>
+        <button id="btn-tab-galaxy" class="tab-btn" onclick="switchTab('galaxy')">🌌 Galáxia</button>
         <button id="btn-tab-passport" class="tab-btn" onclick="switchTab('passport')">🛂 Passaporte</button>
         <button id="btn-tab-admin" class="tab-btn" onclick="switchTab('admin')">⚙️ Admin</button>
         <button class="tab-btn btn-logout" onclick="logout()">Sair</button>
@@ -521,7 +667,48 @@
       </div>
     </div>
 
-    <!-- ABA 2: PASSAPORTE CARIMBADO -->
+    <!-- ABA 2: GALÁXIA 3D INTERATIVA (BURACO NEGRO & ÓRBITAS) -->
+    <div id="tab-galaxy" class="view-panel">
+      <div class="galaxy-wrapper">
+        <div class="galaxy-hud-top">
+          <div class="galaxy-title-box">
+            <h2 style="margin:0; font-size: 1.05rem; color: #fde68a;">🌌 Universo de Exploração</h2>
+            <span style="font-size: 0.76rem; color: var(--text-muted);">Arraste para girar • Clique em uma região ou estrela para abrir o destino</span>
+          </div>
+          <div class="galaxy-controls">
+            <button class="galaxy-btn" onclick="resetGalaxyCamera()">🔭 Visão Geral (Órbita)</button>
+          </div>
+        </div>
+
+        <div id="galaxy-labels-layer"></div>
+        <div id="galaxy-canvas-container"></div>
+
+        <div class="galaxy-legend-bottom">
+          <span>⚫ Centro: Buraco Negro (Singularidade)</span>
+          <span style="color: #93c5fd;">🔵 Estrela Azul: Rio de Janeiro (Base)</span>
+          <span style="color: #fbbf24;">🟡🟠 Estrelas Douradas/Laranjas: Destinos Visitados</span>
+        </div>
+
+        <!-- Painel Lateral Deslizante com Detalhes do Destino -->
+        <div id="galaxyDrawer" class="galaxy-drawer">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 12px; margin-bottom: 16px;">
+              <span id="drawerTag" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; background: rgba(251, 191, 36, 0.15); color: #fbbf24; padding: 4px 10px; border-radius: 6px; font-weight: 700;">DESTINO</span>
+              <button class="btn btn-danger" onclick="closeGalaxyDrawer()">✕</button>
+            </div>
+            <h3 id="drawerTitle" style="margin: 0 0 6px 0; font-size: 1.35rem; color: #fff;">-</h3>
+            <p id="drawerMeta" style="margin: 0 0 16px 0; font-size: 0.85rem; color: var(--text-muted);">-</p>
+            <p id="drawerDesc" style="font-size: 0.86rem; line-height: 1.5; color: #cbd5e1; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid var(--card-border);">
+              Estrela em órbita estável ao redor do buraco negro central.
+            </p>
+          </div>
+
+          <div id="drawerActions" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA 3: PASSAPORTE CARIMBADO -->
     <div id="tab-passport" class="view-panel">
       <div class="passport-book">
         <div class="passport-header">
@@ -545,7 +732,7 @@
       </div>
     </div>
 
-    <!-- ABA 3: PAINEL ADMIN -->
+    <!-- ABA 4: PAINEL ADMIN -->
     <div id="tab-admin" class="view-panel">
       <div class="grid-layout">
         <div>
@@ -678,15 +865,8 @@
 
     const HOME_STATE_BR = "BR-RJ";
 
-    // Fotos dos monumentos por país
     const COUNTRY_LANDMARKS = {
-      'BR': { 
-        name: 'Brasil', 
-        landmark: 'Cristo Redentor • Rio de Janeiro', 
-        photo: '/cristo-br.jpg', 
-        fallback: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=600&q=80',
-        color: '#10b981' 
-      },
+      'BR': { name: 'Brasil', landmark: 'Cristo Redentor • Rio de Janeiro', photo: '/cristo-br.jpg', fallback: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=600&q=80', color: '#10b981' },
       'JP': { name: 'Japão', landmark: 'Monte Fuji & Pagode Chureito', photo: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80', color: '#f43f5e' },
       'US': { name: 'Estados Unidos', landmark: 'Estátua da Liberdade • NY', photo: 'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&w=600&q=80', color: '#3b82f6' },
       'FR': { name: 'França', landmark: 'Torre Eiffel • Paris', photo: 'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?auto=format&fit=crop&w=600&q=80', color: '#6366f1' },
@@ -707,7 +887,6 @@
       'MX': { name: 'México', landmark: 'Chichén Itzá • Yucatán', photo: 'https://images.unsplash.com/photo-1518638150340-f706e86654de?auto=format&fit=crop&w=600&q=80', color: '#10b981' }
     };
 
-    // Fotos dos estados brasileiros para a sub-aba dedicada do Brasil
     const BRAZIL_STATE_LANDMARKS = {
       'BR-RJ': { name: 'Rio de Janeiro', landmark: 'Cristo Redentor & Pão de Açúcar', photo: '/cristo-br.jpg', fallback: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=600&q=80', color: '#3b82f6' },
       'BR-SP': { name: 'São Paulo', landmark: 'Ponte Estaiada & Av. Paulista', photo: 'https://images.unsplash.com/photo-1543059080-f9b1272213d5?auto=format&fit=crop&w=600&q=80', color: '#10b981' },
@@ -776,6 +955,7 @@
         render();
         drawAllMaps();
         updateCountdown();
+        buildGalaxyObjects();
       }
     }
 
@@ -837,6 +1017,11 @@
       
       if (tab === 'dashboard') {
         setTimeout(drawAllMaps, 100);
+      } else if (tab === 'galaxy') {
+        setTimeout(() => {
+          initGalaxyEngine();
+          resizeGalaxy();
+        }, 80);
       }
     }
 
@@ -857,6 +1042,556 @@
       loadCloudData();
     }
 
+    // =========================================================================
+    // MOTOR 3D DA GALÁXIA (BURACO NEGRO + RIO EM ÓRBITA + DESTINOS COLORIDOS)
+    // =========================================================================
+    let galaxyInitialized = false;
+    let gScene, gCamera, gRenderer, gRaycaster, gMouse;
+    let accretionRing1, accretionRing2, accretionParticles, starfieldParticles;
+    let orbitingNodes = []; // { mesh, labelEl, orbitRadius, orbitSpeed, angle, yOffset, data, isRegion, childrenNodes }
+    let constellationLines = [];
+    let camState = {
+      theta: 0.4,
+      phi: 1.05,
+      radius: 42,
+      targetTheta: 0.4,
+      targetPhi: 1.05,
+      targetRadius: 42,
+      lookAt: new THREE.Vector3(0, 0, 0),
+      targetLookAt: new THREE.Vector3(0, 0, 0),
+      isDragging: false,
+      prevX: 0,
+      prevY: 0,
+      dragMoved: false
+    };
+
+    function createGlowTexture(innerColor, midColor) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 128;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      const grad = ctx.createRadialGradient(64, 64, 4, 64, 64, 64);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.25, innerColor);
+      grad.addColorStop(0.6, midColor);
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 128, 128);
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function initGalaxyEngine() {
+      if (galaxyInitialized) return;
+      const container = document.getElementById('galaxy-canvas-container');
+      if (!container || typeof THREE === 'undefined') return;
+
+      galaxyInitialized = true;
+      gScene = new THREE.Scene();
+
+      const w = container.clientWidth || 800;
+      const h = container.clientHeight || 540;
+      gCamera = new THREE.PerspectiveCamera(50, w / h, 0.1, 1000);
+
+      gRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      gRenderer.setSize(w, h);
+      gRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(gRenderer.domElement);
+
+      gRaycaster = new THREE.Raycaster();
+      gMouse = new THREE.Vector2();
+
+      // 1. Poeira Estelar de Fundo
+      const bgGeo = new THREE.BufferGeometry();
+      const bgCount = 1400;
+      const bgPos = new Float32Array(bgCount * 3);
+      const bgColors = new Float32Array(bgCount * 3);
+      const palette = [
+        new THREE.Color('#fbbf24'),
+        new THREE.Color('#f97316'),
+        new THREE.Color('#fde68a'),
+        new THREE.Color('#93c5fd'),
+        new THREE.Color('#ffffff')
+      ];
+      for (let i = 0; i < bgCount; i++) {
+        const r = 45 + Math.random() * 140;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        bgPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+        bgPos[i * 3 + 1] = r * Math.cos(phi);
+        bgPos[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+        const col = palette[i % palette.length];
+        bgColors[i * 3] = col.r;
+        bgColors[i * 3 + 1] = col.g;
+        bgColors[i * 3 + 2] = col.b;
+      }
+      bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
+      bgGeo.setAttribute('color', new THREE.BufferAttribute(bgColors, 3));
+      const bgMat = new THREE.PointsMaterial({ size: 0.45, vertexColors: true, transparent: true, opacity: 0.75 });
+      starfieldParticles = new THREE.Points(bgGeo, bgMat);
+      gScene.add(starfieldParticles);
+
+      // 2. BURACO NEGRO CENTRAL (Horizonte de Eventos + Disco de Acreção Dourado/Laranja)
+      const bhCoreGeo = new THREE.SphereGeometry(3.2, 48, 48);
+      const bhCoreMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+      const bhCore = new THREE.Mesh(bhCoreGeo, bhCoreMat);
+      gScene.add(bhCore);
+
+      // Anel de Fótons (Halo fino dourado ao redor da esfera negra)
+      const photonGeo = new THREE.RingGeometry(3.25, 3.65, 64);
+      const photonMat = new THREE.MeshBasicMaterial({
+        color: 0xfef08a,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.9,
+        blending: THREE.AdditiveBlending
+      });
+      const photonRing = new THREE.Mesh(photonGeo, photonMat);
+      photonRing.rotation.x = Math.PI / 2.2;
+      gScene.add(photonRing);
+
+      // Halo Vertical de Lente Gravitacional (efeito Interestelar)
+      const lensGeo = new THREE.RingGeometry(3.3, 4.1, 64);
+      const lensMat = new THREE.MeshBasicMaterial({
+        color: 0xf59e0b,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.35,
+        blending: THREE.AdditiveBlending
+      });
+      const lensRing = new THREE.Mesh(lensGeo, lensMat);
+      gScene.add(lensRing);
+
+      // Disco de Acreção Principal (Amarelo, Laranja e Branco girando)
+      const diskCount = 2600;
+      const diskGeo = new THREE.BufferGeometry();
+      const diskPos = new Float32Array(diskCount * 3);
+      const diskCol = new Float32Array(diskCount * 3);
+
+      for (let i = 0; i < diskCount; i++) {
+        const radius = 3.8 + Math.pow(Math.random(), 1.6) * 6.5; // Raio máximo 10.3 (bem antes das órbitas dos planetas!)
+        const angle = Math.random() * Math.PI * 2;
+        const thickness = (1 - (radius - 3.8) / 6.5) * 0.35;
+        diskPos[i * 3] = Math.cos(angle) * radius;
+        diskPos[i * 3 + 1] = (Math.random() - 0.5) * thickness;
+        diskPos[i * 3 + 2] = Math.sin(angle) * radius;
+
+        // Gradiente térmico: branco/amarelo perto do centro, laranja intenso nas bordas
+        const ratio = (radius - 3.8) / 6.5;
+        const c = new THREE.Color();
+        if (ratio < 0.25) c.set('#fef9c3');      // Branco-amarelado quente
+        else if (ratio < 0.6) c.set('#fbbf24');  // Amarelo ouro
+        else c.set('#ea580c');                   // Laranja vibrante
+
+        diskCol[i * 3] = c.r;
+        diskCol[i * 3 + 1] = c.g;
+        diskCol[i * 3 + 2] = c.b;
+      }
+      diskGeo.setAttribute('position', new THREE.BufferAttribute(diskPos, 3));
+      diskGeo.setAttribute('color', new THREE.BufferAttribute(diskCol, 3));
+      const diskMat = new THREE.PointsMaterial({
+        size: 0.26,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.9,
+        blending: THREE.AdditiveBlending
+      });
+      accretionParticles = new THREE.Points(diskGeo, diskMat);
+      accretionParticles.rotation.z = 0.22;
+      gScene.add(accretionParticles);
+
+      // Controles de Mouse e Touch
+      container.addEventListener('pointerdown', (e) => {
+        camState.isDragging = true;
+        camState.dragMoved = false;
+        camState.prevX = e.clientX;
+        camState.prevY = e.clientY;
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (!camState.isDragging) return;
+        const dx = e.clientX - camState.prevX;
+        const dy = e.clientY - camState.prevY;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) camState.dragMoved = true;
+        camState.targetTheta -= dx * 0.006;
+        camState.targetPhi = Math.max(0.25, Math.min(Math.PI - 0.25, camState.targetPhi - dy * 0.006));
+        camState.prevX = e.clientX;
+        camState.prevY = e.clientY;
+      });
+
+      window.addEventListener('pointerup', (e) => {
+        if (camState.isDragging && !camState.dragMoved) {
+          handleGalaxyClick(e);
+        }
+        camState.isDragging = false;
+      });
+
+      container.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        camState.targetRadius = Math.max(14, Math.min(85, camState.targetRadius + e.deltaY * 0.03));
+      }, { passive: false });
+
+      buildGalaxyObjects();
+      animateGalaxy();
+    }
+
+    function buildGalaxyObjects() {
+      if (!gScene) return;
+
+      // Limpa nós anteriores
+      const labelsLayer = document.getElementById('galaxy-labels-layer');
+      labelsLayer.innerHTML = '';
+      orbitingNodes.forEach(n => {
+        if (n.group) gScene.remove(n.group);
+        if (n.orbitRing) gScene.remove(n.orbitRing);
+      });
+      constellationLines.forEach(l => gScene.remove(l));
+      orbitingNodes = [];
+      constellationLines = [];
+
+      // Cores vibrantes para as estrelas (amarelo, laranja, dourado, ciano, esmeralda)
+      const starPalettes = [
+        { hex: '#fbbf24', inner: 'rgba(251,191,36,0.9)', mid: 'rgba(245,158,11,0.3)' }, // Amarelo Ouro
+        { hex: '#f97316', inner: 'rgba(249,115,22,0.9)', mid: 'rgba(234,88,12,0.3)' },  // Laranja Solar
+        { hex: '#fde047', inner: 'rgba(253,224,71,0.9)', mid: 'rgba(234,179,8,0.3)' },   // Amarelo Brilhante
+        { hex: '#fb923c', inner: 'rgba(251,146,60,0.9)', mid: 'rgba(249,115,22,0.3)' },  // Laranja Âmbar
+        { hex: '#38bdf8', inner: 'rgba(56,189,248,0.9)', mid: 'rgba(14,165,233,0.3)' }   // Ciano Estelar
+      ];
+
+      // 1. ESTRELA-BASE: RIO DE JANEIRO EM ÓRBITA SEGURA (Raio 13.5 - nunca engolida pelo buraco negro!)
+      const rjRadius = 13.5;
+      const rjGroup = new THREE.Group();
+      const rjCore = new THREE.Mesh(
+        new THREE.SphereGeometry(0.68, 24, 24),
+        new THREE.MeshBasicMaterial({ color: 0x60a5fa })
+      );
+      const rjSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: createGlowTexture('rgba(96,165,250,0.95)', 'rgba(59,130,246,0.35)'),
+        transparent: true,
+        blending: THREE.AdditiveBlending
+      }));
+      rjSprite.scale.set(3.4, 3.4, 1);
+      rjGroup.add(rjCore);
+      rjGroup.add(rjSprite);
+      gScene.add(rjGroup);
+
+      // Linha de órbita do Rio de Janeiro
+      const rjOrbitGeo = new THREE.RingGeometry(rjRadius - 0.04, rjRadius + 0.04, 96);
+      const rjOrbitMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, side: THREE.DoubleSide, transparent: true, opacity: 0.25 });
+      const rjOrbitRing = new THREE.Mesh(rjOrbitGeo, rjOrbitMat);
+      rjOrbitRing.rotation.x = Math.PI / 2;
+      gScene.add(rjOrbitRing);
+
+      const rjLabel = document.createElement('div');
+      rjLabel.className = 'star-label home-node';
+      rjLabel.innerHTML = '🔵 Rio de Janeiro (Base)';
+      labelsLayer.appendChild(rjLabel);
+
+      const rjNodeData = {
+        group: rjGroup,
+        mesh: rjCore,
+        orbitRing: rjOrbitRing,
+        labelEl: rjLabel,
+        orbitRadius: rjRadius,
+        orbitSpeed: 0.0032,
+        angle: 0.5,
+        yOffset: 0.4,
+        isHome: true,
+        data: {
+          name: 'Rio de Janeiro (Base)',
+          region: 'Brasil • Residência Permanente',
+          year: 'BASE',
+          code: 'BR-RJ',
+          desc: 'Sua estrela-base orbitando em segurança ao redor do buraco negro central. Ponto de partida de todas as expedições.',
+          link: '',
+          roteiroLink: ''
+        }
+      };
+      rjLabel.onclick = () => focusAndOpenNode(rjNodeData);
+      orbitingNodes.push(rjNodeData);
+
+      // 2. AGRUPAR DESTINOS POR REGIÃO/CONTINENTE EM ÓRBITAS EXTERNAS (Raios de 19 a 34)
+      const regionNames = {
+        'Brasil': '🇧🇷 Brasil (Estados)',
+        'EUA': '🇺🇸 Estados Unidos',
+        'Americas': '🌎 Américas',
+        'Europa': '🇪🇺 Europa',
+        'Asia': '🌏 Ásia',
+        'Oceania': '🦘 Oceania',
+        'Africa': '🦁 África'
+      };
+
+      const grouped = new Map();
+      db.forEach(item => {
+        const reg = item.region || 'Outros';
+        if (!grouped.has(reg)) grouped.set(reg, []);
+        grouped.get(reg).push(item);
+      });
+
+      let regIndex = 0;
+      const totalRegions = Math.max(grouped.size, 1);
+
+      grouped.forEach((items, regionKey) => {
+        const pal = starPalettes[regIndex % starPalettes.length];
+        const orbitRadius = 19 + regIndex * 3.8; // Órbitas bem afastadas do buraco negro
+        const startAngle = (regIndex / totalRegions) * Math.PI * 2;
+        const yOffset = ((regIndex % 2 === 0) ? 1 : -1) * (1.2 + (regIndex % 3) * 0.8);
+
+        // Anel orbital sutil da região
+        const ringGeo = new THREE.RingGeometry(orbitRadius - 0.03, orbitRadius + 0.03, 110);
+        const ringMat = new THREE.MeshBasicMaterial({ color: pal.hex, side: THREE.DoubleSide, transparent: true, opacity: 0.14 });
+        const orbitRing = new THREE.Mesh(ringGeo, ringMat);
+        orbitRing.rotation.x = Math.PI / 2;
+        orbitRing.position.y = yOffset;
+        gScene.add(orbitRing);
+
+        // Estrela-Mãe do Continente/Região
+        const clusterGroup = new THREE.Group();
+        const regionSphere = new THREE.Mesh(
+          new THREE.SphereGeometry(0.62, 20, 20),
+          new THREE.MeshBasicMaterial({ color: pal.hex })
+        );
+        const regionGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+          map: createGlowTexture(pal.inner, pal.mid),
+          transparent: true,
+          blending: THREE.AdditiveBlending
+        }));
+        regionGlow.scale.set(3.2, 3.2, 1);
+        clusterGroup.add(regionSphere);
+        clusterGroup.add(regionGlow);
+
+        const regLabel = document.createElement('div');
+        regLabel.className = 'star-label region-node';
+        regLabel.innerHTML = `${regionNames[regionKey] || regionKey} (${items.length})`;
+        labelsLayer.appendChild(regLabel);
+
+        const regionNodeObj = {
+          group: clusterGroup,
+          mesh: regionSphere,
+          orbitRing: orbitRing,
+          labelEl: regLabel,
+          orbitRadius: orbitRadius,
+          orbitSpeed: 0.0018 - regIndex * 0.00015,
+          angle: startAngle,
+          yOffset: yOffset,
+          isRegion: true,
+          childrenNodes: []
+        };
+
+        regLabel.onclick = () => zoomToRegion(regionNodeObj);
+
+        // Estrelas Filhas (Cada destino visitado orbitando o nó da sua região)
+        items.forEach((dest, dIdx) => {
+          const destPal = starPalettes[(regIndex + dIdx + 1) % starPalettes.length];
+          const subAngle = (dIdx / items.length) * Math.PI * 2;
+          const subDist = 2.4 + (dIdx % 3) * 0.9;
+          const subY = Math.sin(dIdx * 1.7) * 1.1;
+
+          const destMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(0.38, 16, 16),
+            new THREE.MeshBasicMaterial({ color: destPal.hex })
+          );
+          destMesh.position.set(Math.cos(subAngle) * subDist, subY, Math.sin(subAngle) * subDist);
+
+          const destGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+            map: createGlowTexture(destPal.inner, destPal.mid),
+            transparent: true,
+            blending: THREE.AdditiveBlending
+          }));
+          destGlow.scale.set(2.0, 2.0, 1);
+          destMesh.add(destGlow);
+          clusterGroup.add(destMesh);
+
+          // Linha de constelação ligando o continente à estrela do destino
+          const lineGeo = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(0, 0, 0),
+            destMesh.position.clone()
+          ]);
+          const lineMat = new THREE.LineBasicMaterial({ color: destPal.hex, transparent: true, opacity: 0.45 });
+          const line = new THREE.Line(lineGeo, lineMat);
+          clusterGroup.add(line);
+
+          const destLabel = document.createElement('div');
+          destLabel.className = 'star-label';
+          destLabel.innerHTML = `✨ ${dest.name}`;
+          labelsLayer.appendChild(destLabel);
+
+          const childObj = {
+            mesh: destMesh,
+            labelEl: destLabel,
+            data: dest,
+            parentCluster: clusterGroup
+          };
+
+          destLabel.onclick = () => focusAndOpenNode(childObj);
+          regionNodeObj.childrenNodes.push(childObj);
+        });
+
+        gScene.add(clusterGroup);
+        orbitingNodes.push(regionNodeObj);
+        regIndex++;
+      });
+    }
+
+    function zoomToRegion(regionNode) {
+      const worldPos = new THREE.Vector3();
+      regionNode.group.getWorldPosition(worldPos);
+      camState.targetLookAt.copy(worldPos);
+      camState.targetRadius = 15;
+    }
+
+    function focusAndOpenNode(nodeObj) {
+      const worldPos = new THREE.Vector3();
+      nodeObj.mesh.getWorldPosition(worldPos);
+      camState.targetLookAt.copy(worldPos);
+      camState.targetRadius = 13;
+
+      const d = nodeObj.data;
+      document.getElementById('drawerTag').innerText = d.region || 'DESTINO';
+      document.getElementById('drawerTitle').innerText = d.name;
+      document.getElementById('drawerMeta').innerText = `${d.code} • ${d.year || 'Registrado'}`;
+      document.getElementById('drawerDesc').innerText = d.desc || `Destino registrado no seu passaporte espacial (${d.region}). Órbita estável garantida longe do horizonte de eventos.`;
+
+      let actionsHtml = '';
+      if (d.link && d.link !== '#') {
+        actionsHtml += `<button class="btn" style="width:100%;" onclick="openMediaModal('Galeria: ${d.name}', '${d.link}')">🖼️ Abrir Galeria de Fotos</button>`;
+      }
+      if (d.roteiroLink) {
+        actionsHtml += `<button class="btn btn-secondary" style="width:100%;" onclick="openMediaModal('Roteiro: ${d.name}', '${d.roteiroLink}')">📋 Abrir Roteiro (PDF)</button>`;
+      }
+      if (!actionsHtml) {
+        actionsHtml = `<span style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">Nenhum álbum ou PDF anexado a esta estrela ainda.</span>`;
+      }
+      document.getElementById('drawerActions').innerHTML = actionsHtml;
+      document.getElementById('galaxyDrawer').classList.add('open');
+    }
+
+    function closeGalaxyDrawer() {
+      document.getElementById('galaxyDrawer').classList.remove('open');
+    }
+
+    function resetGalaxyCamera() {
+      closeGalaxyDrawer();
+      camState.targetLookAt.set(0, 0, 0);
+      camState.targetRadius = 42;
+      camState.targetPhi = 1.05;
+    }
+
+    function handleGalaxyClick(e) {
+      if (!gRenderer || !gCamera) return;
+      const rect = gRenderer.domElement.getBoundingClientRect();
+      gMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      gMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      gRaycaster.setFromCamera(gMouse, gCamera);
+
+      const clickableMeshes = [];
+      orbitingNodes.forEach(n => {
+        clickableMeshes.push(n.mesh);
+        if (n.childrenNodes) {
+          n.childrenNodes.forEach(c => clickableMeshes.push(c.mesh));
+        }
+      });
+
+      const intersects = gRaycaster.intersectObjects(clickableMeshes, false);
+      if (intersects.length > 0) {
+        const hit = intersects[0].object;
+        for (const n of orbitingNodes) {
+          if (n.mesh === hit) {
+            if (n.isRegion) zoomToRegion(n);
+            else focusAndOpenNode(n);
+            return;
+          }
+          if (n.childrenNodes) {
+            for (const c of n.childrenNodes) {
+              if (c.mesh === hit) {
+                focusAndOpenNode(c);
+                return;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    function resizeGalaxy() {
+      const container = document.getElementById('galaxy-canvas-container');
+      if (!container || !gRenderer || !gCamera) return;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      if (w > 0 && h > 0) {
+        gCamera.aspect = w / h;
+        gCamera.updateProjectionMatrix();
+        gRenderer.setSize(w, h);
+      }
+    }
+
+    function animateGalaxy() {
+      requestAnimationFrame(animateGalaxy);
+      if (!document.getElementById('tab-galaxy').classList.contains('active')) return;
+
+      // Rotação contínua do disco de acreção (amarelo/laranja) e fundo
+      if (accretionParticles) accretionParticles.rotation.y += 0.008;
+      if (starfieldParticles) starfieldParticles.rotation.y += 0.0003;
+
+      // Atualiza órbitas estáveis ao redor do buraco negro
+      const container = document.getElementById('galaxy-canvas-container');
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+
+      orbitingNodes.forEach(node => {
+        node.angle += node.orbitSpeed;
+        const x = Math.cos(node.angle) * node.orbitRadius;
+        const z = Math.sin(node.angle) * node.orbitRadius;
+        node.group.position.set(x, node.yOffset, z);
+
+        // Projeta rótulo HTML 2D sobre a estrela 3D
+        updateLabelPosition(node.group, node.labelEl, w, h, true);
+
+        if (node.childrenNodes) {
+          node.childrenNodes.forEach(child => {
+            // Mostra rótulos individuais quando der zoom ou sempre de forma limpa
+            updateLabelPosition(child.mesh, child.labelEl, w, h, camState.radius < 28);
+          });
+        }
+      });
+
+      // Suavização da câmera
+      camState.theta += (camState.targetTheta - camState.theta) * 0.08;
+      camState.phi += (camState.targetPhi - camState.phi) * 0.08;
+      camState.radius += (camState.targetRadius - camState.radius) * 0.08;
+      camState.lookAt.lerp(camState.targetLookAt, 0.08);
+
+      gCamera.position.x = camState.lookAt.x + camState.radius * Math.sin(camState.phi) * Math.cos(camState.theta);
+      gCamera.position.y = camState.lookAt.y + camState.radius * Math.cos(camState.phi);
+      gCamera.position.z = camState.lookAt.z + camState.radius * Math.sin(camState.phi) * Math.sin(camState.theta);
+      gCamera.lookAt(camState.lookAt);
+
+      gRenderer.render(gScene, gCamera);
+    }
+
+    function updateLabelPosition(obj3D, labelEl, width, height, visible) {
+      if (!visible) {
+        labelEl.style.display = 'none';
+        return;
+      }
+      const pos = new THREE.Vector3();
+      obj3D.getWorldPosition(pos);
+      pos.project(gCamera);
+
+      if (pos.z > 1) {
+        labelEl.style.display = 'none';
+      } else {
+        labelEl.style.display = 'block';
+        const sx = (pos.x * 0.5 + 0.5) * width;
+        const sy = (-(pos.y * 0.5) + 0.5) * height;
+        labelEl.style.left = `${sx}px`;
+        labelEl.style.top = `${sy}px`;
+      }
+    }
+
+    // =========================================================================
+    // MAPAS GEOCHART
+    // =========================================================================
     function drawAllMaps() {
       if (!chartsLoaded || typeof google === 'undefined' || !google.visualization) return;
 
@@ -952,6 +1687,8 @@
     window.addEventListener('resize', () => {
       if (document.getElementById('tab-dashboard').classList.contains('active')) {
         drawAllMaps();
+      } else if (document.getElementById('tab-galaxy').classList.contains('active')) {
+        resizeGalaxy();
       }
     });
 
@@ -1032,7 +1769,6 @@
       downloadAnchor.remove();
     }
 
-    // CONQUISTAS GEOGRÁFICAS
     function renderBadges(uniqueBrCount, uniqueCountriesCount) {
       const continents = new Set(['Americas']);
       db.forEach(d => {
@@ -1046,30 +1782,10 @@
       const worldPercent = (uniqueCountriesCount / 195) * 100;
 
       const badges = [
-        { 
-          icon: '🏠', 
-          title: 'Base Carioca', 
-          desc: 'Residência no RJ ativa', 
-          unlocked: true 
-        },
-        { 
-          icon: '🇧🇷', 
-          title: 'Explorador Nacional', 
-          desc: `>50% dos estados BR (${uniqueBrCount}/27)`, 
-          unlocked: brPercent > 50 
-        },
-        { 
-          icon: '🌐', 
-          title: 'Desbravador Global', 
-          desc: `25% dos países (${uniqueCountriesCount}/195)`, 
-          unlocked: worldPercent >= 25 
-        },
-        { 
-          icon: '🌍', 
-          title: 'Todos os Continentes', 
-          desc: `5 continentes (${continents.size}/5)`, 
-          unlocked: continents.size >= 5 
-        }
+        { icon: '🏠', title: 'Base Carioca', desc: 'Residência no RJ ativa', unlocked: true },
+        { icon: '🇧🇷', title: 'Explorador Nacional', desc: `>50% dos estados BR (${uniqueBrCount}/27)`, unlocked: brPercent > 50 },
+        { icon: '🌐', title: 'Desbravador Global', desc: `25% dos países (${uniqueCountriesCount}/195)`, unlocked: worldPercent >= 25 },
+        { icon: '🌍', title: 'Todos os Continentes', desc: `5 continentes (${continents.size}/5)`, unlocked: continents.size >= 5 }
       ];
 
       const container = document.getElementById('badgesContainer');
@@ -1082,7 +1798,6 @@
       `).join('');
     }
 
-    // PASSAPORTE COM SUB-ABA GERAL (PAÍSES) E SUB-ABA ESTADOS DO BRASIL
     function renderPassport() {
       const stampsContainer = document.getElementById('passportStampsContainer');
       const rotations = [-2, 1.5, -1.5, 2, -1, 1.5];
